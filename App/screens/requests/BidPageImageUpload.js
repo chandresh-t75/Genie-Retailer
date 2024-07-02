@@ -149,7 +149,7 @@ const BidPageImageUpload = () => {
             [{ resize: { width: 600, height: 800 } }],
             { compress: 0.5, format: "jpeg", base64: true }
           );
-          setImages((prevImages) => [...prevImages,compressedImage.uri]);
+          setImages((prevImages) => [...prevImages, compressedImage.uri]);
           // await getImageUrl(compressedImage);
         } catch (error) {
           console.error("Error processing image: ", error);
@@ -163,7 +163,7 @@ const BidPageImageUpload = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [3,4],
+      aspect: [3, 4],
       base64: true,
       quality: 1,
     });
@@ -173,12 +173,12 @@ const BidPageImageUpload = () => {
     console.log("pickImage", "result");
     if (!result.canceled) {
       const newImageUri = result.assets[0].uri;
-          const compressedImage = await manipulateAsync(
-            newImageUri,
-            [{ resize: { width: 600, height: 800 } }],
-            { compress: 0.5, format: "jpeg", base64: true }
-          );
-          setImages((prevImages) => [...prevImages,compressedImage.uri]);
+      const compressedImage = await manipulateAsync(
+        newImageUri,
+        [{ resize: { width: 600, height: 800 } }],
+        { compress: 0.5, format: "jpeg", base64: true }
+      );
+      setImages((prevImages) => [...prevImages, compressedImage.uri]);
       //   const processedUri = await handleImageProcessing(result.assets[0]);
       //   console.log("photodrive", processedUri);
       // await getImageUrl(result.assets[0]);
@@ -200,16 +200,16 @@ const BidPageImageUpload = () => {
 
   const copyToClipboard = async () => {
     try {
-        await Clipboard.setStringAsync(requestInfo?.requestId?._id);
-        console.log('Text copied to clipboard');
-        setCopied(true);
+      await Clipboard.setStringAsync(requestInfo?.requestId?._id);
+      console.log('Text copied to clipboard');
+      setCopied(true);
 
-        // Hide the notification after 2 seconds
-        setTimeout(() => setCopied(false), 2000);
+      // Hide the notification after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-        console.error('Failed to copy text to clipboard', error);
+      console.error('Failed to copy text to clipboard', error);
     }
-};
+  };
 
   return (
     <>
@@ -234,7 +234,7 @@ const BidPageImageUpload = () => {
                         <Image
                           source={{ uri: requestInfo?.customerId?.pic }}
                           style={{ width: 40, height: 40, borderRadius: 20 }}
-                          // className="w-[40px] h-[40px] rounded-full"
+                        // className="w-[40px] h-[40px] rounded-full"
                         />
                       ) : (
                         <Profile className="" />
@@ -282,32 +282,32 @@ const BidPageImageUpload = () => {
                             </Pressable> */}
               </View>
               <View className="px-[40px] pb-[20px] flex bg-[#FFE7C8]">
-          <View className="flex-row gap-[10px] items-center">
-            <Text
-              className="text-[16px] "
-              style={{ fontFamily: "Poppins-Bold" }}
-            >
-              Request Id
-            </Text>
-            <Text style={{ fontFamily: "Poppins-Regular" }}>
-              {requestInfo?.requestId?._id}
-            </Text>
-            <TouchableOpacity onPress={() => {copyToClipboard()}} style={{padding:4}}>
-                                    <Copy />
-                                </TouchableOpacity>
-                                {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-50 absolute -top-10 right-0">Copied!</Text>}
-          </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
-            {requestInfo?.requestId?.requestDescription
-              ?.split(" ")
-              .slice(0, 12)
-              .join(" ")}
-            ....
-          </Text>
-          {/* {
+                <View className="flex-row gap-[10px] items-center">
+                  <Text
+                    className="text-[16px] "
+                    style={{ fontFamily: "Poppins-Bold" }}
+                  >
+                    Request Id
+                  </Text>
+                  <Text style={{ fontFamily: "Poppins-Regular" }}>
+                    {requestInfo?.requestId?._id}
+                  </Text>
+                  <TouchableOpacity onPress={() => { copyToClipboard() }} style={{ padding: 4 }}>
+                    <Copy />
+                  </TouchableOpacity>
+                  {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-50 absolute -top-10 right-0">Copied!</Text>}
+                </View>
+                <Text style={{ fontFamily: "Poppins-Regular" }}>
+                  {requestInfo?.requestId?.requestDescription
+                    ?.split(" ")
+                    .slice(0, 12)
+                    .join(" ")}
+                  ....
+                </Text>
+                {/* {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}
-        </View>
+              </View>
 
               <View className="flex gap-[16px] px-[50px] pt-[10px] pb-[10px]">
                 <View className="flex-row justify-between">
@@ -401,7 +401,7 @@ const BidPageImageUpload = () => {
                               },
                             ]}
                           />
-                          
+
                         </Pressable>
                       </Modal>
                     </View>

@@ -41,7 +41,7 @@ import auth from "@react-native-firebase/auth";
 import axios from "axios";
 import messaging from "@react-native-firebase/messaging";
 import BackArrow from "../../assets/BackArrow.svg";
-import SmsRetriever from 'react-native-sms-retriever';
+// import SmsRetriever from 'react-native-sms-retriever';
 
 
 
@@ -64,7 +64,7 @@ const MobileNumberEntryScreen = () => {
   const loginScreen = true;
   const uniqueToken = useSelector((state) => state.storeData.uniqueToken);
   const navigationState = useNavigationState((state) => state);
-  const isLoginScreen =navigationState.routes[navigationState.index].name === "mobileNumber";
+  const isLoginScreen = navigationState.routes[navigationState.index].name === "mobileNumber";
   console.log("mobil", isLoginScreen);
   const { width } = Dimensions.get("window");
 
@@ -101,7 +101,7 @@ const MobileNumberEntryScreen = () => {
         setMobileScreen(true);
         return true; // Prevent default back action
       }
-      else if(isLoginScreen) {
+      else if (isLoginScreen) {
         BackHandler.exitApp();
         return true;
       }
@@ -163,14 +163,14 @@ const MobileNumberEntryScreen = () => {
   // }, []);
 
   const sendVerification = async () => {
-   
+
     if (mobileNumber.length === 10) {
       // Navigate to OTP screen if the phone number is valid
       setLoading(true);
       dispatch(setPanCard(""));
       // dispatch(storeClear());
       try {
-         const phoneNumber = countryCode + mobileNumber;
+        const phoneNumber = countryCode + mobileNumber;
         // console.log(phoneNumber);
         // const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
         // setConfirm(confirmation);
@@ -216,26 +216,26 @@ const MobileNumberEntryScreen = () => {
         }
       );
       console.log("res", response);
-      
+
       if (response.data.storeMobileNo) {
         // If mobile number is registered, navigate to home screen
 
-       
+
         const result = await axios.patch(
           `http://173.212.193.109:5000/retailer/editretailer`,
           {
             _id: response?.data?._id,
-            uniqueToken:token,
+            uniqueToken: token,
           }
         );
         dispatch(setUserDetails(result.data));
         await AsyncStorage.setItem("userData", JSON.stringify(result.data));
 
         setToken("");
-        if(response.data.storeApproved){
+        if (response.data.storeApproved) {
           navigation.navigate("home", { data: "" });
         }
-        else{
+        else {
           navigation.navigate("completeProfile");
         }
         setOtp("");
@@ -243,7 +243,7 @@ const MobileNumberEntryScreen = () => {
         setMobileScreen(true);
       } else if (response.data.status === 404) {
         // If mobile number is not registered, continue with the registration process
-        
+
         navigation.navigate("registerUsername");
         setOtp("");
         setToken("")
@@ -258,7 +258,7 @@ const MobileNumberEntryScreen = () => {
       //   return;
       // }
     } catch (error) {
-      console.log("Invalid otp:",otp);
+      console.log("Invalid otp:", otp);
       alert("Invalid otp");
       console.error("Error checking mobile number:", error);
     } finally {
@@ -269,10 +269,10 @@ const MobileNumberEntryScreen = () => {
     <>
       {mobileScreen && (
         <View style={{ flex: 1, backgroundColor: "white" }}>
-         
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <KeyboardAvoidingView behavior="position">
-              <View style={{ flex: 1, backgroundColor: "white" ,paddingBottom:30}}>
+              <View style={{ flex: 1, backgroundColor: "white", paddingBottom: 30 }}>
                 <View className="bg-white flex-col justify-center">
                   <View className="flex flex-col justify-center items-center gap-[20px]">
                     <MobileNumberImg
@@ -323,12 +323,12 @@ const MobileNumberEntryScreen = () => {
                   </View>
                 </View>
               </View>
-              </KeyboardAvoidingView>
-            </ScrollView>
-          
+            </KeyboardAvoidingView>
+          </ScrollView>
+
 
           <TouchableOpacity
-            disabled={mobileNumber.length !== 10 }
+            disabled={mobileNumber.length !== 10}
             onPress={sendVerification}
             style={{
               position: "absolute",
@@ -344,17 +344,17 @@ const MobileNumberEntryScreen = () => {
             }}
           >
             {loading ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-            <Text
-              style={{
-                fontSize: 18,
-                fontFamily:"Poppins-Black",
-                color: mobileNumber.length !== 10 ? "#888888" : "white",
-              }}
-            >
-              NEXT
-            </Text>)}
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontFamily: "Poppins-Black",
+                  color: mobileNumber.length !== 10 ? "#888888" : "white",
+                }}
+              >
+                NEXT
+              </Text>)}
           </TouchableOpacity>
 
           {loading && (
@@ -369,12 +369,12 @@ const MobileNumberEntryScreen = () => {
           <KeyboardAvoidingView behavior="padding">
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
               <View style={{ alignItems: "center" }}>
-              <TouchableOpacity
-                onPress={() => setMobileScreen(true)}
-                style={{ padding:14 ,position:"absolute",top:40,left:8,zIndex:50 }}
-              >
-                <BackArrow width={18} height={14} />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setMobileScreen(true)}
+                  style={{ padding: 14, position: "absolute", top: 40, left: 8, zIndex: 50 }}
+                >
+                  <BackArrow width={18} height={14} />
+                </TouchableOpacity>
                 <View
                   style={{
                     justifyContent: "center",
@@ -387,7 +387,7 @@ const MobileNumberEntryScreen = () => {
                     width={width}
                     className="object-cover"
                   />
-                  <Text className="text-[14.5px]  text-[#FB8C00]"style={{ fontFamily: "Poppins-Bold" }}>
+                  <Text className="text-[14.5px]  text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>
                     Step 2/9
                   </Text>
                 </View>
@@ -396,14 +396,14 @@ const MobileNumberEntryScreen = () => {
                   <Text
                     style={{
                       fontSize: 18,
-                      fontFamily:"Poppins-ExtraBold",
+                      fontFamily: "Poppins-ExtraBold",
                       color: "#001b33",
                       marginTop: 16,
                     }}
                   >
                     ENTER OTP
                   </Text>
-                  <Text style={{ fontSize: 14, color: "#2e2c43" ,fontFamily:"Poppins-Regular"}}>
+                  <Text style={{ fontSize: 14, color: "#2e2c43", fontFamily: "Poppins-Regular" }}>
                     OTP should be auto-filled otherwise type it manually.Sending
                     OTP at{" "}
                     <Text className="text-[#558B2F] " style={{ fontFamily: "Poppins-SemiBold" }}>
@@ -438,29 +438,29 @@ const MobileNumberEntryScreen = () => {
                         height: 53,
                         textAlign: "center",
                         fontSize: 17,
-                        fontFamily:"Poppins-Medium"
+                        fontFamily: "Poppins-Medium"
                       }}
                     />
                   </View>
 
-                  <View style={{ flexDirection: "column", marginTop: 15 ,paddingBottom:80}}>
-                    <Text style={{ fontSize: 16, color: "#2e2c43",fontFamily:"Poppins-Medium" }}>
+                  <View style={{ flexDirection: "column", marginTop: 15, paddingBottom: 80 }}>
+                    <Text style={{ fontSize: 16, color: "#2e2c43", fontFamily: "Poppins-Medium" }}>
                       Didn't receive it?
                     </Text>
                     <TouchableOpacity onPress={sendVerification}>
-                    {loading ? (
-                    <ActivityIndicator size="small" color="#e76043" />
-              ) : (
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontFamily: 'Poppins-ExtraBold',
-                          color: "#e76043",
-                        }}
-                      >
-                        RESEND
-                      </Text>
-              )}
+                      {loading ? (
+                        <ActivityIndicator size="small" color="#e76043" />
+                      ) : (
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontFamily: 'Poppins-ExtraBold',
+                            color: "#e76043",
+                          }}
+                        >
+                          RESEND
+                        </Text>
+                      )}
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -485,18 +485,18 @@ const MobileNumberEntryScreen = () => {
             }}
           >
             {isLoading ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-            <Text
-              style={{
-                fontSize: 18,
-                fontFamily: 'Poppins-Black',
-                color: otp.length !== 6 ? "#888888" : "white",
-              }}
-            >
-            NEXT
-            </Text>
-              )}
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontFamily: 'Poppins-Black',
+                  color: otp.length !== 6 ? "#888888" : "white",
+                }}
+              >
+                NEXT
+              </Text>
+            )}
           </TouchableOpacity>
 
           {/* {loading && (

@@ -24,6 +24,8 @@ import {
   NotificationBidAccepted,
   NotificationRequestAccepted,
 } from "../notification/notificationMessages";
+import { setUserDetails } from "../redux/reducers/storeDataSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const RequestAcceptModal = ({
   user,
@@ -44,6 +46,9 @@ const RequestAcceptModal = ({
   const ongoingRequests = useSelector(
     (state) => state.requestData.ongoingRequests || []
   );
+
+  const userDetails = useSelector(state => state.storeData.userDetails);
+
   const [loading, setLoading] = useState(false);
 
   // console.log("messages of ",messages)
@@ -61,43 +66,47 @@ const RequestAcceptModal = ({
 
       if (requestInfo?.requestType === "new") {
         try {
-          const res = await axios.patch(
+          await axios.patch(
             "http://173.212.193.109:5000/chat/modify-spade-retailer",
             {
               id: requestInfo?._id,
               type: "ongoing",
             }
-          );
-          console.log("RequestType new response", res.data);
-          let tmp = { ...requestInfo, requestType: "ongoing" ,updatedAt:new Date().toISOString()};
+          ).then(async (res) => {
 
-          dispatch(setRequestInfo(tmp));
-          const filteredRequests = newRequests.filter(
-            (request) => request._id !== requestInfo?._id
-          );
-          dispatch(setNewRequests(filteredRequests));
-          const updatedOngoing = [tmp, ...ongoingRequests];
-          dispatch(setOngoingRequests(updatedOngoing));
+            updateUserDetails();
 
-          setAcceptLocal(true);
-          setModalVisible(false);
-          setLoading(false);
-          const token = await axios.get(
-            `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
-          );
-          console.log("notify token: " + token.data);
-          if (token.data.length > 0) {
-            const notification = {
-              token: token.data,
-              title: user?.storeName,
-              requestInfo: requestInfo,
-              tag: user?._id,
-              image: requestInfo?.requestId?.requestImages[0],
-              redirect_to: "bargain",
-            };
-            //  console.log("new notification",notification);
-            NotificationRequestAccepted(notification);
-          }
+            console.log("RequestType new response", res.data);
+            let tmp = { ...requestInfo, requestType: "ongoing", updatedAt: new Date().toISOString() };
+
+            dispatch(setRequestInfo(tmp));
+            const filteredRequests = newRequests.filter(
+              (request) => request._id !== requestInfo?._id
+            );
+            dispatch(setNewRequests(filteredRequests));
+            const updatedOngoing = [tmp, ...ongoingRequests];
+            dispatch(setOngoingRequests(updatedOngoing));
+
+            setAcceptLocal(true);
+            setModalVisible(false);
+            setLoading(false);
+            const token = await axios.get(
+              `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
+            );
+            console.log("notify token: " + token.data);
+            if (token.data.length > 0) {
+              const notification = {
+                token: token.data,
+                title: user?.storeName,
+                requestInfo: requestInfo,
+                tag: user?._id,
+                image: requestInfo?.requestId?.requestImages[0],
+                redirect_to: "bargain",
+              };
+              //  console.log("new notification",notification);
+              NotificationRequestAccepted(notification);
+            }
+          })
         } catch (error) {
           setLoading(false);
           console.error("Error updating requestType 'new':", error);
@@ -119,7 +128,7 @@ const RequestAcceptModal = ({
               socket.emit("new message", accept.data?.message);
               let tmp = {
                 ...requestInfo,
-                requestType:"completed",updatedAt:new Date().toISOString()
+                requestType: "completed", updatedAt: new Date().toISOString()
               };
               dispatch(setRequestInfo(tmp));
               const updatedMessages = messages.map((message) => {
@@ -158,6 +167,33 @@ const RequestAcceptModal = ({
       console.error("Error handling modal:", error);
     }
   };
+
+
+
+
+  // Decreasing the count of available spades of retailer //////////////////////////////////////////////////////
+  const updateUserDetails = async () => {
+
+
+    await axios.patch(
+      `http://173.212.193.109:5000/retailer/editretailer`,
+      {
+        _id: userDetails?._id,
+        freeSpades: userDetails.freeSpades - 1,
+      })
+      .then(async (res) => {
+        console.log("userData updated Successfully after payment ");
+        dispatch(setUserDetails(res.data));
+        console.log("res after user update", res.data);
+        await AsyncStorage.setItem("userData", JSON.stringify(res.data));
+
+      })
+      .catch((err) => {
+        console.error("error while updating profile", err.message);
+      });
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   return (
     <Modal

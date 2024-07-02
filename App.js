@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import navigationService from './App/navigation/navigationService';
 
 import { useFonts } from 'expo-font';
-import * as MediaLibrary from 'expo-media-library';
+// import * as MediaLibrary from 'expo-media-library';
 import * as Notifications from 'expo-notifications';
 import { notificationListeners } from './App/notification/notificationServices';
 import { getCurrentUserId } from './App/screens/utils/getCurrentUserId';
@@ -25,9 +25,9 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const media = await MediaLibrary.requestPermissionsAsync();
-      const notification = await Notifications.requestPermissionsAsync();
-      console.log("status notification", media,notification);
+      // const media = await MediaLibrary.requestPermissionsAsync();
+      // const notification = await Notifications.requestPermissionsAsync();
+      // console.log("status notification", media,notification);
 
     })();
   }, []);
@@ -60,7 +60,7 @@ export default function App() {
     }
   )
   // const ReduxWrapper = () => {
-      
+
   //   const requestInfo = useSelector(
   //     (state) => state.requestData?.requestInfo
   //   );
@@ -69,21 +69,18 @@ export default function App() {
   //       useEffect(() => {
   //         setUserId(chatUserId);
   //       }, [chatUserId]);
-    
+
   //       return null; // This component doesn't render anything
   //     };
 
 
   useEffect(() => {
-       
-        // console.log("userId",userId);
-     notificationListeners();
 
-    
-    
-    }, []);
+    notificationListeners();
 
-   
+  }, []);
+
+
 
 
 
