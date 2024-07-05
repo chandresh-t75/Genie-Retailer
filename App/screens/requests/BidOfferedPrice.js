@@ -96,7 +96,7 @@ const BidOfferedPrice = () => {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="relative flex-grow bg-[#ffe7c8]">
-          <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-between items-center py-[30px] pt-[40px]">
+          <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-between items-center py-[30px] pt-[20px]">
           <TouchableOpacity
               onPress={() => {
                 navigation.goBack();

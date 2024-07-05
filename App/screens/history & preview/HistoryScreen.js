@@ -13,7 +13,7 @@ import GinieIcon from "../../assets/GinieBusinessIcon.svg";
 import History from "../../assets/HistoryIcon.svg";
 import Close from "../../assets/Cross.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { setRequestInfo } from "../../redux/reducers/requestDataSlice";
+import { setCurrentRequest, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import ProductOrderCard from "../../components/ProductOrderCard";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -25,7 +25,7 @@ const HistoryScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView>
-        <View className="flex flex-row justify-center items-center px-[32px] ">
+        <View className="flex flex-row mt-[20px] justify-center items-center px-[32px] ">
           {/* <View className="bg-[#FB8C00] p-[4px] rounded-full">
             <TouchableOpacity onPress={() => navigation.navigate("menu")}>
               <Profile />
@@ -39,7 +39,7 @@ const HistoryScreen = () => {
           </View>
         </View>
         <SafeAreaView className="flex-1">
-          <Text className="text-[14px] text-center mb-[20px] " style={{ fontFamily: "Poppins-Bold" }}>Your History</Text>
+          <Text className="text-[14px] text-center mt-[20px] mb-[20px] " style={{ fontFamily: "Poppins-Bold" }}>Your History</Text>
 
           <View className=" flex flex-col gap-[10px] mb-[20px] items-center justify-center">
             {retailerHistory && retailerHistory.length > 0 ? (
@@ -54,7 +54,11 @@ const HistoryScreen = () => {
                       userId:product?.users[0]._id
                     };
                     console.log('request details', req);
-                    navigation.navigate("requestPage",{req});
+                    const requestId=req?.requestId
+                    dispatch(setCurrentRequest(req));
+                    setTimeout(() => {
+                      navigation.navigate(`requestPage${requestId}`);
+                      },200);
                   }}
                   style={{
                     backgroundColor: '#fff', // Ensure the background is white

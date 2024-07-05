@@ -371,7 +371,7 @@ const MobileNumberEntryScreen = () => {
               <View style={{ alignItems: "center" }}>
                 <TouchableOpacity
                   onPress={() => setMobileScreen(true)}
-                  style={{ padding: 14, position: "absolute", top: 40, left: 8, zIndex: 50 }}
+                  style={{ padding: 20, position: "absolute", top: 4, left: 4, zIndex: 50 }}
                 >
                   <BackArrow width={18} height={14} />
                 </TouchableOpacity>

@@ -183,7 +183,7 @@ const LocationScreen = () => {
       <ScrollView contentContainerStyle={{flexGrow:1}}>
       <KeyboardAvoidingView behavior="position" >
       <View style={{ flex: 1, backgroundColor: "white",position:"relative" }} >
-          <View className="w-full absolute px-[32px]  mt-[40px] flex flex-row justify-between items-center">
+          <View className="w-full absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
             <Pressable
               onPress={() => {
                 navigation.goBack();
@@ -194,7 +194,7 @@ const LocationScreen = () => {
 
             </Pressable>
           </View>
-          <View className="flex flex-col justify-center items-center px-[32px] mt-[40px] ">
+          <View className="flex flex-col justify-center items-center px-[32px] mt-[20px] ">
             <LocationImg height={322} width={width} />
           </View>
        

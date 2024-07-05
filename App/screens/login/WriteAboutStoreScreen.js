@@ -38,7 +38,7 @@ const WriteAboutStoreScreen = () => {
               flexDirection: "row",
               justifyContent: "space-between",
               paddingHorizontal: 32,
-              marginTop: 50,
+              marginTop: 20,
             }}
           >
             <TouchableOpacity

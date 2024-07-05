@@ -78,7 +78,7 @@ const SearchCategoryScreen = () => {
           className="flex-1 px-0 mb-[63px] "
           showsVerticalScrollIndicator={false}
         >
-          <View className=" flex z-40 flex-row items-center mt-[50px] mb-[10px]">
+          <View className=" flex z-40 flex-row items-center mt-[20px] mb-[10px]">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backButton}

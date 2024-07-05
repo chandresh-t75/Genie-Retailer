@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MobileNumberEntryScreen from '../screens/login/MobileNumberEntryScreen';
@@ -32,10 +32,27 @@ import MessageLoaderSkeleton from '../screens/utils/MessageLoaderSkeleton';
 import CompleteProfile from '../components/CompleteProfile';
 import TermsandConditions from '../screens/menu & profile/TermsandConditions';
 import PaymentScreen from '../screens/utils/paymentGateway/PaymentScreen';
+import { useSelector } from 'react-redux';
+import CustomerReport from '../screens/reports/CustomerReport';
+import GSTDocumentVerify from '../screens/login/GSTDocumentVerify';
+
 const Stack = createNativeStackNavigator();
 const GlobalNavigation = () => {
+  const [userId,setUserId] = useState("")
+
+
+  const currentRequest = useSelector(
+    (state) => state.requestData.currentRequest
+  );
+          const chatUserId =currentRequest?.requestId;
+          console.log("Chat User ID in App.js:", chatUserId);
+          useEffect(() => {
+            setUserId(chatUserId);
+          }, [chatUserId]);
+  
 
   return (
+
 
     <Stack.Navigator
       initialRouteName="splash"
@@ -45,11 +62,10 @@ const GlobalNavigation = () => {
         animationDuration: "50"
       }}
     >
-      <Stack.Screen name="payment-gateway" component={PaymentScreen} />
       <Stack.Screen name="splash" component={SplashScreen} />
       <Stack.Screen name="loader" component={MessageLoaderSkeleton} />
 
-      <Stack.Screen name="home" component={HomeScreen} />
+      <Stack.Screen name="home" component={HomeScreen}   />
       <Stack.Screen name="mobileNumber" component={MobileNumberEntryScreen} />
       <Stack.Screen name="registerUsername" component={UserNameEntryScreen} />
       <Stack.Screen name="panCard" component={PanCardScreen} />
@@ -64,8 +80,15 @@ const GlobalNavigation = () => {
       <Stack.Screen name="camera" component={CameraScreen} />
       <Stack.Screen name="addImg" component={AddImageScreen} />
       <Stack.Screen name="imagePreview" component={ImagePreview} />
-      <Stack.Screen name="requestPage" component={RequestPage} />
-      <Stack.Screen name="bidPageInput" component={BidPageInput} />
+      <Stack.Screen name="payment-gateway" component={PaymentScreen} />
+      <Stack.Screen name="customer-report" component={CustomerReport} />
+      <Stack.Screen name="gstVerify" component={GSTDocumentVerify} />
+
+
+
+      <Stack.Screen name={`requestPage${userId}`} component={RequestPage} />
+      {/* <Stack.Screen name="requestPage" component={RequestPage}  />  */}
+     <Stack.Screen name="bidPageInput" component={BidPageInput} />
       <Stack.Screen name="bidPageImageUpload" component={BidPageImageUpload} />
       <Stack.Screen name="bidOfferedPrice" component={BidOfferedPrice} />
       <Stack.Screen name="bidPreviewPage" component={BidPreviewPage} />
@@ -75,6 +98,7 @@ const GlobalNavigation = () => {
       <Stack.Screen name="termsandconditions" component={TermsandConditions} />
       <Stack.Screen name="help" component={HelpScreen} />
       <Stack.Screen name="viewrequest" component={ViewRequestScreen} />
+   
     </Stack.Navigator>
   )
 }

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Image, Pressable, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity ,ActivityIndicator} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackArrow from "../../assets/arrow-left.svg"
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 
-const HelpScreen = () => {
+const CustomerReport = () => {
     const navigation = useNavigation();
     const [query, setQuery] = useState("");
     const user=useSelector(state=>state.storeData.userDetails);
-    
+    const route=useRoute()
+    const {requestId}=route.params
    //  navigation.navigate('menu')
     const [loading,setLoading] = useState(false);
 
@@ -29,8 +30,7 @@ const HelpScreen = () => {
                   mobileNo:mobileNo,
                   email:"Info@culturtap.com",
                   concern:query,
-                  requestId:""
-                  
+                  requestId:requestId
                 }
               );
               console.log("res", res.data);
@@ -38,6 +38,7 @@ const HelpScreen = () => {
                 setLoading(false);
                 navigation.navigate('home');
                 setQuery("");
+
               }
             
     
@@ -61,7 +62,7 @@ const HelpScreen = () => {
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={{ paddingHorizontal: 30 }}>
                        
-                        <View className="z-50 absolute top-[20px] left-[40px]  ">
+                        <View className="z-50 absolute top-[20px] left-[40px] ">
                         <TouchableOpacity onPress={() => { navigation.goBack(); }} style={{padding:8,borderRadius:100,zIndex:50}}>
                       <BackArrow width={14} height={10} />
 
@@ -70,12 +71,12 @@ const HelpScreen = () => {
 
 
 
-                <Text className="text-center pt-[20px] text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>Need any Help?</Text>
+                <Text className="text-center pt-[20px] text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>Report Customer</Text>
 
                         <View style={{ marginTop: 40, marginBottom: 40 }}>
                             <View style={{ marginBottom: 40 }}>
-                                <Text style={{ fontSize: 16, fontFamily:"Poppins-Bold" }}>Help</Text>
-                                <Text style={{ fontFamily: "Poppins-Regular" }}>Tell us your concern!</Text>
+                                <Text style={{ fontSize: 16, fontFamily:"Poppins-Bold" }}>RequestId:</Text>
+                                <Text style={{ fontFamily: "Poppins-Regular" }}>{requestId}</Text>
                             </View>
                             <TextInput
                                 multiline
@@ -133,4 +134,4 @@ const HelpScreen = () => {
     );
 }
 
-export default HelpScreen;
+export default CustomerReport;

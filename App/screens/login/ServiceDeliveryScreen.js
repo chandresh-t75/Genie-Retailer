@@ -41,12 +41,12 @@ const ServiceDeliveryScreen = () => {
       <View style={{ flex: 1, backgroundColor: "white" }}>
         <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
           <View className="w-full bg-white flex-col justify-center">
-            <View className="w-full z-40  mt-[20px] flex flex-row justify-between items-center px-[32px]">
+            {/* <View className="w-full absolute top-10 left-10 z-40 mt-[10px] flex flex-row justify-between items-center px-[32px]"> */}
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={{
                   position:"absolute",
-                  top: 30,
+                  top: 20,
                   left: 30,
                   padding: 15,
                   zIndex: 40,
@@ -54,7 +54,7 @@ const ServiceDeliveryScreen = () => {
               >
                 <BackArrow width={16} height={12} />
               </TouchableOpacity>
-            </View>
+            {/* </View> */}
             <View className="flex flex-col justify-center items-center px-[32px] gap-[20px] ">
               <StoreName width={width} className="object-cover" />
               <Text

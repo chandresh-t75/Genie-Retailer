@@ -103,7 +103,8 @@ const CameraScreen = () => {
         };
 
         // console.log("notification send", notification);
-        navigation.navigate("requestPage", {req});
+        const requestId=req?.requestId
+        navigation.navigate(`requestPage${requestId}`);
         setIsLoading(false)
         const token = await axios.get(
           `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
@@ -116,7 +117,7 @@ const CameraScreen = () => {
             requestInfo: requestInfo,
             tag: user?._id,
             redirect_to: "bargain",
-            image: imageUri,
+            image:res?.data?.bidImages?.length>0?res?.data?.bidImages[0]:"",
           };
 
           sendCustomNotificationAttachment(notification);

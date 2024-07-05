@@ -7,10 +7,12 @@ import {
   Pressable,
   TouchableOpacity,
   FlatList,
+  StyleSheet,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  setCurrentRequest,
   setNewRequests,
   setOngoingRequests,
   setRequestInfo,
@@ -25,9 +27,17 @@ import messaging from "@react-native-firebase/messaging";
 import { notificationListeners } from "../notification/notificationServices";
 import RequestLoader from "../screens/utils/RequestLoader";
 import { socket } from "../screens/utils/socket.io/socket";
-import { formatDateTime } from "../screens/utils/lib";
+import { daysDifference, formatDateTime } from "../screens/utils/lib";
+import CustomerRemain from "../assets/CustomerRemainImg.svg"
+import GSTVerify from "../assets/GSTVerifyImg.svg"
+import QueIcon from "../assets/QuestionIcon.svg"
+import RightArrow from "../assets/RightArrowGold.svg"
+import Time from "../assets/TimeRed.svg"
+import RemainingCustomerModal from "./RemainingCustomerModal";
 
-const HomeScreenVerified = () => {
+
+
+const HomeScreenVerified = ({modalVisible,setModalVisible}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
@@ -35,6 +45,7 @@ const HomeScreenVerified = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState("New");
   const [request, setRequest] = useState(true);
+
   const newRequests = useSelector(
     (state) => state.requestData.newRequests || []
   );
@@ -58,6 +69,7 @@ const HomeScreenVerified = () => {
     socket.on('connected', () => setSocketConnected(true));
     console.log('Home Screen socekt connect with id', id);
   })
+  
 
 
   useEffect(() => {
@@ -69,9 +81,9 @@ const HomeScreenVerified = () => {
 
   useEffect(() => {
     const handleMessageReceived = (updatedUser) => {
-      console.log('Updated user data received at socket', updatedUser._id, updatedUser.latestMessage.message, updatedUser.unreadCount);
+      console.log('Updated user data received at socket', updatedUser?._id, updatedUser?.latestMessage.message, updatedUser?.unreadCount);
 
-      console.log("ongoing requests", ongoingRequests.length, updatedUser)
+      console.log("ongoing requests", ongoingRequests?.length, updatedUser)
 
       const filteredRequests = ongoingRequests.filter(
         (request) => request?._id !== updatedUser?._id
@@ -81,7 +93,6 @@ const HomeScreenVerified = () => {
       const updatedRequest = [updatedUser, ...filteredRequests];
       dispatch(setOngoingRequests(updatedRequest));
 
-
     };
 
     socket.on("updated retailer", handleMessageReceived);
@@ -90,7 +101,7 @@ const HomeScreenVerified = () => {
     return () => {
       socket.off("updated retailer", handleMessageReceived);
     };
-  }, [dispatch, ongoingRequests]);
+  }, [dispatch,ongoingRequests]);
 
 
   useEffect(() => {
@@ -111,6 +122,11 @@ const HomeScreenVerified = () => {
   }, [dispatch, newRequests]);
 
 
+
+
+  const remainingDays=daysDifference(userData?.createdAt)>60?0:60-daysDifference(userData?.createdAt)
+
+ 
 
 
 
@@ -144,7 +160,7 @@ const HomeScreenVerified = () => {
     }
   });
 
-  const fetchOngoingRequests = useCallback(async () => {
+  const fetchOngoingRequests =async () => {
     setIsLoading(true);
 
     try {
@@ -163,9 +179,9 @@ const HomeScreenVerified = () => {
       dispatch(setOngoingRequests([]));
       //console.error('Error fetching ongoing requests:', error);
     }
-  });
+  };
 
-  const fetchRetailerHistory = useCallback(async () => {
+  const fetchRetailerHistory = async () => {
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       const history = await axios.get(
@@ -180,7 +196,7 @@ const HomeScreenVerified = () => {
       dispatch(setRetailerHistory([]));
       //console.error('Error fetching ongoing requests:', error);
     }
-  });
+  };
 
   const handleRefresh = () => {
     // setRefreshing(true); // Show the refresh indicator
@@ -227,8 +243,12 @@ const HomeScreenVerified = () => {
           requestId:item?.requestId?._id,
           userId:item?.users[0]._id
         };
+        const requestId=req?.requestId
+        dispatch(setCurrentRequest(req));
         console.log('request details', req);
-        navigation.navigate("requestPage",{req});
+        setTimeout(() => {
+        navigation.navigate(`requestPage${requestId}`);
+        },200);
       }}
       style={{
         backgroundColor: "#fff",
@@ -262,9 +282,9 @@ const HomeScreenVerified = () => {
           retailerHistory?.length > 0) && (
             <View className="flex items-center">
               <View>
-                <View className="flex-row justify-between px-[20px]  gap-[5x] mb-[20px]">
+                <View className="flex-row justify-around px-[10px]   gap-[5x] mb-[20px]">
                   <TouchableOpacity onPress={() => setTab("New")}>
-                    <View className="flex-row  gap-[5px]  items-center p-[4px]">
+                    <View className="flex-row  gap-[5px]   p-[4px]">
                       <Text
                         style={{
                           fontFamily:
@@ -272,10 +292,11 @@ const HomeScreenVerified = () => {
                           borderBottomWidth: tab === "New" ? 3 : 0,
                           borderBottomColor: "#FB8C00",
                         }}
+                        className=""
                       >
                         New Requests
                       </Text>
-                      <View className="bg-[#E76063] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
+                      <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full " >
                         <Text
                           className="text-white  "
                           style={{ fontFamily: "Poppins-Regular" }}
@@ -286,7 +307,7 @@ const HomeScreenVerified = () => {
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setTab("Ongoing")}>
-                    <View className="flex-row gap-[5px] items-center p-[4px]">
+                    <View className="flex-row gap-[5px]  p-[4px]">
                       <Text
                         style={{
                           fontFamily:
@@ -300,7 +321,7 @@ const HomeScreenVerified = () => {
                       >
                         Ongoing Requests
                       </Text>
-                      <View className="bg-[#E76063] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
+                      <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
                         <Text
                           className="text-white  "
                           style={{ fontFamily: "Poppins-Regular" }}
@@ -312,6 +333,99 @@ const HomeScreenVerified = () => {
                   </TouchableOpacity>
                 </View>
                 {tab === "New" && (
+                  <>
+                  {/* customer remaining card */}
+                  <View  style={{
+                    backgroundColor: '#fff', // Ensure the background is white
+                    margin: 10, // Add some margin if necessary for better shadow visibility
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
+                    elevation: 5,
+                    borderRadius:16
+                  }}>
+                     <View className="max-w-[340px] flex flex-row p-[20px] gap-[20px] items-center">
+                      <CustomerRemain width={92} height={76}/>
+                      <View className="w-10/12 flex-col gap-[5px]">
+                        <View className="flex-row gap-[10px]">
+                          <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>
+                             Customer Remaining
+                          </Text>
+                          <TouchableOpacity onPress={()=>setModalVisible(true)}>
+                            <QueIcon/>
+
+                          </TouchableOpacity>
+                        </View>
+                        <Text className={`text-[24px]  ${userData?.freeSpades<=50 ? "text-[#E76063]":"text-[#FB8C00]"}`} style={{ fontFamily: "Poppins-Black" }}>
+                             {userData?.freeSpades} / 1000
+                          </Text>
+                          {/* <TouchableOpacity>
+                            <View className="flex flex-row items-center gap-[10px]">
+                            <Text className="text-[14px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Regular" }}>
+                                Add more
+                              </Text>
+                            <RightArrow/>
+
+                            </View>
+
+                          </TouchableOpacity> */}
+                      </View>
+
+                        
+                     </View>
+                    </View>
+                    {/* gst verification card */}
+                    {
+                      userData.panCard?.length==0 &&
+                      <View  style={{
+                        backgroundColor: '#fff', // Ensure the background is white
+                        margin: 10, // Add some margin if necessary for better shadow visibility
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 4,
+                        elevation: 5,
+                        borderRadius:16
+                      }} className="max-w-[340px]">
+                         <View className="w-full flex flex-row p-[20px] gap-[20px] items-center">
+                          <GSTVerify width={80} height={60}/>
+                          <View className="w-10/12 px-[10px] flex-col gap-[5px]">
+                            <View className="w-full flex-row gap-[10px]">
+                              <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>
+                              Attach your GST/Labor{"\n"}certificate
+                              </Text>
+                              <TouchableOpacity>
+                                <QueIcon/>
+    
+                              </TouchableOpacity>
+                            </View>
+                            {/* <View className="flex flex-row items-center gap-[10px]">
+                                 <Time/>
+    
+                                <Text className="text-[14px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>
+                                   <Text>{remainingDays}</Text> Days remaining
+                                  </Text>
+    
+                                </View> */}
+                            
+                              <TouchableOpacity onPress={()=>navigation.navigate("gstVerify")}>
+                                <View className="flex flex-row items-center gap-[10px]">
+                                <Text className="text-[14px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Regular" }}>
+                                    Add Now
+                                  </Text>
+                                <RightArrow/>
+    
+                                </View>
+    
+                              </TouchableOpacity>
+                          </View>
+    
+                            
+                         </View>
+                        </View>
+                    }
+                   
                   <FlatList
                     data={newRequests}
                     renderItem={renderItem}
@@ -331,6 +445,7 @@ const HomeScreenVerified = () => {
                       </Text>
                     }
                   />
+                  </>
                 )}
                 {tab === "Ongoing" && (
                   <FlatList
@@ -354,7 +469,9 @@ const HomeScreenVerified = () => {
                   />
                 )}
               </View>
+              
             </View>
+            
           )}
         {!(
           newRequests?.length > 0 ||
@@ -363,8 +480,18 @@ const HomeScreenVerified = () => {
         ) && <HomeScreenRequests />
         }
       </View>
+      
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  overlay: {
+      flex:1,
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent greyish background
+  },
+
+})
 
 export default HomeScreenVerified;

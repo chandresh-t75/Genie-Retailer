@@ -234,12 +234,12 @@ const AddImageScreen = () => {
       {!cameraScreen && (
         <View style={{ flex: 1 }}> 
           <View style={{ flex: 1 }}>
-            <View className="w-full z-40 pt-16 flex flex-row justify-between items-center px-[32px]">
+            <View className="w-full z-40 pt-[20px] flex flex-row justify-between items-center px-[32px]">
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{padding:6}}
+              style={{padding:8}}
             >
                              <BackArrow width={14} height={10} />
 

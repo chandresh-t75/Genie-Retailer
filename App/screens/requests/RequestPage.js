@@ -55,14 +55,16 @@ import {
 import { NotificationBidRejected } from "../../notification/notificationMessages";
 import MessageLoaderSkeleton from "../utils/MessageLoaderSkeleton";
 import BackArrow from "../../assets/arrow-left.svg";
-import * as Clipboard from 'expo-clipboard';
-
+import * as Clipboard from "expo-clipboard";
+import navigationService from "../../navigation/navigationService";
+import ConfirmPaymentModal from "../../components/ConfirmPaymentModal";
+import UploadGSTModal from "../../components/UploadGSTModal";
+import { daysDifference } from "../utils/lib";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
 // import MessageLoaderSkeleton from "../utils/MessageLoaderSkeleton";
 // import { setMessages } from "../../redux/reducers/requestDataSlice";
-
 
 const RequestPage = () => {
   const navigation = useNavigation();
@@ -78,7 +80,6 @@ const RequestPage = () => {
   const [available, setAvailable] = useState(false);
   const [copied, setCopied] = useState(false);
 
-
   const [modal, setModal] = useState(false);
   const [closeRequestModal, setCloseRequestModal] = useState(false);
   const [acceptRequestModal, setAcceptRequestModal] = useState(false);
@@ -88,11 +89,13 @@ const RequestPage = () => {
   const [cameraScreen, setCameraScreen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isLoading, setisLoading] = useState(false);
-  const [feedbackLoading, setFeedbackLoading] = useState(false)
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [confirmPaymentModal, setConfirmPaymentModal] = useState(false);
+  const [uploadGSTModal, setUploadGSTModal] = useState(false);
 
   const [rating, setRating] = useState(0);
-  const { req } = route.params;
+  // const { req } = route.params;
   const retailerHistory = useSelector(
     (state) => state.requestData.retailerHistory || []
   );
@@ -103,18 +106,17 @@ const RequestPage = () => {
   const requestInfo = useSelector(
     (state) => state.requestData.requestInfo || {}
   );
-  const isHome = useSelector(
-    (state) => state.requestData.isHome
+  const currentRequest = useSelector(
+    (state) => state.requestData.currentRequest
   );
-  console.log("params", isHome);
 
+  // console.log("params", currentRequest);
 
   //    const navigationState = useNavigationState(state => state);
   // const isChat = navigationState.routes[navigationState.index].name === 'requestPage';
   // console.log("params",isHome,isChat);
 
-
-  const fetchRequestData = useCallback(async () => {
+  const fetchRequestData = async () => {
     setLoading(true);
     try {
       const userData = JSON.parse(await AsyncStorage.getItem("userData"));
@@ -125,80 +127,80 @@ const RequestPage = () => {
 
       // if (route?.params?.data) {
       // const  req =route?.params?.data
-      console.log('reqInfo from notification section', req);
+      // console.log('reqInfo from notification section', currentRequest);
       // }
       // let response =
 
-      await axios.get(
-        `http://173.212.193.109:5000/chat/get-particular-chat`, {
-        params: {
-          retailerId: userData?._id,
-          requestId: req?.requestId
-        }
-      }
-      ).then(async (result) => {
-        console.log("new requestInfo fetched successfully", result?.data[0]);
-        dispatch(setRequestInfo(result?.data[0]))
+      await axios
+        .get(`http://173.212.193.109:5000/chat/get-particular-chat`, {
+          params: {
+            retailerId: userData?._id,
+            requestId: currentRequest?.requestId,
+          },
+        })
+        .then(async (resu) => {
+          const result = resu?.data[0];
+          // console.log("new requestInfo fetched successfully", result);
+          dispatch(setRequestInfo(result));
 
+          await axios
+            .get("http://173.212.193.109:5000/chat/get-spade-messages", {
+              params: {
+                id: result?._id,
+              },
+            })
+            .then(async (response) => {
+              setMessages(response?.data);
 
-        await axios
-          .get("http://173.212.193.109:5000/chat/get-spade-messages", {
-            params: {
-              id: result?.data[0]?._id
-            },
-          })
-          .then(async (response) => {
-            setMessages(response?.data);
+              // console.log("Messages found successfully",response.data);
+              // console.log("user joined chat with chatId", response.data[0].chat._id);
+              socket.emit("join chat", response?.data[0]?.chat?._id);
 
-            // console.log("Messages found successfully",response.data);
-            // console.log("user joined chat with chatId", response.data[0].chat._id);
-            socket.emit("join chat", response?.data[0]?.chat?._id);
+              console.log("socket join chat setup successfully");
 
-            console.log("socket join chat setup successfully");
+              setLoading(false);
+              if (
+                result?.unreadCount > 0 &&
+                result?.latestMessage?.sender?.type === "UserRequest"
+              ) {
+                const res = await axios.patch(
+                  "http://173.212.193.109:5000/chat/mark-as-read",
+                  {
+                    id: result?._id,
+                  }
+                );
 
-            setLoading(false);
-            if (
-              result?.data[0]?.unreadCount > 0 &&
-              result?.data[0]?.latestMessage?.sender?.type === "UserRequest"
-            ) {
-              const res = await axios.patch(
-                "http://173.212.193.109:5000/chat/mark-as-read",
-                {
-                  id: result?.data[0]?._id,
+                let tmp = { ...result, unreadCount: 0 };
+
+                dispatch(setRequestInfo(tmp));
+                const filteredRequests = ongoingRequests.filter(
+                  (request) => request._id !== result?._id
+                );
+                if (result?.latestMessage?.bidType === "update") {
+                  console.log("update");
+                  const data = [...filteredRequests];
+                  dispatch(setOngoingRequests(data));
+                  const data2 = [tmp, ...retailerHistory];
+                  dispatch(setRetailerHistory(data2));
+                } else {
+                  const data = [tmp, ...filteredRequests];
+                  dispatch(setOngoingRequests(data));
                 }
-              );
 
-              let tmp = { ...result?.data[0], unreadCount: 0 };
-
-              dispatch(setRequestInfo(tmp));
-              const filteredRequests = ongoingRequests.filter(
-                (request) => request._id !== result?.data[0]?._id
-              );
-              if (requestInfo?.latestMessage?.bidType === "update") {
-                console.log("update");
-                const data = [...filteredRequests];
-                dispatch(setOngoingRequests(data));
-                const data2 = [tmp, ...retailerHistory];
-                dispatch(setRetailerHistory(data2));
-              } else {
-                const data = [tmp, ...filteredRequests];
-                dispatch(setOngoingRequests(data));
+                console.log("mark as read", res?.data, res?.data?.unreadCount);
               }
-
-              console.log("mark as read", res?.data, res?.data?.unreadCount);
-            }
-          })
-
-      })
+            });
+        });
       // dispatch(setMessages(response.data));
 
       // socket.emit("join chat", response?.data[0].chat._id);
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
-  });
+  };
 
   const SocketSetUp = async (id) => {
+    console.log("setup", id);
     socket.emit("setup", id);
     console.log("socket setup for personal user setup successfully");
     // console.log("user connected with userId", requestInfo.users[0]._id);
@@ -209,25 +211,26 @@ const RequestPage = () => {
   };
 
   useEffect(() => {
-    console.log('route.params.data', req);
+    console.log("route.params.data", currentRequest);
     // if (requestInfo) {
     //   console.log("find error of requestPage from home screen");
     //   SocketSetUp(requestInfo?.users[0]._id);
     // }
-    if (req) {
+    if (currentRequest) {
       console.log("Params data found");
       // let req = route?.params?.data;
       // console.log('reqInfo from notification section',req);
 
       // dispatch(setRequestInfo(req));
-      SocketSetUp(req?.userId);
+      SocketSetUp(currentRequest?.userId);
 
-      // setTimeout(()=>{
-      //   console.log('reqInfo from params',requestInfo);
-      // },2000);
-
+      fetchRequestData();
+      console.log("reqInfo from params", socketConnected);
     }
-    fetchRequestData();
+
+    // setTimeout(()=>{
+    //   console.log('reqInfo from params',requestInfo);
+    // },2000);
 
     return () => {
       if (socket) {
@@ -236,8 +239,6 @@ const RequestPage = () => {
       }
     };
   }, []);
-
-
 
   const RejectBid = async () => {
     setisLoading(true);
@@ -407,7 +408,6 @@ const RequestPage = () => {
 
   // const messages = useSelector(state => state.requestData.messages);
 
-
   const handlePress = (star) => {
     setRating(star);
   };
@@ -415,40 +415,43 @@ const RequestPage = () => {
   const copyToClipboard = async () => {
     try {
       await Clipboard.setStringAsync(requestInfo?.requestId?._id);
-      console.log('Text copied to clipboard');
+      console.log("Text copied to clipboard");
       setCopied(true);
 
       // Hide the notification after 2 seconds
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy text to clipboard', error);
+      console.error("Failed to copy text to clipboard", error);
     }
   };
 
-  useEffect(() => {
-    const backAction = () => {
-      if (isHome) {
-        navigation.navigate("home");
-        return true;
-      } else {
-        BackHandler.exitApp();
-        return true;
-      }
-    };
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     if (isHome) {
+  //       navigation.navigate("home");
+  //       return true;
+  //     } else {
+  //       BackHandler.exitApp();
+  //       return true;
+  //     }
+  //   };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     backAction
+  //   );
 
-    return () => backHandler.remove(); // Clean up the event listener
-  }, [isHome]);
+  //   return () => backHandler.remove(); // Clean up the event listener
+  // }, [isHome]);
 
+  const remainingDays =
+    daysDifference(user?.createdAt) > 0
+      ? 0
+      : 60 - daysDifference(user?.createdAt);
+  // console.log("remainingDays: ", remainingDays);
 
-
-
-
-
+  // const lastMessage = messages[messages.length - 1];
+  // console.log("last Mesage: ", lastMessage);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -465,15 +468,10 @@ const RequestPage = () => {
         </View>
       )}
       <View className="relative">
-        <View className=" relative bg-[#FFE7C8] pt-[40px] w-full flex flex-row px-[32px] justify-between items-center py-[30px]">
+        <View className=" relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row px-[32px] justify-between items-center py-[30px]">
           <TouchableOpacity
             onPress={() => {
-              if (isHome) {
-                navigation.navigate("home");
-              }
-              else {
-
-              }
+              navigation.goBack();
             }}
             style={{ padding: 6 }}
           >
@@ -492,7 +490,7 @@ const RequestPage = () => {
                       borderRadius: 20,
                       objectFit: "cover",
                     }}
-                  // className="w-[40px] h-[40px] rounded-full"
+                    // className="w-[40px] h-[40px] rounded-full"
                   />
                 ) : (
                   <Profile className="w-full h-full rounded-full" />
@@ -526,28 +524,35 @@ const RequestPage = () => {
           </TouchableOpacity>
         </View>
         {modal && (
-          <View className="absolute top-[40px] right-[80px]  bg-white rounded-md">
+          <View className="absolute top-[20px] right-[80px]  bg-white rounded-md">
             <TouchableOpacity
               onPress={() => {
                 setModal(!modal);
                 navigation.navigate("viewrequest");
               }}
+              style={{
+                padding: 8,
+                borderBottomColor: "gray",
+                borderBottomWidth: 1,
+                marginHorizontal: 8,
+              }}
             >
-              <Text
-                className="mx-5  py-3"
-                style={{ fontFamily: "Poppins-Regular" }}
-              >
+              <Text className="mx-5" style={{ fontFamily: "Poppins-Regular" }}>
                 View Request
               </Text>
             </TouchableOpacity>
-            {/* <Pressable
+            <TouchableOpacity
               onPress={() => {
-                setCloseRequestModal(true);
                 setModal(!modal);
+                const requestId = requestInfo?.requestId?._id;
+                navigation.navigate("customer-report", { requestId });
               }}
+              style={{ padding: 8 }}
             >
-              <Text className="mx-5 py-3">Close Request</Text>
-            </Pressable> */}
+              <Text className="mx-5" style={{ fontFamily: "Poppins-Regular" }}>
+                Report Customer
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -562,10 +567,19 @@ const RequestPage = () => {
             <Text style={{ fontFamily: "Poppins-Regular" }}>
               {requestInfo?.requestId?._id}
             </Text>
-            <TouchableOpacity onPress={() => { copyToClipboard() }} style={{ padding: 4 }}>
+            <TouchableOpacity
+              onPress={() => {
+                copyToClipboard();
+              }}
+              style={{ padding: 4 }}
+            >
               <Copy />
             </TouchableOpacity>
-            {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">Copied!</Text>}
+            {copied && (
+              <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">
+                Copied!
+              </Text>
+            )}
           </View>
           <Text style={{ fontFamily: "Poppins-Regular" }}>
             {requestInfo?.requestId?.requestDescription
@@ -611,7 +625,7 @@ const RequestPage = () => {
                   // console.log("mapping", message); // You can move console.log outside of the return statement if you want to log the value
                   if (message?.bidType === "update") {
                     return (
-                      <View key={message?._id} className="flex gap-6" >
+                      <View key={message?._id} className="flex gap-6">
                         <View className="flex justify-center bg-[#FFE7C8] rounded-[24px] px-[32px] py-[10px] ">
                           <Text
                             className="text-[16px] text-center text-[#FB8C00]"
@@ -624,7 +638,7 @@ const RequestPage = () => {
                           <View className=" mt-[19px] ">
                             <Text
                               className="text-[14px]"
-                              style={{ fontFamily: "Poppins-Bold" }}
+                              style={{ fontFamily: "Poppins-Regular" }}
                             >
                               Rate your experience with customer
                             </Text>
@@ -650,8 +664,8 @@ const RequestPage = () => {
 
                           <View className="mb-[20px]">
                             <Text
-                              className="text-[14px] text-[#2e2c43] mx-[6px] mt-[30px] mb-[15px]"
-                              style={{ fontFamily: "Poppins-ExtraBold" }}
+                              className="text-[14px]  mx-[6px] mt-[30px] mb-[15px]"
+                              style={{ fontFamily: "Poppins-Regular" }}
                             >
                               Feedback for customer
                             </Text>
@@ -678,14 +692,13 @@ const RequestPage = () => {
                             </KeyboardAvoidingView>
                           </View>
                           <TouchableOpacity
-                            disabled={!rating || !feedback}
+                            disabled={!rating && !feedback}
                             //  onPress={sendQuery}
                             style={{
-
                               height: 50,
                               width: "100%",
                               backgroundColor:
-                                (!rating || !feedback) ? "#e6e6e6" : "#FB8C00",
+                                !rating && !feedback ? "#e6e6e6" : "#FB8C00",
                               justifyContent: "center", // Center content vertically
                               alignItems: "center", // Center content horizontally
                             }}
@@ -698,17 +711,14 @@ const RequestPage = () => {
                                   fontSize: 18,
                                   fontFamily: "Poppins-Black",
                                   color:
-                                    (!rating || !feedback) ? "#888888" : "white",
+                                    !rating && !feedback ? "#888888" : "white",
                                 }}
                               >
                                 Submit
                               </Text>
                             )}
                           </TouchableOpacity>
-
                         </View>
-
-
                       </View>
                     );
                   } else if (message?.sender?.refId !== user?._id) {
@@ -777,14 +787,15 @@ const RequestPage = () => {
 
       {/* Typing Area */}
       <View
-        className={`absolute bottom-0 left-0 right-0 pt-[10] ${attachmentScreen ? "-z-50" : "z-50"
-          } `}
+        className={`absolute bottom-0 left-0 right-0 pt-[10] ${
+          attachmentScreen ? "-z-50" : "z-50"
+        } `}
       >
         {requestInfo?.requestType !== "closed" &&
           requestInfo?.requestType === "new" &&
           available === false && (
-            <View className="gap-[20px] items-center bg-white pt-[20px] shadow-2xl">
-              <View>
+            <View className="gap-[20px]  items-center bg-white pt-[20px] shadow-2xl ">
+              <View className="flex flex-col justify-center items-center">
                 <Text
                   className="text-[14px] text-center"
                   style={{ fontFamily: "Poppins-Bold" }}
@@ -798,11 +809,56 @@ const RequestPage = () => {
                   Please confirm the product/service availability by accepting
                   this request
                 </Text>
+
+                {messages && messages[messages.length - 1]?.bidImages && (
+                  <ScrollView
+                    horizontal
+                    contentContainerStyle={{
+                      paddingHorizontal: 10,
+                      marginTop: 10,
+                      flexDirection: "row",
+                      gap: 4,
+                    }}
+                    showsHorizontalScrollIndicator={false}
+                    style={{ maxHeight: 150 }}
+                  >
+                    {messages[messages.length - 1]?.bidImages.map(
+                      (image, index) => (
+                        <View key={index} className="rounded-3xl">
+                          <Image
+                            source={{ uri: image }}
+                            width={100}
+                            height={140}
+                            className="rounded-3xl border-[1px] border-slate-400 object-contain"
+                          />
+                        </View>
+                      )
+                    )}
+                  </ScrollView>
+                )}
+
+                {messages && messages[messages.length - 1]?.bidPrice && (
+                  <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
+                    <Text style={{ fontFamily: "Poppins-Medium" }}>
+                      Expected Price:{" "}
+                    </Text>
+                    <Text
+                      className=" text-[#79B649]"
+                      style={{ fontFamily: "Poppins-SemiBold" }}
+                    >
+                      Rs. {messages[messages.length - 1]?.bidPrice}
+                    </Text>
+                  </View>
+                )}
               </View>
 
               <View className="w-full flex-row justify-between bg-white">
                 <TouchableOpacity
-                  onPress={() => { userDetails.freeSpades > 0 ? setAcceptRequestModal(true) : navigation.navigate('payment-gateway'); }}
+                  onPress={() => {
+                    user?.freeSpades > 0
+                      ? setAcceptRequestModal(true)
+                      : setConfirmPaymentModal(true);
+                  }}
                   style={{ flex: 1 }}
                 >
                   <View className="h-[63px] flex items-center justify-center border-[1px] bg-[#FB8C00] border-[#FB8C00]">
@@ -897,17 +953,54 @@ const RequestPage = () => {
           messages[messages.length - 1]?.bidAccepted === "new" &&
           messages[messages.length - 1]?.sender?.refId !== user?._id && (
             <View className="gap-[20px] items-center bg-white pt-[20px] shadow-2xl">
-              <View>
+              <View className="flex flex-col justify-center items-center">
                 <Text
                   className="text-[14px]  text-center"
                   style={{ fontFamily: "Poppins-Bold" }}
                 >
                   Are you accepting the customer offer ?
                 </Text>
-                {/* <Text className="text-[14px] text-center" style={{ fontFamily: "Poppins-Regular" }}>
-                  If you don’t understand the customer’s need,
-                  {"\n"}select no and send query for clarification.
-                </Text> */}
+                <View>
+                {messages && messages[messages.length - 1]?.bidImages && (
+                  <ScrollView
+                    horizontal
+                    contentContainerStyle={{
+                      paddingHorizontal: 10,
+                      marginTop: 10,
+                      flexDirection: "row",
+                      gap: 4,
+                    }}
+                    showsHorizontalScrollIndicator={false}
+                    style={{ maxHeight: 150 }}
+                  >
+                    {messages[messages.length - 1]?.bidImages.map(
+                      (image, index) => (
+                        <View key={index} className="rounded-3xl">
+                          <Image
+                            source={{ uri: image }}
+                            width={100}
+                            height={140}
+                            className="rounded-3xl border-[1px] border-slate-400 object-contain"
+                          />
+                        </View>
+                      )
+                    )}
+                  </ScrollView>
+                )}
+                </View>
+                {messages && messages[messages.length - 1]?.bidPrice && (
+                  <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
+                    <Text style={{ fontFamily: "Poppins-Medium" }}>
+                      Offered Price:{" "}
+                    </Text>
+                    <Text
+                      className=" text-[#79B649]"
+                      style={{ fontFamily: "Poppins-SemiBold" }}
+                    >
+                      Rs. {messages[messages.length - 1]?.bidPrice}
+                    </Text>
+                  </View>
+                )}
               </View>
 
               <View className="w-full flex-row justify-between">
@@ -930,7 +1023,7 @@ const RequestPage = () => {
                       <ActivityIndicator size="small" color="#FB8C00" />
                     ) : (
                       <Text
-                        className=" text-[16px] text-[#FB8C00]"
+                        className="text-[16px] text-[#FB8C00]"
                         style={{ fontFamily: "Poppins-Black" }}
                       >
                         No
@@ -991,7 +1084,7 @@ const RequestPage = () => {
       <RequestCancelModal
         modalVisible={cancelRequestModal}
         setModalVisible={setCancelRequestModal}
-      // requestInfo={requestInfo}
+        // requestInfo={requestInfo}
       />
       {/* <RequestCancelModal
         modalVisible={closeRequestModal}
@@ -1006,10 +1099,20 @@ const RequestPage = () => {
         // requestInfo={requestInfo}
         setAcceptLocal={setAcceptLocal}
       />
+      <ConfirmPaymentModal
+        modalConfirmVisible={confirmPaymentModal}
+        setModalConfirmVisible={setConfirmPaymentModal}
+      />
+      <UploadGSTModal
+        modalConfirmVisible={uploadGSTModal}
+        setModalConfirmVisible={setUploadGSTModal}
+      />
 
       {/* {closeRequestModal && <View style={styles.overlay} />} */}
       {acceptRequestModal && <View style={styles.overlay} />}
       {cancelRequestModal && <View style={styles.overlay} />}
+      {confirmPaymentModal && <View style={styles.overlay} />}
+      {uploadGSTModal && <View style={styles.overlay} />}
     </View>
   );
 };

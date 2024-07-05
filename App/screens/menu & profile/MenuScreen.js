@@ -50,7 +50,7 @@ const MenuScreen = () => {
   return (
     <View style={{ flex: 1,backgroundColor:"white" }}>
        
-         <View className="mt-[50px] flex  gap-[60px]" style={{ flex: 1 }} >
+         <View className="pt-[20px] flex  gap-[60px]" style={{ flex: 1 }} >
              <View className="flex flex-row px-[32px] items-center ">
                  
                      <TouchableOpacity onPress={() => {navigation.goBack()}} className="flex  items-center "

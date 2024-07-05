@@ -136,7 +136,9 @@ const BidPreviewPage = () => {
           userId:updatedRequest?.users[0]._id
         };
 
-        navigation.navigate("requestPage",{req});
+        const requestId=req?.requestId
+        navigation.navigate(`requestPage${requestId}`);
+
         setLoading(false)
         const token=await axios.get(`http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`);
         if(token.data.length>0){
@@ -147,7 +149,7 @@ const BidPreviewPage = () => {
            requestInfo: requestInfo,
            tag: user?._id,
            price: bidOfferedPrice,
-           image: bidImages[0],
+           image:response?.data?.bidImages?.length>0?response?.data?.bidImages[0]:"",
            redirect_to: "bargain",
          };
          sendCustomNotificationBid(notification);
@@ -182,7 +184,7 @@ const BidPreviewPage = () => {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="relative flex-grow bg-[#ffe7c8]">
-          <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-between items-center py-[40px]">
+          <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-between items-center py-[20px]">
           <TouchableOpacity
               onPress={() => {
                 navigation.goBack();

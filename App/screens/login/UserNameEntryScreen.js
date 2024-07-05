@@ -97,15 +97,15 @@ const UserNameEntryScreen = () => {
        
           
             <View className="flex-col justify-center">
-              <View className="w-full absolute z-40 top-[45px] flex flex-row justify-end items-center px-[32px]">
-                <Pressable
+              <View className="w-full absolute z-40 top-[20px] flex flex-row justify-end items-center px-[32px]">
+                <TouchableOpacity
                   onPress={() => {
                     setModalVisible(!modalVisible);
                   }}
-                  className="flex flex-row p-2 items-center gap-2"
+                  className="flex flex-row p-4 items-center gap-2"
                 >
                   <QuestionIcon />
-                </Pressable>
+                </TouchableOpacity>
               </View>
               <View className="flex flex-col justify-center items-center gap-[8px]">
                 <StoreName  width={width} className="object-cover" />

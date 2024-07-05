@@ -14,7 +14,7 @@ const ViewRequestScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1,backgroundColor:"white"}}>
-            <View className=" flex z-40 flex-row items-center justify-center mt-[24px] mb-[24px] mx-[36px]">
+            <View className=" flex z-40 flex-row items-center justify-center mt-[20px] mb-[24px] mx-[36px]">
             <Pressable
             onPress={() => {
               navigation.goBack();

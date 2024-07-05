@@ -6,8 +6,9 @@ const initialState = {
   newRequests: [],
   ongoingRequests:[],
   messages:[],
-  requestInfo:[],
+  requestInfo:{},
   retailerHistory:[],
+  currentRequest: {},
   isHome: false,
 };
 
@@ -35,6 +36,9 @@ const requestDataSlice = createSlice({
       setIsHome: (state, action) => {
         state.isHome = action.payload;
       },
+      setCurrentRequest: (state, action) => {
+        state.currentRequest = action.payload;
+      },
       requestClear: (state) => {
         return initialState;
       }
@@ -43,5 +47,5 @@ const requestDataSlice = createSlice({
   },
 });
 
-export const { setNewRequests,setOngoingRequests,setMessages,setRequestInfo,setRetailerHistory,requestClear,setIsHome} = requestDataSlice.actions;
+export const { setNewRequests,setOngoingRequests,setMessages,setRequestInfo,setRetailerHistory,requestClear,setIsHome,setCurrentRequest} = requestDataSlice.actions;
 export default requestDataSlice.reducer;

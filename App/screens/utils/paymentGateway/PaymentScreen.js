@@ -11,10 +11,10 @@ import {
     ScrollView,
     TextInput
 } from "react-native";
-import RazorpayCheckout from "react-native-razorpay";
+// import RazorpayCheckout from "react-native-razorpay";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
-import { encode as btoa } from "base-64";
+// import { encode as btoa } from "base-64";
 import Close from "../../../assets/Cross.svg";
 // import PaymentImg from "../../assets/PaymentImg.svg";
 import { useNavigation } from "@react-navigation/native";
@@ -23,6 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator } from "react-native";
 import { setUserDetails } from "../../../redux/reducers/storeDataSlice";
 import PaymentSuccessFulModal from "../../../components/PaymentSuccessFulModal";
+import { getFormattedDate } from "../lib";
 
 const PaymentScreen = () => {
     const navigation = useNavigation();
@@ -34,7 +35,7 @@ const PaymentScreen = () => {
     const [couponFailed, setCouponFailed] = useState(false);
     const [couponCode, setCouponCode] = useState("");
 
-    // console.log('userDetails at razorpay', userDetails);
+    console.log('userDetails at razorpay', userDetails);
 
     useEffect(() => {
         // console.log('lastSpade', userDetails.lastSpade);
@@ -42,164 +43,166 @@ const PaymentScreen = () => {
             navigation.navigate("home");
         }
     }, []);
-    const PayNow = async () => {
-        const username = "rzp_live_oz8kr6Ix29mKyC";
-        const password = "IADDTICFJ2oXYLX3H2pLjvcx";
-        const credentials = `${username}:${password}`;
-        const encodedCredentials = btoa(credentials);
-        setLoading(true);
-        try {
-            const response = await axios.post(
-                "https://api.razorpay.com/v1/orders",
-                {
-                    amount: 100,  // INR amount in paisa 1Rs = 100 paisa
-                    currency: "INR",
-                    receipt: userDetails._id,
-                    notes: {
-                        notes_key_1: "Welcome to CulturTap-Genie",
-                        notes_key_2: "Eat-Sleep-Code-Repeat.",
-                    },
-                },
-                {
-                    headers: {
-                        Authorization: `Basic ${encodedCredentials}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
 
-            const order = response.data;
-
-            var options = {
-                description: "Payment for Genie-service",
-                image:
-                    "https://res.cloudinary.com/kumarvivek/image/upload/v1716890335/qinbdiriqama2cw10bz6.png",
-                currency: "INR",
-                key: "rzp_live_oz8kr6Ix29mKyC",
-                amount: "100", // Amount in paise (20000 paise = 200 INR)
-                name: "CulturTap-Genie",
-                order_id: order.id, // Use the order ID created using Orders API.
-                prefill: {
-                    email: userDetails?.email,
-                    contact: userDetails?.storeMobileNo,
-                    name: userDetails?.storeName,
-                },
-                theme: { color: "#fb8c00" },
-            };
-
-            RazorpayCheckout.open(options)
-                .then((data) => {
-                    // handle success
-                    // Alert.alert(`Success: ${data.razorpay_payment_id}`);
-                    console.log("Payment Successful");
-
-                    updateUserDetails();
-                    setLoading(false);
-                })
-                .catch((error) => {
-                    // handle failure
-                    setLoading(false);
-                    // Alert.alert(`Error: ${error.code} | ${error.description}`);
-                    console.error(error);
-                });
-        } catch (error) {
-            setLoading(false);
-            console.error("Order creation failed:", error);
-            Alert.alert("Order creation failed", error.message);
-        }
-    };
-
-    const updateUserDetails = async () => {
-        // setEditUser(false);
-        // console.log('userNmae', userName);
-        // if (userName.length < 3) return;
-
-        await axios.patch(
-            `http://173.212.193.109:5000/retailer/editretailer`,
-            {
-                _id: userDetails?._id,
-                freeSpades: 1000,
-            })
-            .then(async (res) => {
-                console.log("userData updated Successfully after payment ");
-                dispatch(setUserDetails(res.data));
-                console.log("res after user update", res.data);
-                await AsyncStorage.setItem("userData", JSON.stringify(res.data));
-                setIsVisible(true);
-                setTimeout(() => {
-                    setIsVisible(false);
-                    navigation.navigate("home");
-                }, 3000);
-            })
-            .catch((err) => {
-                console.error("error while updating profile", err.message);
-            });
-    };
-
-
-    // /////////////////////////////////////////////////////////////////////////////////////////////
-    //Handle free spade
-    // const handleFreeSpade = async () => {
+    const todayDate=getFormattedDate();
+     const PayNow = async () => {
+    //     const username = "rzp_live_oz8kr6Ix29mKyC";
+    //     const password = "IADDTICFJ2oXYLX3H2pLjvcx";
+    //     const credentials = `${username}:${password}`;
+    //     const encodedCredentials = btoa(credentials);
+    //     setLoading(true);
     //     try {
-    //         setLoading(true);
-    //         await axios
-    //             .patch("http://173.212.193.109:5000/user/edit-profile", {
-    //                 _id: userDetails._id,
-    //                 updateData: { freeSpades: userDetails.freeSpades - 1, lastPaymentStatus: "paid" },
-    //             })
-    //             .then(async (res) => {
-    //                 console.log('Payment Successfully updated');
-    //                 dispatch(setUserDetails(res.data));
-    //                 await AsyncStorage.setItem("userDetails", JSON.stringify(res.data));
-    //                 setIsVisible(true);
-    //                 setTimeout(() => {
-    //                     setIsVisible(false);
-    //                     navigation.navigate("home");
-    //                 }, 3000);
-    //             })
+    //         const response = await axios.post(
+    //             "https://api.razorpay.com/v1/orders",
+    //             {
+    //                 amount: 100,  // INR amount in paisa 1Rs = 100 paisa
+    //                 currency: "INR",
+    //                 receipt: userDetails._id,
+    //                 notes: {
+    //                     notes_key_1: "Welcome to CulturTap-Genie",
+    //                     notes_key_2: "Eat-Sleep-Code-Repeat.",
+    //                 },
+    //             },
+    //             {
+    //                 headers: {
+    //                     Authorization: `Basic ${encodedCredentials}`,
+    //                     "Content-Type": "application/json",
+    //                 },
+    //             }
+    //         );
 
+    //         const order = response.data;
+
+    //         var options = {
+    //             description: "Payment for Genie-service",
+    //             image:
+    //                 "https://res.cloudinary.com/kumarvivek/image/upload/v1716890335/qinbdiriqama2cw10bz6.png",
+    //             currency: "INR",
+    //             key: "rzp_live_oz8kr6Ix29mKyC",
+    //             amount: "100", // Amount in paise (20000 paise = 200 INR)
+    //             name: "CulturTap-Genie",
+    //             order_id: order.id, // Use the order ID created using Orders API.
+    //             prefill: {
+    //                 email: userDetails?.email,
+    //                 contact: userDetails?.storeMobileNo,
+    //                 name: userDetails?.storeName,
+    //             },
+    //             theme: { color: "#fb8c00" },
+    //         };
+
+    //         RazorpayCheckout.open(options)
+    //             .then((data) => {
+    //                 // handle success
+    //                 // Alert.alert(`Success: ${data.razorpay_payment_id}`);
+    //                 console.log("Payment Successful");
+
+    //                 updateUserDetails();
+    //                 setLoading(false);
+    //             })
+    //             .catch((error) => {
+    //                 // handle failure
+    //                 setLoading(false);
+    //                 // Alert.alert(`Error: ${error.code} | ${error.description}`);
+    //                 console.error(error);
+    //             });
     //     } catch (error) {
     //         setLoading(false);
-    //         console.error("Error while sending free spade request:", error);
-    //         Alert.alert("Error Sending Free Spade Request", error.message);
+    //         console.error("Order creation failed:", error);
+    //         Alert.alert("Order creation failed", error.message);
     //     }
-    // }
+     };
 
-    // //////////////////////////////////////////////////////////////////////////////////////
+    const updateUserDetails = async () => {
+        // // setEditUser(false);
+        // // console.log('userNmae', userName);
+        // // if (userName.length < 3) return;
+
+        // await axios.patch(
+        //     `http://173.212.193.109:5000/retailer/editretailer`,
+        //     {
+        //         _id: userDetails?._id,
+        //         freeSpades: 1000,
+        //     })
+        //     .then(async (res) => {
+        //         console.log("userData updated Successfully after payment ");
+        //         dispatch(setUserDetails(res.data));
+        //         console.log("res after user update", res.data);
+        //         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
+        //         setIsVisible(true);
+        //         setTimeout(() => {
+        //             setIsVisible(false);
+        //             navigation.navigate("home");
+        //         }, 3000);
+        //     })
+        //     .catch((err) => {
+        //         console.error("error while updating profile", err.message);
+        //     });
+    };
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Handle free spade
+    const handleFreeSpade = async () => {
+        // try {
+        //     setLoading(true);
+        //     await axios
+        //         .patch("http://173.212.193.109:5000/user/edit-profile", {
+        //             _id: userDetails._id,
+        //             updateData: { freeSpades: userDetails.freeSpades - 1, lastPaymentStatus: "paid" },
+        //         })
+        //         .then(async (res) => {
+        //             console.log('Payment Successfully updated');
+        //             dispatch(setUserDetails(res.data));
+        //             await AsyncStorage.setItem("userDetails", JSON.stringify(res.data));
+        //             setIsVisible(true);
+        //             setTimeout(() => {
+        //                 setIsVisible(false);
+        //                 navigation.navigate("home");
+        //             }, 3000);
+        //         })
+
+        // } catch (error) {
+        //     setLoading(false);
+        //     console.error("Error while sending free spade request:", error);
+        //     Alert.alert("Error Sending Free Spade Request", error.message);
+        // }
+    }
+
+
     // Verify coupon function
     const VerifyCoupon = async () => {
-        console.log("Adding coupon");
-        if (couponCode.length === 0) return;
-        console.log('couponCode: ' + couponCode);
-        try {
-            await axios.get('http://173.212.193.109:5000/coupon/verify-coupon', {
-                params: {
-                    couponCode: couponCode
-                }
-            })
-                .then(res => {
-                    console.log('res', res.data);
-                    if (res.data.message === "Coupon code is valid") {
-                        setVerifiedCouponCode(true);
-                        // dispatch(setSpadePrice(10));
-                        // dispatch(setSpadeCouponCode(couponCode));
-                    }
-                    else {
-                        setCouponFailed(true);
-                    }
-                })
+        // console.log("Adding coupon");
+        // if (couponCode.length === 0) return;
+        // console.log('couponCode: ' + couponCode);
+        // try {
+        //     await axios.get('http://173.212.193.109:5000/coupon/verify-coupon', {
+        //         params: {
+        //             couponCode: couponCode
+        //         }
+        //     })
+        //         .then(res => {
+        //             console.log('res', res.data);
+        //             if (res.data.message === "Coupon code is valid") {
+        //                 setVerifiedCouponCode(true);
+        //                 // dispatch(setSpadePrice(10));
+        //                 // dispatch(setSpadeCouponCode(couponCode));
+        //             }
+        //             else {
+        //                 setCouponFailed(true);
+        //             }
+        //         })
 
-        } catch (error) {
-            setCouponFailed(true);
-            console.log("Error while updating coupon code", error);
-        }
+        // } catch (error) {
+        //     setCouponFailed(true);
+        //     console.log("Error while updating coupon code", error);
+        // }
     }
-    // /////////////////////////////////////////////////////////////////////////////////////////////
+    
 
     return (
         <View style={{ flex: 1, backgroundColor: "white" }}>
             <ScrollView contentContainerStyle={{ flex: 1 }}>
-                <View className="flex w-screen mt-[40px]" style={{ flex: 1 }}>
+                <View className="flex w-screen mt-[20px]" style={{ flex: 1 }}>
                     <View className="flex flex-row items-center pb-[20px] px-[32px]">
                         <Text
                             className="text-[16px]  flex-1 text-center"
@@ -212,33 +215,33 @@ const PaymentScreen = () => {
                         </TouchableOpacity>
                     </View>
                     <View className="bg-[rgb(255,231,200)] px-[32px] py-[30px]">
-                        <View className="flex-row items-center gap-2">
+                        <View className="flex-row items-center justify-center gap-2">
                             <Text
-                                className="text-[14px] "
+                                className="text-[14px] text-center"
                                 style={{ fontFamily: "Poppins-ExtraBold" }}
                             >
                                 Date:
                             </Text>
                             <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>
-                                12 June 2024
+                                {todayDate}
                             </Text>
                         </View>
 
 
-                        <View className="flex-row gap-[10px] items-center ">
+                        <View className="flex-row gap-[10px] items-center justify-center ">
                             <Text
                                 className=" text-[14px] "
                                 style={{ fontFamily: "Poppins-ExtraBold" }}
                             >
-                                Payment to:
+                                Bill To:
                             </Text>
-                            <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}> CulturTap Tourism India</Text>
+                            <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Aishwary Shrivastav</Text>
 
                         </View>
 
                         <Text
-                            className="mt-[5px]"
-                            style={{ fontFamily: "Poppins-Regular" }}
+                            className="mt-[10px] text-center capitalize"
+                            style={{ fontFamily: "Poppins-Bold" ,fontSize:24}}
                         >
                             {userDetails?.storeName}
                         </Text>
@@ -280,10 +283,10 @@ const PaymentScreen = () => {
                         </View>
                     </View>
 
-                    <View className="px-[32px]">
-                        <Text className="text-[16px]" style={{ fontFamily: "Poppins-ExtraBold" }}>Cost of 1000 customers</Text>
+                    <View className="px-[32px] mt-[5px]">
+                        <Text className="text-[16px]" style={{ fontFamily: "Poppins-ExtraBold" }}>Cost for 1000 customers</Text>
                         <Text className="text-[24px] text-[#558b2F]" style={{ fontFamily: "Poppins-SemiBold" }}>100 Rs</Text>
-                        <Text className="text-[16px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>Discount - 50 Rs</Text>
+                        <Text className="text-[16px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>Discount - {verifiedCouponCode ? "50" : "0"}</Text>
                         <Text className="text-[16px]" style={{ fontFamily: "Poppins-Regular" }}>Tax - 0 Rs</Text>
                         <Text className="text-[16px]" style={{ fontFamily: "Poppins-ExtraBold" }}>Total Cost</Text>
                         <Text className="text-[24px] text-[#558b2F]" style={{ fontFamily: "Poppins-SemiBold" }}>{verifiedCouponCode ? "50" : "100"} Rs</Text>
@@ -311,9 +314,9 @@ const PaymentScreen = () => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-            {
+            {/* {
                 isVisible && <PaymentSuccessFulModal isVisible={isVisible} setIsVisible={setIsVisible} />
-            }
+            } */}
         </View>
     );
 };

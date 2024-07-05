@@ -217,7 +217,7 @@ const BidPageImageUpload = () => {
         <View style={{ flex: 1, backgroundColor: "#ffe7c8" }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className="relative flex-grow bg-[#ffe7c8]">
-              <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-evenly gap-[5px] items-center pt-[40px] pb-[20px]">
+              <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-evenly gap-[5px] items-center pt-[20px] pb-[20px]">
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();

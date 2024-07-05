@@ -164,7 +164,7 @@ useEffect(()=>{
           //   }
           // />}
           >
-            <View className="flex flex-col mt-[40px]  gap-[32px] ">
+            <View className="flex flex-col mt-[20px]  gap-[32px] ">
                 <View className="flex flex-row justify-between items-center px-[32px]">
                   
                         <TouchableOpacity onPress={()=>navigation.navigate("menu")} style={{padding:4}}>

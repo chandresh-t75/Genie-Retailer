@@ -2,17 +2,21 @@ import messaging from "@react-native-firebase/messaging";
 import { Alert } from "react-native";
 import navigationService from "../navigation/navigationService";
 import * as Notifications from 'expo-notifications';
+import store from "../redux/store";
 
 import notifee, {
   EventType,
   AndroidImportance,
   AndroidStyle,
 } from "@notifee/react-native";
+import { setCurrentRequest } from "../redux/reducers/requestDataSlice";
 
 
 async function onDisplayNotification(remoteMessage) {
   // Request permissions (required for iOS)
   await notifee.requestPermission();
+  console.log("notification detail",remoteMessage)
+
 
   const channelId = await notifee.createChannel({
     id: "default",
@@ -31,10 +35,13 @@ async function onDisplayNotification(remoteMessage) {
         launchActivity: remoteMessage?.data?.requestInfo,
       },
       importance: AndroidImportance.HIGH,
+      ...(remoteMessage?.notification?.android?.imageUrl ? {largeIcon:remoteMessage?.notification?.android?.imageUrl  } : {}),
       timestamp: Date.now(),
-      // style: { type: AndroidStyle.BIGPICTURE, picture: remoteMessage?.notification?.image },
+      ...(remoteMessage?.notification?.android?.imageUrl ? { style: { type: AndroidStyle.BIGPICTURE, picture:remoteMessage?.notification?.android?.imageUrl } } : {}),
     },
   });
+
+ 
   return notifee.onForegroundEvent(({ type, detail }) => {
     switch (type) {
       case EventType.DISMISSED:
@@ -51,14 +58,19 @@ async function onDisplayNotification(remoteMessage) {
           // Assuming requestInfo is stored in the notification data
           const req = JSON.parse(reqt);
           console.log("data", req);
-          navigationService.navigate("requestPage", { req });
+          const requestId=req?.requestId
+          store.dispatch(setCurrentRequest(req))
+
+          setTimeout(() => {
+          navigationService.navigate(`requestPage${requestId}`);
+        }, 200);
         }, 1200);
         break;
     }
   });
 }
 
-async function onDisplayNotification1(remoteMessage) {
+async function onDisplayNotificationHome(remoteMessage) {
   // Request permissions (required for iOS)
   await notifee.requestPermission();
 
@@ -67,7 +79,7 @@ async function onDisplayNotification1(remoteMessage) {
     name: "request",
     importance: AndroidImportance.HIGH,
   });
-
+  console.log("notification detail",remoteMessage)
   // Display a notification
   await notifee.displayNotification({
     title: remoteMessage.notification.title,
@@ -80,7 +92,9 @@ async function onDisplayNotification1(remoteMessage) {
       },
       timestamp: Date.now(),
       importance: AndroidImportance.HIGH,
-      // style: { type: AndroidStyle.BIGPICTURE, picture: remoteMessage?.notification?.image },
+      ...(remoteMessage?.notification?.android?.imageUrl ? { style: { type: AndroidStyle.BIGPICTURE, picture:remoteMessage?.notification?.android?.imageUrl } } : {}),
+      ...(remoteMessage?.notification?.android?.imageUrl ? {largeIcon:remoteMessage?.notification?.android?.imageUrl  } : {}),
+
     },
   });
   return notifee.onForegroundEvent(({ type, detail }) => {
@@ -121,7 +135,12 @@ export  function notificationListeners() {
           } else if (remoteMessage?.data?.requestInfo) {
             const req = JSON.parse(remoteMessage?.data?.requestInfo);
             console.log("data", req);
-            navigationService.navigate("requestPage", { req });
+            const requestId=req?.requestId
+          store.dispatch(setCurrentRequest(req))
+
+          setTimeout(() => {
+          navigationService.navigate(`requestPage${requestId}`);
+        }, 200);
           }
         }, 1200);
       }
@@ -139,8 +158,11 @@ export  function notificationListeners() {
             navigationService.navigate("home");
           } else if (remoteMessage?.data?.requestInfo) {
             const req = JSON.parse(remoteMessage?.data?.requestInfo);
-            console.log("data", req);
-            navigationService.navigate("requestPage", { req });
+            const requestId=req?.requestId
+          store.dispatch(setCurrentRequest(req))
+          setTimeout(() => {
+          navigationService.navigate(`requestPage${requestId}`);
+        }, 200);
           }
         }, 1200);
       }
@@ -152,27 +174,31 @@ export  function notificationListeners() {
     // console.log("FCM message", remoteMessage.data);
     // console.log("requestInfo at notification service",requestInfo)
     // handleNotifcation(remoteMessage);
-    // const currentRoute = navigationService.getCurrentRoute();
-    // const currentScreen = currentRoute ? currentRoute.name : null;
-    // console.log("Notification received on screen:", currentScreen);
-    // console.log("notification:", userId);
-    // const req=JSON.parse(remoteMessage?.data?.requestInfo);
-    //              console.log("data", req?.requestId);
-    //              const currentId=req?.requestId;
-
     if (remoteMessage?.data?.userRequest) {
       console.log("request notification");
-
-      await onDisplayNotification1(remoteMessage);
+      await onDisplayNotificationHome(remoteMessage);
     }
-    if (remoteMessage?.data?.requestInfo ){
+    else{
+    const currentRoute = navigationService.getCurrentRoute();
+    const currentScreen = currentRoute ? currentRoute.name : null;
+    console.log("Notification received on screen at notify:", currentScreen);
+    // console.log("notification:", userId);
+    const req=JSON.parse(remoteMessage?.data?.requestInfo);
+                //  console.log("data", req?.requestId);
+                 const currentId=req?.requestId;
+
+    
+    if (remoteMessage?.data?.requestInfo && currentScreen!==`requestPage${currentId}`){
       // console.log(object)
-      // const res = JSON.parse(remoteMessage.data.requestInfo);
+      const res = JSON.parse(remoteMessage.data.requestInfo);
+      
       // dispatch(setRequestInfo(res));
-      console.log("message notification");
+      // console.log("message notification");
       await onDisplayNotification(remoteMessage);
     }
-  });
+  }
+});
+
 
   return unsubscribe;
   // return () => {

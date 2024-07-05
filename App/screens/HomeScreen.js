@@ -1,26 +1,26 @@
-import { View, Text, Pressable, ScrollView, BackHandler, TouchableOpacity, RefreshControl } from 'react-native'
+import { View, Text, Pressable, ScrollView, BackHandler, TouchableOpacity, RefreshControl, StyleSheet } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Profile from "../assets/ProfileIcon.svg"
 import GinieIcon from "../assets/GinieBusinessIcon.svg"
 import History from "../assets/HistoryIcon.svg"
-import { useFocusEffect, useIsFocused, useNavigation, useNavigationState } from '@react-navigation/native'
+import { useFocusEffect, useIsFocused, useNavigation, useNavigationState, useRoute } from '@react-navigation/native'
 import HomeScreenVerified from '../components/HomeScreenVerified'
 import CompleteProfile from '../components/CompleteProfile'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { setUserDetails } from '../redux/reducers/storeDataSlice'
+import RemainingCustomerModal from '../components/RemainingCustomerModal'
 
  
 
 const HomeScreen = () => {
     const navigation =useNavigation()
     const dispatch=useDispatch();
-    const [verified,setVerified]=useState(true);
-    const [completeProfile,setCompleteProfile]=useState(true);
-    const [refreshing,setRefreshing]=useState(false);
-  const isFocused = useIsFocused();
+  const [modalVisible,setModalVisible]=useState(false);
+
+ 
 
 //   const [userData, setUserData] = useState();
 
@@ -164,7 +164,7 @@ useEffect(()=>{
             <ScrollView 
           
           >
-            <View className="flex flex-col mt-[40px]  gap-[32px] ">
+            <View className="flex flex-col mt-[20px]  gap-[32px] ">
                 <View className="flex flex-row justify-between items-center px-[32px]">
                   
                         <TouchableOpacity onPress={()=>navigation.navigate("menu")} style={{padding:4}}>
@@ -184,17 +184,36 @@ useEffect(()=>{
                     
                 </View>
                 {
-                     <HomeScreenVerified />
+                     <HomeScreenVerified modalVisible={modalVisible} setModalVisible={setModalVisible} />
                 }
                
             
 
 
             </View>
+              
             </ScrollView>
+            {modalVisible && (
+          <>
+            <RemainingCustomerModal
+              modalConfirmVisible={modalVisible}
+              setModalConfirmVisible={setModalVisible}
+            />
+            <View style={styles.overlay} />
+          </>
+        )}
 
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+      flex:1,
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent greyish background
+  },
+
+})
 
 export default HomeScreen

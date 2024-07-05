@@ -131,7 +131,9 @@ const ProfileScreen = () => {
             [{ resize: { width: 600, height: 800 } }],
             { compress: 0.5, format: "jpeg", base64: true }
           );
+       
           await getImageUrl({ image: compressedImage.uri, type: type });
+          
 
           // Update user or perform other operations here
         } catch (error) {
@@ -189,6 +191,8 @@ const ProfileScreen = () => {
       console.log(error);
     }
   }
+
+ 
 
   // const getImageUrl = async ({ image, type }) => {
   //   setLoading(true);
@@ -254,13 +258,17 @@ const ProfileScreen = () => {
       };
       dispatch(setUserDetails(updatedUser));
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
-      const response = await axios.patch(
+      await axios.patch(
         `http://173.212.193.109:5000/retailer/editretailer`,
         {
           _id: user?._id,
           storeImages: updatedUser.storeImages,
         }
-      );
+      ).then(async(res)=>{
+        dispatch(setUserDetails(res.data));
+        await AsyncStorage.setItem("userData", JSON.stringify(res.data));
+      }
+      )
     } else {
       console.error("Invalid index for deleting image");
     }
@@ -269,7 +277,7 @@ const ProfileScreen = () => {
   return (
     <View className="bg-white">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="mt-[50px] flex">
+        <View className="mt-[20px] flex">
           <View className="flex  relative flex-row px-[32px] items-center">
             <TouchableOpacity
               onPress={() => {
@@ -446,16 +454,47 @@ const ProfileScreen = () => {
               onSavePress={() => handleSavePress("storeMobileNo")}
               isLoading={isLoading}
             />
-            <EditableField
-              label="GST certificate and Labor certificate"
-              value={panCard}
-              editable={editableField === "panCard"}
-              onChangeText={setPanCard}
-              onEditPress={() => handleEditPress("panCard")}
-              onSavePress={() => handleSavePress("panCard")}
-              isLoading={isLoading}
-            />
+           
           </View>
+          <View className="px-[32px] flex  gap-[26px] mb-[60px]">
+            <View className="flex-row items-center justify-between  my-[10px]">
+            <Text style={{ fontFamily: "Poppins-Regular" }}>GST/Labor certificate</Text>
+          
+          </View>
+              {user?.panCard &&
+                <Pressable  onPress={() => handleImagePress(user?.panCard)}>
+                  <View className="rounded-[16px]">
+                    <Image
+                      source={{ uri:user?.panCard }}
+                      width={119}
+                      height={164}
+                      className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                    />
+                    {/* <Pressable
+                      onPress={() => deleteImage(0)}
+                      style={{position: "absolute",
+                        top: 5,
+                         left:90,
+                        backgroundColor: "white",
+                        borderRadius: 50,
+                        padding: 2,}}
+                    >
+                      <DelImg />
+                    </Pressable> */}
+                  </View>
+                </Pressable>
+              }
+              {
+                !user?.panCard &&
+                  <View>
+                   
+                    <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
+                      <Text className="text-center text-[14px] " style={{ fontFamily: "Poppins-Regular" }} >No Certificates Uploaded</Text>
+                    </View>
+                  </View>
+                
+              }
+            </View>
         </View>
       </ScrollView>
       {loading && (

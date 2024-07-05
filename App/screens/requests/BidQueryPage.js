@@ -129,8 +129,9 @@ const BidQueryPage = () => {
         
        
         // console.log("notification", notification.requestInfo);
-       
-        navigation.navigate("requestPage",{req});
+        const requestId=req?.requestId
+        navigation.navigate(`requestPage${requestId}`);
+
         setLoading(false)
         const token=await axios.get(`http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`);
         console.log("token",token.data);
@@ -183,7 +184,7 @@ const BidQueryPage = () => {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="relative  flex-grow bg-[#ffe7c8]">
-          <View className=" bg-[#ffe7c8] w-full flex relative flex-row px-[32px] justify-between items-center py-[40px]">
+          <View className=" bg-[#ffe7c8] w-full flex relative flex-row px-[32px] justify-between items-center py-[20px]">
           <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
