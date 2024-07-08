@@ -48,6 +48,8 @@ const RequestAcceptModal = ({
   );
 
   const userDetails = useSelector(state => state.storeData.userDetails);
+  // console.log("userDetails", userDetails,
+  //   "request",requestInfo);
 
   const [loading, setLoading] = useState(false);
 
@@ -91,17 +93,14 @@ const RequestAcceptModal = ({
             setModalVisible(false);
             setLoading(false);
             const token = await axios.get(
-              `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
+              `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId?._id}`
             );
             console.log("notify token: " + token.data);
             if (token.data.length > 0) {
               const notification = {
                 token: token.data,
                 title: user?.storeName,
-                requestInfo: {
-                  requestId: requestInfo?._id,
-                  userId: requestInfo?.users[1]._id
-                },
+                userRequest:requestInfo?._id,
                 tag: user?._id,
                 image: requestInfo?.requestId?.requestImages[0],
                 redirect_to: "bargain",
@@ -203,7 +202,7 @@ const RequestAcceptModal = ({
     await axios.patch(
       `http://173.212.193.109:5000/retailer/editretailer`,
       {
-        _id: userDetails?._id,
+        _id:userDetails?._id,
         freeSpades: userDetails.freeSpades - 1,
       })
       .then(async (res) => {

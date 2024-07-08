@@ -40,7 +40,7 @@ const CameraScreen = () => {
 
   const [camScreen, setCamScreen] = useState(true);
   const dispatch = useDispatch();
-  const { user, messages, setMessages } = route.params;
+  const { messages, setMessages } = route.params;
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   console.log("store", openCamera);
   const [query, setQuery] = useState("");
@@ -49,6 +49,8 @@ const CameraScreen = () => {
   const ongoingRequests = useSelector(
     (state) => state.requestData.ongoingRequests || []
   );
+  const user=useSelector(state=>state.storeData.userDetails);
+
 
 
   const sendAttachment = async () => {

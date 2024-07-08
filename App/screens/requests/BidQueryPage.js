@@ -37,7 +37,7 @@ const BidQueryPage = () => {
   const navigation = useNavigation();
 
   const [query, setQuery] = useState("");
-  const { user, messages, setMessages } = route.params;
+  const {  messages, setMessages } = route.params;
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   const [loading,setLoading]=useState(false)
   const [copied, setCopied] = useState(false);
@@ -45,6 +45,8 @@ const BidQueryPage = () => {
   const ongoingRequests = useSelector(
     (state) => state.requestData.ongoingRequests || []
   );
+  const user=useSelector(state=>state.storeData.userDetails);
+
   // const messages = useSelector(state => state.requestData.messages);
   // console.log("messages of ",messages);
 
@@ -56,9 +58,10 @@ const BidQueryPage = () => {
   //         //         // console.log('route.params.data', route.params.data);
   //     }
   // }, [route.params])
-
+  
   const sendQuery = async () => {
     setLoading(true)
+    console.log("requestInfo",user);
     try {
       const formData = new FormData();
      
@@ -97,7 +100,7 @@ const BidQueryPage = () => {
           headers: { 'Content-Type': 'multipart/form-data' }
         }
       );
-      //    console.log("res",response);
+        //  console.log("res",response);
       if (response.status === 201) {
         //  console.log("messages recieved",response.data);
 

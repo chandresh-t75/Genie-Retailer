@@ -43,7 +43,7 @@ const BidPageImageUpload = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  const { user, messages, setMessages } = route.params;
+  const {  messages, setMessages } = route.params;
   const [imgIndex, setImgIndex] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [cameraScreen, setCameraScreen] = useState(false);
@@ -63,6 +63,8 @@ const BidPageImageUpload = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
+  const user=useSelector(state=>state.storeData.userDetails);
+
 
   const handleImagePress = (image) => {
     setSelectedImage(image);

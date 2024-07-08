@@ -30,11 +30,13 @@ const BidPageInput = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { user, messages, setMessages } = route.params;
+  const { messages, setMessages } = route.params;
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   // const messages=route.params.messages;
   const [bidDetails, setBidDetailsLocal] = useState("");
   const [copied, setCopied] = useState(false);
+  const user=useSelector(state=>state.storeData.userDetails);
+
 
   // const messages = useSelector(state => state.requestData.messages);
   // console.log("messages of ",messages)

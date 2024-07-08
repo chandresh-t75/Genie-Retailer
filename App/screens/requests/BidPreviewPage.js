@@ -47,7 +47,7 @@ const BidPreviewPage = () => {
   // const [user,setUser]=useState();
   // const [requestInfo,setRequestInfo]=useState()
   // console.log("messages of ",messages)
-  const { offeredPrice, user, messages, setMessages } = route.params;
+  const { offeredPrice, messages, setMessages } = route.params;
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   const bidDetails = useSelector((state) => state.bid.bidDetails);
   const bidOfferedPrice = useSelector((state) => state.bid.bidOfferedPrice);
@@ -56,6 +56,8 @@ const BidPreviewPage = () => {
   const ongoingRequests = useSelector(
     (state) => state.requestData.ongoingRequests || []
   );
+  const user=useSelector(state=>state.storeData.userDetails);
+
   // const messages = useSelector(state => state.requestData.messages);
 
   // console.log("warranty",warranty);

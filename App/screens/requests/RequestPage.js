@@ -60,6 +60,7 @@ import navigationService from "../../navigation/navigationService";
 import ConfirmPaymentModal from "../../components/ConfirmPaymentModal";
 import UploadGSTModal from "../../components/UploadGSTModal";
 import { daysDifference } from "../utils/lib";
+import { setUserDetails } from "../../redux/reducers/storeDataSlice";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -74,7 +75,7 @@ const RequestPage = () => {
   const scrollViewRef = useRef(null);
 
   // const [requestInfo, setRequestInfo] = useState();
-  const [user, setUser] = useState();
+  // const [user, setUser] = useState();
   const [messages, setMessages] = useState([]);
   const [accept, setAcceptLocal] = useState(false);
   const [available, setAvailable] = useState(false);
@@ -109,27 +110,27 @@ const RequestPage = () => {
   const currentRequest = useSelector(
     (state) => state.requestData.currentRequest
   );
+  const user=useSelector(state=>state.storeData.userDetails);
+
 
   // console.log("params", currentRequest);
 
   //    const navigationState = useNavigationState(state => state);
   // const isChat = navigationState.routes[navigationState.index].name === 'requestPage';
   // console.log("params",isHome,isChat);
+  const fetchUserDetails = async () => {
+    const userData = JSON.parse(await AsyncStorage.getItem('userData'));
+    // setUser(userData);
+    dispatch(setUserDetails(userData));
+}
 
   const fetchRequestData = async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
-      const userData = JSON.parse(await AsyncStorage.getItem("userData"));
-      setUser(userData);
+      // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
+      // setUser(userData);
       console.log("User data found successfully",currentRequest);
 
-      // console.log("requestInfo page", requestInfo);
-
-      // if (route?.params?.data) {
-      // const  req =route?.params?.data
-      // console.log('reqInfo from notification section', currentRequest);
-      // }
-      // let response =
 
       await axios
         .get(`http://173.212.193.109:5000/chat/get-particular-chat`, {
@@ -142,11 +143,23 @@ const RequestPage = () => {
           const result = resu?.data;
           console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
+        })}catch(error) {
+          setLoading(false)
+          console.log(error);
+        }
+
+
+
+        }
+
+        const fetchMessages=async()=>{
+
+        try{
 
           await axios
             .get("http://173.212.193.109:5000/chat/get-spade-messages", {
               params: {
-                id: result?._id,
+                id: requestInfo?._id,
               },
             })
             .then(async (response) => {
@@ -160,23 +173,24 @@ const RequestPage = () => {
 
               setLoading(false);
               if (
-                result?.unreadCount > 0 &&
-                result?.latestMessage?.sender?.type === "UserRequest"
+                requestInfo?.unreadCount > 0 &&
+                requestInfo?.latestMessage?.sender?.type === "UserRequest"
               ) {
                 const res = await axios.patch(
                   "http://173.212.193.109:5000/chat/mark-as-read",
                   {
-                    id: result?._id,
+                    id: requestInfo?._id,
                   }
                 );
 
-                let tmp = { ...result, unreadCount: 0 };
+                let tmp = { ...requestInfo, unreadCount: 0 };
+                console.log("mar as read ",tmp)
 
                 dispatch(setRequestInfo(tmp));
                 const filteredRequests = ongoingRequests.filter(
-                  (request) => request._id !== result?._id
+                  (request) => request._id !== requestInfo?._id
                 );
-                if (result?.latestMessage?.bidType === "update") {
+                if (requestInfo?.latestMessage?.bidType === "update"){
                   console.log("update");
                   const data = [...filteredRequests];
                   dispatch(setOngoingRequests(data));
@@ -190,11 +204,11 @@ const RequestPage = () => {
                 console.log("mark as read", res?.data, res?.data?.unreadCount);
               }
             });
-        });
+        }
       // dispatch(setMessages(response.data));
 
       // socket.emit("join chat", response?.data[0].chat._id);
-    } catch (error) {
+     catch (error) {
       console.error("Error fetching messages:", error);
     }
   };
@@ -216,19 +230,25 @@ const RequestPage = () => {
     //   console.log("find error of requestPage from home screen");
     //   SocketSetUp(requestInfo?.users[0]._id);
     // }
-    if (currentRequest) {
-      console.log("Params data found");
-      // let req = route?.params?.data;
-      // console.log('reqInfo from notification section',req);
-
-      // dispatch(setRequestInfo(req));
-      SocketSetUp(currentRequest?.userId);
-
+    console.log("Params data found");
+    fetchUserDetails();
+    SocketSetUp(currentRequest?.userId);
+    if (requestInfo && requestInfo._id===currentRequest.requestId) {
+      setLoading(true);
       fetchRequestData();
-      console.log("reqInfo from params", socketConnected);
+      fetchMessages();
+      setLoading(false);
+    }
+    else{
+      setLoading(true);
+      fetchRequestData();
+      fetchMessages();
+      setLoading(false)
     }
 
     // setTimeout(()=>{
+      console.log("reqInfo from params", socketConnected);
+
       console.log('reqInfo from params',requestInfo);
     // },2000);
 
@@ -540,7 +560,7 @@ const RequestPage = () => {
 
           <View className="gap-[9px] ">
             <View className="flex-row gap-[18px] items-center">
-              <View className=" flex items-center justify-center rounded-full ml-2 bg-white ">
+              <View className=" flex items-center justify-center rounded-full ml-2 p-[4px] bg-white ">
                 {requestInfo?.customerId?.pic ? (
                   <Image
                     source={{ uri: requestInfo?.customerId?.pic }}

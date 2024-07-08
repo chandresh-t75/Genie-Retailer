@@ -31,11 +31,13 @@ const BidOfferedPrice = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { user, messages, setMessages } = route.params;
+  const {messages, setMessages } = route.params;
   const [offeredPrice, setOfferedPrice] = useState(0);
   const [warranty, setWarranty] = useState(0);
   const [copied, setCopied] = useState(false);
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
+  const user=useSelector(state=>state.storeData.userDetails);
+
 
   const handleOfferedPrice = (offeredPrice) => {
     const parsedPrice = parseFloat(offeredPrice);

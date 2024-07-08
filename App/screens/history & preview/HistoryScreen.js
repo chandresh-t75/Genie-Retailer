@@ -102,14 +102,7 @@ const HistoryScreen = () => {
                 >
                   Cancelled Requests
                 </Text>
-                <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full ">
-                  <Text
-                    className="text-white  "
-                    style={{ fontFamily: "Poppins-Regular" }}
-                  >
-                    {cancelledRequests ? cancelledRequests?.length : 0}
-                  </Text>
-                </View>
+               
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setTab("Closed")}>
@@ -125,14 +118,7 @@ const HistoryScreen = () => {
                 >
                   Closed Requests
                 </Text>
-                <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
-                  <Text
-                    className="text-white  "
-                    style={{ fontFamily: "Poppins-Regular" }}
-                  >
-                    {closedRequests ? closedRequests?.length : 0}
-                  </Text>
-                </View>
+                
               </View>
             </TouchableOpacity>
           </View>
