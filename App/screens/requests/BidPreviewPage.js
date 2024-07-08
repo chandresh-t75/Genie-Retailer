@@ -146,7 +146,10 @@ const BidPreviewPage = () => {
           token:token.data,
            title: user?.storeName,
            body: bidDetails,
-           requestInfo: requestInfo,
+           requestInfo: {
+            requestId: requestInfo?.requestId?._id,
+            userId: requestInfo?.users[1]._id
+          },
            tag: user?._id,
            price: bidOfferedPrice,
            image:response?.data?.bidImages?.length>0?response?.data?.bidImages[0]:"",
@@ -184,20 +187,19 @@ const BidPreviewPage = () => {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="relative flex-grow bg-[#ffe7c8]">
-          <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-between items-center py-[20px]">
+          <View className=" bg-[#ffe7c8] w-full flex flex-row  justify-between items-center py-[20px]">
           <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
-              }}
-              style={{padding:6}}
-            >
-                         <BackArrow width={14} height={10} />
-
-            </TouchableOpacity>
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={{ padding:20,paddingRight:10,zIndex:30}}
+          >
+            <BackArrow  />
+          </TouchableOpacity>
 
             <View className="gap-[9px]">
-              <View className="flex-row gap-[18px]">
-                <View className="flex items-center justify-center rounded-full bg-white p-[4px]">
+              <View className="flex-row gap-[18px] items-center">
+                <View className="flex items-center justify-center rounded-full ml-4 bg-white p-[4px]">
                   {requestInfo?.customerId?.pic ? (
                     <Image
                       source={{ uri: requestInfo?.customerId?.pic }}
@@ -209,9 +211,16 @@ const BidPreviewPage = () => {
                   )}
                 </View>
                 <View className="w-[70%]">
-                  <Text className="text-[14px] text-[#2e2c43] capitalize" style={{ fontFamily: "Poppins-Regular" }}>
-                    {requestInfo?.customerId?.userName}
-                  </Text>
+                <Text
+                  className="text-[14px]  text-[#2e2c43] capitalize"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  {requestInfo?.customerId?.userName?.substring(0,20)}
+                  {
+                    requestInfo?.customerId?.userName?.length>20 && <Text>...
+                      </Text>
+                  }
+                </Text>
                   <Text className="text-[12px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>
                   Online
                 </Text>
@@ -255,20 +264,26 @@ const BidPreviewPage = () => {
             <View className="flex-row justify-between px-[40px]">
               <Text className="" style={{ fontFamily: "Poppins-Bold" }}>Preview your offer response</Text>
             </View>
-            <View className="px-[50px]">
+            <View className="px-[40px]">
               {/* <Text>{user?.storeOwnerName}</Text> */}
               <Text style={{ fontFamily: "Poppins-Regular" }}>{bidDetails}</Text>
             </View>
             <View className="gap-[10px]">
-              <Text className=" text-[14px] px-[50px]" style={{ fontFamily: "Poppins-SemiBold" }}>
+              <Text className=" text-[14px] px-[40px]" style={{ fontFamily: "Poppins-SemiBold" }}>
                 Reference Images
               </Text>
               {bidImages ? (
                 <ScrollView
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{
+                    paddingHorizontal: 10,
+                     paddingLeft:40,
+                      flexDirection: "row",
+                      gap: 8,
+                  }}
                 >
-                  <View className="flex-row gap-[10px] pl-[50px]">
+                 
                     {bidImages &&
                       bidImages?.map(
                         (
@@ -285,22 +300,22 @@ const BidPreviewPage = () => {
                           </View>
                         )
                       )}
-                  </View>
+                 
                 </ScrollView>
               ) : (
-                <View className="flex-row gap-[10px] px-[50px]">
+                <View className="flex-row gap-[10px] px-[40px]">
                   <View className="h-[140px] w-[100px] rounded-3xl bg-white "></View>
                   <View className="h-[140px] w-[100px] rounded-3xl bg-white"></View>
                 </View>
               )}
             </View>
-            <View className="gap-[0px] px-[50px]">
+            <View className="gap-[0px] px-[40px]">
               <Text className=" text-[14px]" style={{ fontFamily: "Poppins-SemiBold" }}>Offered Price</Text>
               <Text className=" text-[24px] text-[#558B2F]" style={{ fontFamily: "Poppins-Bold" }}>
                  {bidOfferedPrice?`Rs ${bidOfferedPrice}`:"Na"}
               </Text>
             </View>
-            <View className="gap-[0px] px-[50px]">
+            <View className="gap-[0px] px-[40px]">
               <Text className=" text-[14px]" style={{ fontFamily: "Poppins-SemiBold" }}>
                 Product Warranty
               </Text>

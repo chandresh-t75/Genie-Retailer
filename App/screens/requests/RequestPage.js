@@ -94,7 +94,7 @@ const RequestPage = () => {
   const [confirmPaymentModal, setConfirmPaymentModal] = useState(false);
   const [uploadGSTModal, setUploadGSTModal] = useState(false);
 
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   // const { req } = route.params;
   const retailerHistory = useSelector(
     (state) => state.requestData.retailerHistory || []
@@ -229,7 +229,7 @@ const RequestPage = () => {
     }
 
     // setTimeout(()=>{
-    //   console.log('reqInfo from params',requestInfo);
+      console.log('reqInfo from params',requestInfo);
     // },2000);
 
     return () => {
@@ -292,7 +292,10 @@ const RequestPage = () => {
             token: token.data,
             title: user?.storeName,
             body: lastMessage.message,
-            requestInfo: requestInfo,
+            requestInfo: {
+              requestId: requestInfo?.requestId?._id,
+              userId: requestInfo?.users[1]._id
+            },
             tag: user?._id,
             image: lastMessage?.bidImages[0],
             redirect_to: "bargain",
@@ -410,6 +413,7 @@ const RequestPage = () => {
 
   const handlePress = (star) => {
     setRating(star);
+    console.log("star",star)
   };
 
   const copyToClipboard = async () => {
@@ -444,6 +448,62 @@ const RequestPage = () => {
   //   return () => backHandler.remove(); // Clean up the event listener
   // }, [isHome]);
 
+  const SubmitFeedback = async () => {
+    setisLoading(true);
+      
+      try {
+        if(rating==0)return;
+        console.log("feedback",requestInfo?.customerId?._id,user?._id,rating,feedback,user?.storeName,requestInfo?._id)
+         await axios.post(
+          "http://173.212.193.109:5000/rating/rating-feedback",
+          {
+              user:{type:"User",refId:requestInfo?.customerId?._id},
+              sender:{type:"Retailer",refId:user?._id},
+              rating:rating,
+              feedback:feedback,
+              senderName:user?.storeName,
+              chatId:requestInfo?._id
+          }
+        ).then((response) => {
+
+        console.log("response of feedback", response.data);
+        let tmp = {
+          ...requestInfo,
+          rated:true,
+          updatedAt: new Date().toISOString(),
+        
+        };
+        console.log("update", tmp);
+        dispatch(setRequestInfo(tmp));
+      
+        const filteredRequests = retailerHistory.filter(
+          (request) => request._id !== requestInfo._id
+        );
+        const requests = retailerHistory.filter(
+          (request) => request._id === requestInfo._id
+        );
+        const updatedRequest = {
+          ...requests[0],
+          updatedAt: new Date().toISOString(),
+        };
+        //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
+
+        // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
+        const data = [updatedRequest, ...filteredRequests];
+        dispatch(setRetailerHistory(data));
+        setisLoading(false);
+        
+  
+        })
+    } catch (error) {
+      // setisLoading(false);
+
+      console.error("Error sending feedback:", error);
+    }
+  };
+
+
+
   const remainingDays =
     daysDifference(user?.createdAt) > 0
       ? 0
@@ -468,19 +528,19 @@ const RequestPage = () => {
         </View>
       )}
       <View className="relative">
-        <View className=" relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row px-[32px] justify-between items-center py-[30px]">
+        <View className=" relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px]">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding: 6 }}
+            style={{ padding:20,paddingRight:5,zIndex:30}}
           >
-            <BackArrow width={14} height={10} />
+            <BackArrow  />
           </TouchableOpacity>
 
-          <View className="gap-[9px]">
-            <View className="flex-row gap-[18px]">
-              <View className=" flex items-center justify-center rounded-full ml-4 bg-white p-[4px]">
+          <View className="gap-[9px] ">
+            <View className="flex-row gap-[18px] items-center">
+              <View className=" flex items-center justify-center rounded-full ml-2 bg-white ">
                 {requestInfo?.customerId?.pic ? (
                   <Image
                     source={{ uri: requestInfo?.customerId?.pic }}
@@ -501,7 +561,11 @@ const RequestPage = () => {
                   className="text-[14px]  text-[#2e2c43] capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
-                  {requestInfo?.customerId?.userName}
+                  {requestInfo?.customerId?.userName?.substring(0,20)}
+                  {
+                    requestInfo?.customerId?.userName?.length>20 && <Text>...
+                      </Text>
+                  }
                 </Text>
                 <Text
                   className="text-[12px] text-[#79B649]"
@@ -634,7 +698,9 @@ const RequestPage = () => {
                             {message?.message}
                           </Text>
                         </View>
-                        <View className="px-[32px] py-[10px] bg-[#ffe7c8] rounded-[24px] ">
+                        {
+                          !requestInfo?.rated &&
+                          <View className="px-[32px] py-[10px] bg-[#ffe7c8] rounded-[24px] ">
                           <View className=" mt-[19px] ">
                             <Text
                               className="text-[14px]"
@@ -693,7 +759,7 @@ const RequestPage = () => {
                           </View>
                           <TouchableOpacity
                             disabled={!rating && !feedback}
-                            //  onPress={sendQuery}
+                             onPress={()=>{SubmitFeedback()}}
                             style={{
                               height: 50,
                               width: "100%",
@@ -719,6 +785,8 @@ const RequestPage = () => {
                             )}
                           </TouchableOpacity>
                         </View>
+                        }
+                        
                       </View>
                     );
                   } else if (message?.sender?.refId !== user?._id) {
@@ -810,7 +878,7 @@ const RequestPage = () => {
                   this request
                 </Text>
 
-                {messages && messages[messages.length - 1]?.bidImages && (
+                {messages && messages[messages.length - 1]?.bidImages && messages[messages.length - 1]?.bidImages?.length>0 && (
                   <ScrollView
                     horizontal
                     contentContainerStyle={{
@@ -961,7 +1029,7 @@ const RequestPage = () => {
                   Are you accepting the customer offer ?
                 </Text>
                 <View>
-                {messages && messages[messages.length - 1]?.bidImages && (
+                {messages && messages[messages.length - 1]?.bidImages && messages[messages.length - 1]?.bidImages?.length>0  && (
                   <ScrollView
                     horizontal
                     contentContainerStyle={{
@@ -1113,6 +1181,11 @@ const RequestPage = () => {
       {cancelRequestModal && <View style={styles.overlay} />}
       {confirmPaymentModal && <View style={styles.overlay} />}
       {uploadGSTModal && <View style={styles.overlay} />}
+      {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#fb8c00" />
+        </View>
+      )}
     </View>
   );
 };
@@ -1125,6 +1198,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     //  position:"absolute",
     //  bottom:0// Semi-transparent greyish background
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFill,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   // menuContainer: {
   //     flex: 1,

@@ -218,18 +218,18 @@ const BidPageImageUpload = () => {
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className="relative flex-grow bg-[#ffe7c8]">
               <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-evenly gap-[5px] items-center pt-[20px] pb-[20px]">
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.goBack();
-                  }}
-                  style={{ padding: 6 }}
-                >
-                  <BackArrow width={14} height={10} />
-                </TouchableOpacity>
+              <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={{ padding:20,paddingRight:10,zIndex:30}}
+          >
+            <BackArrow  />
+          </TouchableOpacity>
 
                 <View className="gap-[9px] ml-4">
                   <View className="flex-row gap-[18px] items-center">
-                    <View className=" rounded-full bg-white p-[4px] ">
+                    <View className=" rounded-full bg-white ml-4 p-[4px] ">
                       {requestInfo?.customerId?.pic ? (
                         <Image
                           source={{ uri: requestInfo?.customerId?.pic }}
@@ -241,12 +241,16 @@ const BidPageImageUpload = () => {
                       )}
                     </View>
                     <View className="w-[70%]">
-                      <Text
-                        className="text-[14px] text-[#2e2c43] capitalize"
-                        style={{ fontFamily: "Poppins-Regular" }}
-                      >
-                        {requestInfo?.customerId?.userName}
+                    <Text
+                  className="text-[14px]  text-[#2e2c43] capitalize"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  {requestInfo?.customerId?.userName?.substring(0,20)}
+                  {
+                    requestInfo?.customerId?.userName?.length>20 && <Text>...
                       </Text>
+                  }
+                </Text>
 
                       <Text
                         className="text-[12px] text-[#79B649]"
@@ -269,7 +273,7 @@ const BidPageImageUpload = () => {
                     className=""
                   >
                     <Text
-                      className="text-[14px] text-[#FB8C00] "
+                      className="text-[14px] text-[#FB8C00] px-2 "
                       style={{ fontFamily: "Poppins-SemiBold" }}
                     >
                       Skip

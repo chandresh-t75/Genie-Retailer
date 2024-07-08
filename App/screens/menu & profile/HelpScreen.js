@@ -61,8 +61,9 @@ const HelpScreen = () => {
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={{ paddingHorizontal: 30 }}>
                        
-                        <View className="z-50 absolute top-[20px] left-[40px]  ">
-                        <TouchableOpacity onPress={() => { navigation.goBack(); }} style={{padding:8,borderRadius:100,zIndex:50}}>
+                    <View className="z-50 absolute top-[10px] left-[16px] ">
+
+                        <TouchableOpacity onPress={() => { navigation.goBack(); }} style={{padding:20,borderRadius:100,zIndex:50}}>
                       <BackArrow width={14} height={10} />
 
                     </TouchableOpacity>

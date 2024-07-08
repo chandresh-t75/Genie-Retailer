@@ -41,7 +41,7 @@ import auth from "@react-native-firebase/auth";
 import axios from "axios";
 import messaging from "@react-native-firebase/messaging";
 import BackArrow from "../../assets/BackArrow.svg";
-// import SmsRetriever from 'react-native-sms-retriever';
+import SmsRetriever from 'react-native-sms-retriever';
 
 
 
@@ -135,32 +135,32 @@ const MobileNumberEntryScreen = () => {
     console.log(otp);
   };
 
-  // useEffect(() => {
-  //   const startSmsRetriever = async () => {
-  //     try {
-  //       const registered = await SmsRetriever.startSmsRetriever();
-  //       if (registered) {
-  //         SmsRetriever.addSmsListener(event => {
-  //           const message = event.message;
-  //           const otpRegex = /\b\d{6}\b/; // Adjust the regex based on your OTP format
-  //           const extractedOtp = message.match(otpRegex);
-  //           if (extractedOtp) {
-  //             setOtp(extractedOtp[0]);
-  //             SmsRetriever.removeSmsListener();
-  //           }
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
+  useEffect(() => {
+    const startSmsRetriever = async () => {
+      try {
+        const registered = await SmsRetriever.startSmsRetriever(); 
+        if (registered) {
+          SmsRetriever.addSmsListener(event => {
+            const message = event.message;
+            const otpRegex = /\b\d{6}\b/; // Adjust the regex based on your OTP format
+            const extractedOtp = message?.match(otpRegex);
+            if (extractedOtp) {
+              setOtp(extractedOtp[0]);
+              SmsRetriever.removeSmsListener();
+            }
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  //   startSmsRetriever();
+    startSmsRetriever();
 
-  //   return () => {
-  //     SmsRetriever.removeSmsListener();
-  //   };
-  // }, []);
+    return () => {
+      SmsRetriever.removeSmsListener();
+    };
+  }, []);
 
   const sendVerification = async () => {
 
@@ -171,7 +171,7 @@ const MobileNumberEntryScreen = () => {
       // dispatch(storeClear());
       try {
         const phoneNumber = countryCode + mobileNumber;
-        // console.log(phoneNumber);
+        console.log(phoneNumber);
         // const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
         // setConfirm(confirmation);
         // console.log(confirmation);
@@ -249,7 +249,7 @@ const MobileNumberEntryScreen = () => {
         setToken("")
         setMobileNumberLocal("");
         setMobileScreen(true);
-      }
+      } 
       // }
       // else{
       //   setLoading(false);
@@ -373,7 +373,7 @@ const MobileNumberEntryScreen = () => {
                   onPress={() => setMobileScreen(true)}
                   style={{ padding: 20, position: "absolute", top: 4, left: 4, zIndex: 50 }}
                 >
-                  <BackArrow width={18} height={14} />
+                  <BackArrow width={16} height={14} />
                 </TouchableOpacity>
                 <View
                   style={{
@@ -426,6 +426,7 @@ const MobileNumberEntryScreen = () => {
                       placeholderTextColor={"#dbcdbb"}
                       keyboardType="numeric"
                       onChangeText={handleOtp}
+                      autoComplete="sms-otp"
                       value={otp}
                       style={{
                         letterSpacing: 8,

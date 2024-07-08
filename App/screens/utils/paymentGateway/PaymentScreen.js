@@ -11,10 +11,10 @@ import {
     ScrollView,
     TextInput
 } from "react-native";
-// import RazorpayCheckout from "react-native-razorpay";
+import RazorpayCheckout from "react-native-razorpay";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
-// import { encode as btoa } from "base-64";
+import { encode as btoa } from "base-64";
 import Close from "../../../assets/Cross.svg";
 // import PaymentImg from "../../assets/PaymentImg.svg";
 import { useNavigation } from "@react-navigation/native";
@@ -46,156 +46,156 @@ const PaymentScreen = () => {
 
     const todayDate=getFormattedDate();
      const PayNow = async () => {
-    //     const username = "rzp_live_oz8kr6Ix29mKyC";
-    //     const password = "IADDTICFJ2oXYLX3H2pLjvcx";
-    //     const credentials = `${username}:${password}`;
-    //     const encodedCredentials = btoa(credentials);
-    //     setLoading(true);
-    //     try {
-    //         const response = await axios.post(
-    //             "https://api.razorpay.com/v1/orders",
-    //             {
-    //                 amount: 100,  // INR amount in paisa 1Rs = 100 paisa
-    //                 currency: "INR",
-    //                 receipt: userDetails._id,
-    //                 notes: {
-    //                     notes_key_1: "Welcome to CulturTap-Genie",
-    //                     notes_key_2: "Eat-Sleep-Code-Repeat.",
-    //                 },
-    //             },
-    //             {
-    //                 headers: {
-    //                     Authorization: `Basic ${encodedCredentials}`,
-    //                     "Content-Type": "application/json",
-    //                 },
-    //             }
-    //         );
+        const username = "rzp_live_oz8kr6Ix29mKyC";
+        const password = "IADDTICFJ2oXYLX3H2pLjvcx";
+        const credentials = `${username}:${password}`;
+        const encodedCredentials = btoa(credentials);
+        setLoading(true);
+        try {
+            const response = await axios.post(
+                "https://api.razorpay.com/v1/orders",
+                {
+                    amount: 100,  // INR amount in paisa 1Rs = 100 paisa
+                    currency: "INR",
+                    receipt: userDetails._id,
+                    notes: {
+                        notes_key_1: "Welcome to CulturTap-Genie",
+                        notes_key_2: "Eat-Sleep-Code-Repeat.",
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `Basic ${encodedCredentials}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-    //         const order = response.data;
+            const order = response.data;
 
-    //         var options = {
-    //             description: "Payment for Genie-service",
-    //             image:
-    //                 "https://res.cloudinary.com/kumarvivek/image/upload/v1716890335/qinbdiriqama2cw10bz6.png",
-    //             currency: "INR",
-    //             key: "rzp_live_oz8kr6Ix29mKyC",
-    //             amount: "100", // Amount in paise (20000 paise = 200 INR)
-    //             name: "CulturTap-Genie",
-    //             order_id: order.id, // Use the order ID created using Orders API.
-    //             prefill: {
-    //                 email: userDetails?.email,
-    //                 contact: userDetails?.storeMobileNo,
-    //                 name: userDetails?.storeName,
-    //             },
-    //             theme: { color: "#fb8c00" },
-    //         };
+            var options = {
+                description: "Payment for Genie-service",
+                image:
+                    "https://res.cloudinary.com/kumarvivek/image/upload/v1716890335/qinbdiriqama2cw10bz6.png",
+                currency: "INR",
+                key: "rzp_live_oz8kr6Ix29mKyC",
+                amount: "100", // Amount in paise (20000 paise = 200 INR)
+                name: "CulturTap-Genie",
+                order_id: order.id, // Use the order ID created using Orders API.
+                prefill: {
+                    email: userDetails?.email,
+                    contact: userDetails?.storeMobileNo,
+                    name: userDetails?.storeName,
+                },
+                theme: { color: "#fb8c00" },
+            };
 
-    //         RazorpayCheckout.open(options)
-    //             .then((data) => {
-    //                 // handle success
-    //                 // Alert.alert(`Success: ${data.razorpay_payment_id}`);
-    //                 console.log("Payment Successful");
+            RazorpayCheckout.open(options)
+                .then((data) => {
+                    // handle success
+                    // Alert.alert(`Success: ${data.razorpay_payment_id}`);
+                    console.log("Payment Successful");
 
-    //                 updateUserDetails();
-    //                 setLoading(false);
-    //             })
-    //             .catch((error) => {
-    //                 // handle failure
-    //                 setLoading(false);
-    //                 // Alert.alert(`Error: ${error.code} | ${error.description}`);
-    //                 console.error(error);
-    //             });
-    //     } catch (error) {
-    //         setLoading(false);
-    //         console.error("Order creation failed:", error);
-    //         Alert.alert("Order creation failed", error.message);
-    //     }
+                    updateUserDetails();
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    // handle failure
+                    setLoading(false);
+                    // Alert.alert(`Error: ${error.code} | ${error.description}`);
+                    console.error(error);
+                });
+        } catch (error) {
+            setLoading(false);
+            console.error("Order creation failed:", error);
+            Alert.alert("Order creation failed", error.message);
+        }
      };
 
     const updateUserDetails = async () => {
-        // // setEditUser(false);
-        // // console.log('userNmae', userName);
-        // // if (userName.length < 3) return;
+        // setEditUser(false);
+        // console.log('userNmae', userName);
+        // if (userName.length < 3) return;
 
-        // await axios.patch(
-        //     `http://173.212.193.109:5000/retailer/editretailer`,
-        //     {
-        //         _id: userDetails?._id,
-        //         freeSpades: 1000,
-        //     })
-        //     .then(async (res) => {
-        //         console.log("userData updated Successfully after payment ");
-        //         dispatch(setUserDetails(res.data));
-        //         console.log("res after user update", res.data);
-        //         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
-        //         setIsVisible(true);
-        //         setTimeout(() => {
-        //             setIsVisible(false);
-        //             navigation.navigate("home");
-        //         }, 3000);
-        //     })
-        //     .catch((err) => {
-        //         console.error("error while updating profile", err.message);
-        //     });
+        await axios.patch(
+            `http://173.212.193.109:5000/retailer/editretailer`,
+            {
+                _id: userDetails?._id,
+                freeSpades: 1000,
+            })
+            .then(async (res) => {
+                console.log("userData updated Successfully after payment ");
+                dispatch(setUserDetails(res.data));
+                console.log("res after user update", res.data);
+                await AsyncStorage.setItem("userData", JSON.stringify(res.data));
+                setIsVisible(true);
+                setTimeout(() => {
+                    setIsVisible(false);
+                    navigation.navigate("home");
+                }, 3000);
+            })
+            .catch((err) => {
+                console.error("error while updating profile", err.message);
+            });
     };
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Handle free spade
     const handleFreeSpade = async () => {
-        // try {
-        //     setLoading(true);
-        //     await axios
-        //         .patch("http://173.212.193.109:5000/user/edit-profile", {
-        //             _id: userDetails._id,
-        //             updateData: { freeSpades: userDetails.freeSpades - 1, lastPaymentStatus: "paid" },
-        //         })
-        //         .then(async (res) => {
-        //             console.log('Payment Successfully updated');
-        //             dispatch(setUserDetails(res.data));
-        //             await AsyncStorage.setItem("userDetails", JSON.stringify(res.data));
-        //             setIsVisible(true);
-        //             setTimeout(() => {
-        //                 setIsVisible(false);
-        //                 navigation.navigate("home");
-        //             }, 3000);
-        //         })
+        try {
+            setLoading(true);
+            await axios
+                .patch("http://173.212.193.109:5000/user/edit-profile", {
+                    _id: userDetails._id,
+                    updateData: { freeSpades: userDetails.freeSpades - 1, lastPaymentStatus: "paid" },
+                })
+                .then(async (res) => {
+                    console.log('Payment Successfully updated');
+                    dispatch(setUserDetails(res.data));
+                    await AsyncStorage.setItem("userDetails", JSON.stringify(res.data));
+                    setIsVisible(true);
+                    setTimeout(() => {
+                        setIsVisible(false);
+                        navigation.navigate("home");
+                    }, 3000);
+                })
 
-        // } catch (error) {
-        //     setLoading(false);
-        //     console.error("Error while sending free spade request:", error);
-        //     Alert.alert("Error Sending Free Spade Request", error.message);
-        // }
+        } catch (error) {
+            setLoading(false);
+            console.error("Error while sending free spade request:", error);
+            Alert.alert("Error Sending Free Spade Request", error.message);
+        }
     }
 
 
     // Verify coupon function
     const VerifyCoupon = async () => {
-        // console.log("Adding coupon");
-        // if (couponCode.length === 0) return;
-        // console.log('couponCode: ' + couponCode);
-        // try {
-        //     await axios.get('http://173.212.193.109:5000/coupon/verify-coupon', {
-        //         params: {
-        //             couponCode: couponCode
-        //         }
-        //     })
-        //         .then(res => {
-        //             console.log('res', res.data);
-        //             if (res.data.message === "Coupon code is valid") {
-        //                 setVerifiedCouponCode(true);
-        //                 // dispatch(setSpadePrice(10));
-        //                 // dispatch(setSpadeCouponCode(couponCode));
-        //             }
-        //             else {
-        //                 setCouponFailed(true);
-        //             }
-        //         })
+        console.log("Adding coupon");
+        if (couponCode.length === 0) return;
+        console.log('couponCode: ' + couponCode);
+        try {
+            await axios.get('http://173.212.193.109:5000/coupon/verify-coupon', {
+                params: {
+                    couponCode: couponCode
+                }
+            })
+                .then(res => {
+                    console.log('res', res.data);
+                    if (res.data.message === "Coupon code is valid") {
+                        setVerifiedCouponCode(true);
+                        // dispatch(setSpadePrice(10));
+                        // dispatch(setSpadeCouponCode(couponCode));
+                    }
+                    else {
+                        setCouponFailed(true);
+                    }
+                })
 
-        // } catch (error) {
-        //     setCouponFailed(true);
-        //     console.log("Error while updating coupon code", error);
-        // }
+        } catch (error) {
+            setCouponFailed(true);
+            console.log("Error while updating coupon code", error);
+        }
     }
     
 

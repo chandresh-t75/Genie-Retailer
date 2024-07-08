@@ -29,12 +29,12 @@ const TermsandConditions = () => {
     <View style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
         <View className="flex items-center gap-[32px] bg-white">
-          <View className="z-50 absolute top-[20px] left-[40px] pb-[8px] px-[4px]">
+        <View className="z-50 absolute top-[10px] left-[16px] ">
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{ padding: 8, borderRadius: 100 }}
+              style={{ padding: 20, borderRadius: 100 }}
             >
               <BackArrow width={14} height={10} />
             </TouchableOpacity>

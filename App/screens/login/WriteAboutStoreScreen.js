@@ -12,7 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 import { setStoreDescription } from "../../redux/reducers/storeDataSlice";
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 
 const WriteAboutStoreScreen = () => {
@@ -37,7 +38,7 @@ const WriteAboutStoreScreen = () => {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              paddingHorizontal: 32,
+              paddingHorizontal: 12,
               marginTop: 20,
             }}
           >
@@ -45,7 +46,7 @@ const WriteAboutStoreScreen = () => {
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{padding:10}}
+              style={{padding:20,paddingTop:10}}
             >
                              <BackArrow width={14} height={10} />
 

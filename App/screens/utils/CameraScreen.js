@@ -114,7 +114,10 @@ const CameraScreen = () => {
             token: token.data,
             title: user?.storeName,
             body: query,
-            requestInfo: requestInfo,
+            requestInfo: {
+              requestId: requestInfo?.requestId?._id,
+              userId: requestInfo?.users[1]._id
+            },
             tag: user?._id,
             redirect_to: "bargain",
             image:res?.data?.bidImages?.length>0?res?.data?.bidImages[0]:"",

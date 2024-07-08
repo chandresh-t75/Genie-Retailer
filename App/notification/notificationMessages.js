@@ -135,7 +135,7 @@ export const sendCustomNotificationChat = async (mess) => {
           notification: {
             sound: "default",
             //   icon: "fcm_push_icon",
-              color:"#fcb800",
+              // color:"#fcb800",
             tag: mess?.tag,
           },
         },
@@ -314,7 +314,7 @@ export const NotificationRequestAccepted = async (mess) => {
         },
         data: {
           redirect_to: mess.redirect_to,
-          requestInfo: JSON.stringify(mess.requestInfo),
+          userRequest: JSON.stringify(mess.requestInfo),
         },
       },
     };
@@ -354,7 +354,7 @@ export const NotificationBidAccepted = async (mess) => {
   try {
     const message = {
       message: {
-        token:mess.token[0],
+        token:mess.token,
         notification: {
           title: `${mess.title} has accepted the bid at ${mess.price}`,
           body: mess?.details,
@@ -377,7 +377,7 @@ export const NotificationBidAccepted = async (mess) => {
     };
 
     const accessToken = await getAccessToken();
-    if(mess.token[0].length>0){
+  
 
     const notificationResponse = await fetch(
       `https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
@@ -401,7 +401,7 @@ export const NotificationBidAccepted = async (mess) => {
       const successResponse = JSON.parse(textResponse);
       console.log("Notification sent successfully:");
     }
-  }
+  
   } catch (e) {
     console.error("Failed to send notification:", e);
   }

@@ -94,14 +94,14 @@ export const handleDownload = async (imageUri, downloadProgress, setDownloadProg
         ...prevState,
         [index]:1, // Clear progress after download completion
       }));
-      alert('Download complete');
+      // alert('Download complete');
     } catch (e) {
       console.error(e);
       setDownloadProgress((prevState) => ({
         ...prevState,
         [index]: undefined, // Clear progress on error
       }));
-      alert('Download failed');
+      // alert('Download failed');
     }
 }
 

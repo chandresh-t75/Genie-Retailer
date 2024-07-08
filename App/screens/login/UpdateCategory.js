@@ -7,6 +7,8 @@ import {
   ScrollView,
   Pressable,
   Platform,
+  ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import {
   SafeAreaView,
@@ -16,8 +18,10 @@ import { Octicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import BackArrow from "../../assets/BackArrow.svg";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
-import { setStoreCategory } from "../../redux/reducers/storeDataSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setStoreCategory, setUserDetails } from "../../redux/reducers/storeDataSlice";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const searchData = [
   { id: 1, name: 'Miscelleneous' },
@@ -38,13 +42,14 @@ const searchData = [
   { id: 16, name: 'Others' },
 ];
 
-const SearchCategoryScreen = () => {
+const UpdateCategory = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(searchData);
-
+  const user=useSelector(state=>state.storeData.userDetails)
   const [selectedOption, setSelectedOption] = useState("");
+  const [loading,setLoading] =useState(false)
 
   const handleSelectResult = (result) => {
     setSelectedOption(result === selectedOption ? "" : result);
@@ -62,12 +67,46 @@ const SearchCategoryScreen = () => {
     search(text);
   };
 
-  const handleStoreCategory = () => {
+//   const handleStoreCategory = () => {
+//     try {
+//       dispatch(setStoreCategory(selectedOption.name));
+//       navigation.navigate("serviceDelivery");
+//     } catch (error) {
+//       console.log("error", error);
+//     }
+//   };
+
+  const  handleStoreCategory = async () => {
+    setLoading(true);
+
     try {
-      dispatch(setStoreCategory(selectedOption.name));
-      navigation.navigate("serviceDelivery");
+      console.log( "user", user);
+
+    
+    await axios.patch(
+        `http://173.212.193.109:5000/retailer/editretailer`,
+        {
+          _id: user._id,
+          storeCategory:selectedOption.name,
+          
+        }
+      ).then(async(response) => {
+
+      console.log("category updated successfully:", response.data); 
+       dispatch(setUserDetails(response.data));
+      // Update user data in AsyncStorage
+      await AsyncStorage.setItem("userData", JSON.stringify(response.data));
+
+      // Navigate to home only after successfully updating the location
+     
+      navigation.navigate("profile");
+      setLoading(false)
+    })
     } catch (error) {
-      console.log("error", error);
+      setLoading(false)
+
+      console.error("Failed to update category:", error);
+      // Optionally handle error differently here
     }
   };
 
@@ -75,7 +114,7 @@ const SearchCategoryScreen = () => {
     <View style={styles.container} edges={["top", "bottom"]}>
       <View className="flex-1 w-full bg-white flex-col  gap-[40px] px-[32px] ">
         <ScrollView
-          className="flex-1 px-0 mb-[63px]"
+          className="flex-1 px-0 mb-[63px] "
           showsVerticalScrollIndicator={false}
         >
           <View className=" flex z-40 flex-row items-center mt-[20px] mb-[10px]">
@@ -155,11 +194,22 @@ const SearchCategoryScreen = () => {
           </View>
         </TouchableOpacity>
       </View>
+      {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#fb8c00" />
+          </View>
+        )}
     </View>
   );
 };
 
 const styles = {
+    loadingContainer: {
+        ...StyleSheet.absoluteFill,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      },
   container: {
     flex: 1,
     //  marginTop: Platform.OS === 'android' ? 44 : 0,
@@ -195,4 +245,4 @@ const styles = {
   },
 };
 
-export default SearchCategoryScreen;
+export default UpdateCategory;

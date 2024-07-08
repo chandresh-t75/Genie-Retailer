@@ -26,7 +26,8 @@ import { setServiceProvider, setStoreLocation, setUserDetails } from "../../redu
 import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 
 
@@ -184,15 +185,14 @@ const LocationScreen = () => {
       <KeyboardAvoidingView behavior="position" >
       <View style={{ flex: 1, backgroundColor: "white",position:"relative" }} >
           <View className="w-full absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
-            <Pressable
-              onPress={() => {
-                navigation.goBack();
-              }}
-              className="flex flex-row p-6 items-center  gap-2"
-            >
-                           <BackArrow width={14} height={10} />
-
-            </Pressable>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={{ padding:20,paddingRight:10,zIndex:30}}
+          >
+            <BackArrow  />
+          </TouchableOpacity>
           </View>
           <View className="flex flex-col justify-center items-center px-[32px] mt-[20px] ">
             <LocationImg height={322} width={width} />

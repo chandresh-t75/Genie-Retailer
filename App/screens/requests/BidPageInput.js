@@ -77,20 +77,19 @@ const BidPageInput = () => {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="relative flex-grow bg-[#ffe7c8]">
-          <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-between items-center py-[20px]">
-            <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
-              }}
-              style={{padding:6}}
-            >
-                         <BackArrow width={14} height={10} />
-
-            </TouchableOpacity>
+          <View className=" bg-[#ffe7c8] w-full flex flex-row  justify-between items-center py-[20px]">
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={{ padding:20,paddingRight:10,zIndex:30}}
+          >
+            <BackArrow  />
+          </TouchableOpacity>
 
             <View className="gap-[9px]">
-              <View className="flex-row gap-[18px]">
-                <View className="flex items-center justify-center rounded-full bg-white p-[4px]">
+              <View className="flex-row gap-[18px] items-center">
+                <View className="flex items-center justify-center rounded-full ml-4 bg-white p-[4px]">
                   {requestInfo?.customerId?.pic ? (
                     <Image
                       source={{ uri: requestInfo?.customerId?.pic }}
@@ -102,9 +101,16 @@ const BidPageInput = () => {
                   )}
                 </View>
                 <View className="w-[70%]">
-                  <Text className="text-[14px] text-[#2e2c43] capitalize" style={{ fontFamily: "Poppins-Regular" }}>
-                    {requestInfo?.customerId?.userName}
-                  </Text>
+                <Text
+                  className="text-[14px]  text-[#2e2c43] capitalize"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  {requestInfo?.customerId?.userName?.substring(0,20)}
+                  {
+                    requestInfo?.customerId?.userName?.length>20 && <Text>...
+                      </Text>
+                  }
+                </Text>
                   <Text className="text-[12px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>
                   Online
                 </Text>

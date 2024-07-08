@@ -145,7 +145,22 @@ const fetchUserData = async () => {
     if (userData) {
       dispatch(setUserDetails(userData));
       console.log('Fetched user data successfully at HomeScreen', userData);
+      const response = await axios.get('http://173.212.193.109:5000/retailer/', {
+        params: {
+          storeMobileNo: userData?.storeMobileNo
+        }
+      });
+      console.log("res at compltete profile", response.data);
+  
+      if (response.status === 200) {
+        const data = response.data;
+  
+        dispatch(setUserDetails(data));
+        await AsyncStorage.setItem('userData', JSON.stringify(data));
+
+      }
     }
+
 
 
 };

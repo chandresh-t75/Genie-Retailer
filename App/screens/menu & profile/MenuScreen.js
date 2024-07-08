@@ -10,7 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import ModalLogout from '../../components/ModalLogout';
 import { setServiceProvider, setUserDetails } from '../../redux/reducers/storeDataSlice';
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 
 
@@ -51,15 +52,15 @@ const MenuScreen = () => {
     <View style={{ flex: 1,backgroundColor:"white" }}>
        
          <View className="pt-[20px] flex  gap-[60px]" style={{ flex: 1 }} >
-             <View className="flex flex-row px-[32px] items-center ">
+             <View className="flex z-40 flex-row px-[32px] items-center ">
                  
-                     <TouchableOpacity onPress={() => {navigation.goBack()}} className="flex  items-center "
+                     <TouchableOpacity onPress={() => {navigation.goBack()}} className="flex items-center "
                      style={{
                       position:"absolute",
-                      left:28,
-                      top:-10,
+                      left:0,
+                      top:-28,
                       zIndex:40,
-                      padding:6,
+                      padding:20,
 
                      }}>
                      <View className="p-4 rounded-full ">

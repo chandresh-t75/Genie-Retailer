@@ -25,7 +25,8 @@ import { launchCamera } from "react-native-image-picker";
 import { manipulateAsync } from "expo-image-manipulator";
 import DelImg from "../../assets/delImg.svg";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
-import BackArrow from "../../assets/arrow-left.svg";
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -35,7 +36,7 @@ const ProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   //   const [user,setUser]= useState(route.params.user);
   const user = useSelector((state) => state.storeData.userDetails);
-  // console.log("user at profile", user);
+  console.log("user at profile", user);
 
   const [editableField, setEditableField] = useState(null);
   const [location, setLocation] = useState(user?.location || "");
@@ -131,9 +132,8 @@ const ProfileScreen = () => {
             [{ resize: { width: 600, height: 800 } }],
             { compress: 0.5, format: "jpeg", base64: true }
           );
-       
+
           await getImageUrl({ image: compressedImage.uri, type: type });
-          
 
           // Update user or perform other operations here
         } catch (error) {
@@ -144,23 +144,24 @@ const ProfileScreen = () => {
   };
 
   const getImageUrl = async ({ image, type }) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const formData = new FormData();
 
-      formData.append('storeImages', {
+      formData.append("storeImages", {
         uri: image,
-        type: 'image/jpeg',
-        name: `photo-${Date.now()}.jpg`
-      })
+        type: "image/jpeg",
+        name: `photo-${Date.now()}.jpg`,
+      });
 
-      await axios.post('http://173.212.193.109:5000/upload', formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-        .then(async(res) => {
-          console.log('imageUrl updated from server', res.data[0]);
+      await axios
+        .post("http://173.212.193.109:5000/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(async (res) => {
+          console.log("imageUrl updated from server", res.data[0]);
           const imgUri = res.data[0];
           let updatedUser;
           if (type === "main") {
@@ -184,15 +185,12 @@ const ProfileScreen = () => {
             }
           );
           setLoading(false);
-        })
-      
+        });
     } catch (error) {
       setLoading(false);
       console.log(error);
     }
-  }
-
- 
+  };
 
   // const getImageUrl = async ({ image, type }) => {
   //   setLoading(true);
@@ -258,17 +256,15 @@ const ProfileScreen = () => {
       };
       dispatch(setUserDetails(updatedUser));
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
-      await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
-        {
+      await axios
+        .patch(`http://173.212.193.109:5000/retailer/editretailer`, {
           _id: user?._id,
           storeImages: updatedUser.storeImages,
-        }
-      ).then(async(res)=>{
-        dispatch(setUserDetails(res.data));
-        await AsyncStorage.setItem("userData", JSON.stringify(res.data));
-      }
-      )
+        })
+        .then(async (res) => {
+          dispatch(setUserDetails(res.data));
+          await AsyncStorage.setItem("userData", JSON.stringify(res.data));
+        });
     } else {
       console.error("Invalid index for deleting image");
     }
@@ -277,25 +273,27 @@ const ProfileScreen = () => {
   return (
     <View className="bg-white">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="mt-[20px] flex">
-          <View className="flex  relative flex-row px-[32px] items-center">
-            <TouchableOpacity
+      <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
               }}
               className="flex "
               style={{
                 position: "absolute",
-                left: 28,
+                left: 10,
                 top: 0,
                 zIndex: 40,
-                padding: 6,
+                padding: 20,
               }}
             >
               <View className="p-2 rounded-full">
                 <BackArrow width={14} height={10} />
               </View>
             </TouchableOpacity>
+        <View className="mt-[20px] flex">
+          
+          <View className="flex  relative flex-row px-[32px] items-center">
+           
             <Text
               className="text-[16px] flex-1 text-center"
               style={{ fontFamily: "Poppins-Bold" }}
@@ -408,16 +406,29 @@ const ProfileScreen = () => {
               </Pressable>
             </Modal>
           </ScrollView>
-          <View className="px-[32px] flex flex-col gap-[26px] mb-[20px]">
-            <EditableField
-              label="Store Location"
-              value={location}
-              editable={editableField === "location"}
-              onChangeText={setLocation}
-              onEditPress={() => handleEditPress("location")}
-              onSavePress={() => handleSavePress("location")}
-              isLoading={isLoading}
+          <View className="px-[32px] flex flex-col gap-[26px] mb-[20px] items-center">
+          <View className="px-[20px] mb-[10px]">
+          <Text style={{ fontFamily: "Poppins-Regular" }} className="mb-[10px] ">
+                Store Location
+              </Text>
+          <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+            <TextInput
+              value={user?.location}
+              placeholder={user?.location}
+              placeholderTextColor={"#dbcdbb"}
+              className="w-[250px] text-[14px]  text-black capitalize"
+              style={{ fontFamily: "Poppins-Regular" }}
             />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("update-location");
+              }}
+            >
+              <EditIcon className="px-[10px]" />
+            </TouchableOpacity>
+          </View>
+
+          </View>
             <EditableField
               label="Store Name"
               value={storeName}
@@ -436,41 +447,61 @@ const ProfileScreen = () => {
               onSavePress={() => handleSavePress("storeOwnerName")}
               isLoading={isLoading}
             />
-            <EditableField
-              label="Store Category"
-              value={storeCategory}
-              editable={editableField === "storeCategory"}
-              onChangeText={setStoreCategory}
-              onEditPress={() => handleEditPress("storeCategory")}
-              onSavePress={() => handleSavePress("storeCategory")}
-              isLoading={isLoading}
+               <View className="px-[20px] mb-[10px]">
+          <Text style={{ fontFamily: "Poppins-Regular" }} className="mb-[10px] ">
+                Store Category
+              </Text>
+          <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+            <TextInput
+              value={user.storeCategory}
+              editable={false}
+              placeholder={storeCategory}
+              placeholderTextColor={"#dbcdbb"}
+              className="w-[250px] text-[14px]  text-black capitalize"
+              style={{ fontFamily: "Poppins-Regular" }}
             />
+            {/* <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("update-category");
+              }}
+            >
+              <EditIcon className="px-[10px]" />
+            </TouchableOpacity> */}
+          </View>
+
+          </View>
+             
+
             <EditableField
               label="Mobile Number"
-              value={storeMobileNo}
+              value={user.storeMobileNo}
               editable={false}
               onChangeText={setStoreMobileNo}
               onEditPress={() => handleEditPress("storeMobileNo")}
               onSavePress={() => handleSavePress("storeMobileNo")}
               isLoading={isLoading}
             />
-           
           </View>
-          <View className="px-[32px] flex  gap-[26px] mb-[60px]">
+       
+        
+        
+
+          <View className="px-[20px] flex  gap-[26px] mb-[60px]">
             <View className="flex-row items-center justify-between  my-[10px]">
-            <Text style={{ fontFamily: "Poppins-Regular" }}>GST/Labor certificate</Text>
-          
-          </View>
-              {user?.panCard &&
-                <Pressable  onPress={() => handleImagePress(user?.panCard)}>
-                  <View className="rounded-[16px]">
-                    <Image
-                      source={{ uri:user?.panCard }}
-                      width={119}
-                      height={164}
-                      className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
-                    />
-                    {/* <Pressable
+              <Text style={{ fontFamily: "Poppins-Regular" }}>
+                GST/Labor certificate
+              </Text>
+            </View>
+            {user?.panCard && (
+              <Pressable onPress={() => handleImagePress(user?.panCard)}>
+                <View className="rounded-[16px]">
+                  <Image
+                    source={{ uri: user?.panCard }}
+                    width={119}
+                    height={164}
+                    className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                  />
+                  {/* <Pressable
                       onPress={() => deleteImage(0)}
                       style={{position: "absolute",
                         top: 5,
@@ -481,20 +512,22 @@ const ProfileScreen = () => {
                     >
                       <DelImg />
                     </Pressable> */}
-                  </View>
-                </Pressable>
-              }
-              {
-                !user?.panCard &&
-                  <View>
-                   
-                    <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
-                      <Text className="text-center text-[14px] " style={{ fontFamily: "Poppins-Regular" }} >No Certificates Uploaded</Text>
-                    </View>
-                  </View>
-                
-              }
-            </View>
+                </View>
+              </Pressable>
+            )}
+            {!user?.panCard && (
+              <View>
+                <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
+                  <Text
+                    className="text-center text-[14px] "
+                    style={{ fontFamily: "Poppins-Regular" }}
+                  >
+                    No Certificates Uploaded
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
         </View>
       </ScrollView>
       {loading && (
@@ -534,7 +567,7 @@ const EditableField = ({
       )} */}
     </View>
 
-    <KeyboardAvoidingView className="flex items-center">
+    <KeyboardAvoidingView className="flex ">
       <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
         <TextInput
           value={value}

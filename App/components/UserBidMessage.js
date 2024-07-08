@@ -72,7 +72,8 @@ const UserBidMessage = ({ bidDetails }) => {
         </View>
         <View className="w-[60%]">
           <View className="flex flex-row justify-between">
-            <Text className="text-[14px] text-[#2e2c43]  capitalize" style={{ fontFamily: "Poppins-ExtraBold" }}>
+          <Text className="w-[70%] text-[14px] flex flex-wrap flex-row text-[#2e2c43] capitalize" style={{ fontFamily: "Poppins-ExtraBold" }} >
+
               {requestInfo?.customerId?.userName}
             </Text>
 

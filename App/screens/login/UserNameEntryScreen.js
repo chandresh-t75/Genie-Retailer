@@ -107,7 +107,7 @@ const UserNameEntryScreen = () => {
                   <QuestionIcon />
                 </TouchableOpacity>
               </View>
-              <View className="flex flex-col justify-center items-center gap-[8px]">
+              <View className="flex flex-col justify-center items-center gap-[0px]">
                 <StoreName  width={width} className="object-cover" />
                 <Text className="text-[14.5px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>Step 3/9</Text>
               </View>

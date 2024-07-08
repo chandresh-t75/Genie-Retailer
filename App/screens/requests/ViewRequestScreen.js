@@ -1,10 +1,12 @@
-import { View, Text, Pressable, Image, ScrollView } from 'react-native'
+import { View, Text, Pressable, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 // import ArrowLeft from '../../assets/arrow-left.svg';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesome ,Entypo} from "@expo/vector-icons";
+import BackArrow from "../../assets/arrow-left.svg"
+
 
 
 
@@ -15,15 +17,15 @@ const ViewRequestScreen = () => {
     return (
         <SafeAreaView style={{ flex: 1,backgroundColor:"white"}}>
             <View className=" flex z-40 flex-row items-center justify-center mt-[20px] mb-[24px] mx-[36px]">
-            <Pressable
+            <TouchableOpacity
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding: 2 }}
+            style={{ padding:20,paddingRight:10,zIndex:30}}
           >
-            <FontAwesome name="arrow-left" size={15} color="black" />
-          </Pressable>
-                <Text className="flex flex-1 justify-center items-center text-center text-[16px]" style={{ fontFamily: "Poppins-Regular" }}>View Request</Text>
+            <BackArrow  />
+          </TouchableOpacity>
+                <Text className="flex flex-1 justify-center items-center text-center text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>View Request</Text>
                 {/* <Pressable onPress={() => { navigation.navigate('requestpreview'); }}>
                     <Text className="text-[14px]" ></Text>
                 </Pressable> */}

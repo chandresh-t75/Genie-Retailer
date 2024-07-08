@@ -21,7 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import ClickImage from "../../assets/ClickImg.svg";
 import AddMoreImage from "../../assets/AddMoreImg.svg";
 
-import BackArrow from "../../assets/arrow-left.svg"
+
 
 
 import DelImg from "../../assets/delImg.svg"
@@ -38,6 +38,7 @@ import { manipulateAsync } from "expo-image-manipulator";
 import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import axios from "axios";
+import BackArrow from "../../assets/BackArrow.svg";
 
 const AddImageScreen = () => {
   const [imagesLocal, setImagesLocal] = useState([]);
@@ -239,7 +240,7 @@ const AddImageScreen = () => {
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{padding:8}}
+              style={{padding:20,paddingTop:10}}
             >
                              <BackArrow width={14} height={10} />
 

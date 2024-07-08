@@ -35,6 +35,8 @@ import PaymentScreen from '../screens/utils/paymentGateway/PaymentScreen';
 import { useSelector } from 'react-redux';
 import CustomerReport from '../screens/reports/CustomerReport';
 import GSTDocumentVerify from '../screens/login/GSTDocumentVerify';
+import UpdateCategory from '../screens/login/UpdateCategory';
+import UpdateLocation from '../screens/login/UpdateLocation';
 
 const Stack = createNativeStackNavigator();
 const GlobalNavigation = () => {
@@ -83,8 +85,8 @@ const GlobalNavigation = () => {
       <Stack.Screen name="payment-gateway" component={PaymentScreen} />
       <Stack.Screen name="customer-report" component={CustomerReport} />
       <Stack.Screen name="gstVerify" component={GSTDocumentVerify} />
-
-
+      <Stack.Screen name="update-category" component={UpdateCategory} />
+      <Stack.Screen name="update-location" component={UpdateLocation} />
 
       <Stack.Screen name={`requestPage${userId}`} component={RequestPage} />
       {/* <Stack.Screen name="requestPage" component={RequestPage}  />  */}

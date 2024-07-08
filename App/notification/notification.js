@@ -49,7 +49,7 @@ export const getAccessToken = async () => {
         // return response.data.acces 
         return response.data.accessToken;
     } catch (error) {
-        console.error("Error fetching access token", error);
+        console.error("Error fetching custimer access token", error);
     }
 };
 

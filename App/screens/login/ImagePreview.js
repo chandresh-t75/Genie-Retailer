@@ -19,7 +19,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setImages, setUserDetails } from "../../redux/reducers/storeDataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 
 
@@ -91,7 +92,7 @@ const [loading,setLoading] = useState(false);
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{padding:6}}
+              style={{padding:10,paddingTop:10}}
             >
                              <BackArrow width={14} height={10} />
 
