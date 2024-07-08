@@ -123,7 +123,7 @@ const BidQueryPage = () => {
          dispatch(setOngoingRequests(data));
          dispatch(setRequestInfo(updatedRequest));
          const req={
-          requestId:updatedRequest?.requestId?._id,
+          requestId:updatedRequest?._id,
           userId:updatedRequest?.users[0]._id
         };
         
@@ -141,7 +141,7 @@ const BidQueryPage = () => {
           title: user?.storeName,
           body: query,
           requestInfo: {
-            requestId: requestInfo?.requestId?._id,
+            requestId: requestInfo?._id,
             userId: requestInfo?.users[1]._id
           },
           tag: user?._id,

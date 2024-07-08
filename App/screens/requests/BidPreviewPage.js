@@ -147,7 +147,7 @@ const BidPreviewPage = () => {
            title: user?.storeName,
            body: bidDetails,
            requestInfo: {
-            requestId: requestInfo?.requestId?._id,
+            requestId: requestInfo?._id,
             userId: requestInfo?.users[1]._id
           },
            tag: user?._id,

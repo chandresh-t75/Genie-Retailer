@@ -121,7 +121,7 @@ const RequestPage = () => {
     try {
       const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       setUser(userData);
-      console.log("User data found successfully");
+      console.log("User data found successfully",currentRequest);
 
       // console.log("requestInfo page", requestInfo);
 
@@ -134,13 +134,13 @@ const RequestPage = () => {
       await axios
         .get(`http://173.212.193.109:5000/chat/get-particular-chat`, {
           params: {
-            retailerId: userData?._id,
-            requestId: currentRequest?.requestId,
+            
+            id:currentRequest?.requestId,
           },
         })
         .then(async (resu) => {
-          const result = resu?.data[0];
-          // console.log("new requestInfo fetched successfully", result);
+          const result = resu?.data;
+          console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
 
           await axios
@@ -293,7 +293,7 @@ const RequestPage = () => {
             title: user?.storeName,
             body: lastMessage.message,
             requestInfo: {
-              requestId: requestInfo?.requestId?._id,
+              requestId: requestInfo?._id,
               userId: requestInfo?.users[1]._id
             },
             tag: user?._id,

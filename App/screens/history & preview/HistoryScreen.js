@@ -146,7 +146,7 @@ const HistoryScreen = () => {
                     onPress={() => {
                       dispatch(setRequestInfo(product));
                       const req = {
-                        requestId: product?.requestId?._id,
+                        requestId:product?._id,
                         userId: product?.users[0]._id,
                       };
                       console.log("request details", req);
@@ -187,7 +187,7 @@ const HistoryScreen = () => {
                     onPress={() => {
                       dispatch(setRequestInfo(product));
                       const req = {
-                        requestId: product?.requestId?._id,
+                        requestId: product?._id,
                         userId: product?.users[0]._id,
                       };
                       console.log("request details", req);

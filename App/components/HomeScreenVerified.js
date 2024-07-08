@@ -227,7 +227,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         dispatch(setRequestInfo(item));
         // console.log(item)
         const req = {
-          requestId: item?.requestId?._id,
+          requestId: item?._id,
           userId: item?.users[0]._id,
         };
         const requestId = req?.requestId;

@@ -190,7 +190,7 @@ export  function notificationListeners() {
     
     if (remoteMessage?.data?.requestInfo && currentScreen!==`requestPage${currentId}`){
       // console.log(object)
-      const res = JSON.parse(remoteMessage.data.requestInfo);
+      // const res = JSON.parse(remoteMessage.data.requestInfo);
       
       // dispatch(setRequestInfo(res));
       // console.log("message notification");

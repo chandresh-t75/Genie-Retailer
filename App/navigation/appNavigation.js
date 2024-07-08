@@ -55,7 +55,6 @@ const GlobalNavigation = () => {
 
   return (
 
-
     <Stack.Navigator
       initialRouteName="splash"
       screenOptions={{

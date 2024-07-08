@@ -115,7 +115,7 @@ const CameraScreen = () => {
             title: user?.storeName,
             body: query,
             requestInfo: {
-              requestId: requestInfo?.requestId?._id,
+              requestId: requestInfo?._id,
               userId: requestInfo?.users[1]._id
             },
             tag: user?._id,

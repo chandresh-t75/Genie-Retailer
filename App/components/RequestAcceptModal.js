@@ -98,9 +98,9 @@ const RequestAcceptModal = ({
               const notification = {
                 token: token.data,
                 title: user?.storeName,
-                userRequest:{
-                  requestId: requestInfo?.requestId?._id,
-                  userId: requestInfo?.users[0]._id
+                requestInfo: {
+                  requestId: requestInfo?._id,
+                  userId: requestInfo?.users[1]._id
                 },
                 tag: user?._id,
                 image: requestInfo?.requestId?.requestImages[0],
@@ -151,7 +151,7 @@ const RequestAcceptModal = ({
                   token: token.data,
                 title: user?.storeName,
                 requestInfo: {
-                  requestId: requestInfo?.requestId?._id,
+                  requestId: requestInfo?._id,
                   userId: requestInfo?.users[1]._id
                 },
                 tag: user?._id,
@@ -164,7 +164,7 @@ const RequestAcceptModal = ({
                 token: accept?.data?.uniqueTokens,
                 title: user?.storeName,
                 requestInfo: {
-                  requestId: requestInfo?.requestId?._id,
+                  requestId: requestInfo?._id,
                   userId: requestInfo?.users[0]._id
                 },
                 tag: user?._id,
