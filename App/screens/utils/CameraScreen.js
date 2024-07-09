@@ -100,7 +100,7 @@ const CameraScreen = () => {
          dispatch(setRequestInfo(updatedRequest));
        
         const req={
-          requestId:updatedRequest?.requestId?._id,
+          requestId:updatedRequest?._id,
           userId:updatedRequest?.users[0]._id
         };
 

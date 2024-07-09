@@ -100,7 +100,10 @@ const RequestAcceptModal = ({
               const notification = {
                 token: token.data,
                 title: user?.storeName,
-                userRequest:requestInfo?._id,
+                requestInfo:{
+                  requestId:requestInfo?._id,
+                  userId:res.data?.users[1]._id
+                },
                 tag: user?._id,
                 image: requestInfo?.requestId?.requestImages[0],
                 redirect_to: "bargain",
