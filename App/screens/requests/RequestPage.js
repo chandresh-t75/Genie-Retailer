@@ -125,7 +125,7 @@ const RequestPage = () => {
 }
 
   const fetchRequestData = async () => {
-    // setLoading(true);
+    setLoading(true);
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       // setUser(userData);
@@ -143,23 +143,10 @@ const RequestPage = () => {
           const result = resu?.data;
           console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
-        })}catch(error) {
-          setLoading(false)
-          console.log(error);
-        }
-
-
-
-        }
-
-        const fetchMessages=async()=>{
-
-        try{
-
           await axios
             .get("http://173.212.193.109:5000/chat/get-spade-messages", {
               params: {
-                id: requestInfo?._id,
+                id: result?._id,
               },
             })
             .then(async (response) => {
@@ -171,26 +158,26 @@ const RequestPage = () => {
 
               console.log("socket join chat setup successfully");
 
-              setLoading(false);
+            
               if (
-                requestInfo?.unreadCount > 0 &&
-                requestInfo?.latestMessage?.sender?.type === "UserRequest"
+                result?.unreadCount > 0 &&
+                result?.latestMessage?.sender?.type === "UserRequest"
               ) {
                 const res = await axios.patch(
                   "http://173.212.193.109:5000/chat/mark-as-read",
                   {
-                    id: requestInfo?._id,
+                    id: result?._id,
                   }
                 );
 
-                let tmp = { ...requestInfo, unreadCount: 0 };
+                let tmp = { ...result, unreadCount: 0 };
                 console.log("mar as read ",tmp)
 
                 dispatch(setRequestInfo(tmp));
                 const filteredRequests = ongoingRequests.filter(
-                  (request) => request._id !== requestInfo?._id
+                  (request) => request._id !== result?._id
                 );
-                if (requestInfo?.latestMessage?.bidType === "update"){
+                if (result?.latestMessage?.bidType === "update"){
                   console.log("update");
                   const data = [...filteredRequests];
                   dispatch(setOngoingRequests(data));
@@ -203,8 +190,10 @@ const RequestPage = () => {
 
                 console.log("mark as read", res?.data, res?.data?.unreadCount);
               }
+              setLoading(false);
             });
-        }
+        })
+      }
       // dispatch(setMessages(response.data));
 
       // socket.emit("join chat", response?.data[0].chat._id);
@@ -233,18 +222,17 @@ const RequestPage = () => {
     console.log("Params data found");
     fetchUserDetails();
     SocketSetUp(currentRequest?.userId);
-    if (requestInfo && requestInfo._id===currentRequest.requestId) {
-      setLoading(true);
+    // if (requestInfo && requestInfo._id===currentRequest.requestId) {
+    //   setLoading(true);
+    //   fetchRequestData();
+    //   fetchMessages();
+    //   setLoading(false);
+    // }
+    // else{
+     
       fetchRequestData();
-      fetchMessages();
-      setLoading(false);
-    }
-    else{
-      setLoading(true);
-      fetchRequestData();
-      fetchMessages();
-      setLoading(false)
-    }
+  
+    // }
 
     // setTimeout(()=>{
       console.log("reqInfo from params", socketConnected);
