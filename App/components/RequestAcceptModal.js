@@ -78,8 +78,9 @@ const RequestAcceptModal = ({
 
             updateUserDetails();
 
-            console.log("RequestType new response", res.data);
-            let tmp = { ...requestInfo, requestType: "ongoing", updatedAt: new Date().toISOString() };
+            console.log("RequestType new response", res.data,res.data.users[0], res.data.users[1]);
+            let tmp = { ...requestInfo, requestType: "ongoing", updatedAt: new Date().toISOString(),users:[res.data.users[0], res.data.users[1]]};
+            console.log("new requestInfo",tmp)
 
             dispatch(setRequestInfo(tmp));
             const filteredRequests = newRequests.filter(
@@ -100,9 +101,9 @@ const RequestAcceptModal = ({
               const notification = {
                 token: token.data,
                 title: user?.storeName,
-                requestInfo:{
-                  requestId:requestInfo?._id,
-                  userId:res.data?.users[1]._id
+                requestInfo: {
+                  requestId: requestInfo?._id,
+                  userId: res.data?.users[1]._id
                 },
                 tag: user?._id,
                 image: requestInfo?.requestId?.requestImages[0],

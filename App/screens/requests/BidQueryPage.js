@@ -61,7 +61,7 @@ const BidQueryPage = () => {
   
   const sendQuery = async () => {
     setLoading(true)
-    console.log("requestInfo",user);
+    console.log("requestInfo",requestInfo);
     try {
       const formData = new FormData();
      
@@ -113,10 +113,10 @@ const BidQueryPage = () => {
         //  dispatch(setMessages(mess));
         setMessages(mess);
         const filteredRequests = ongoingRequests.filter(
-          (request) => request._id !==requestInfo._id
+          (request) => request?._id !==requestInfo?._id
         );
         const requests = ongoingRequests.filter(
-          (request) => request._id ===requestInfo._id
+          (request) => request?._id ===requestInfo?._id
         );
         const updatedRequest={...requests[0],updatedAt:new Date().toISOString(),unreadCount:0}
         //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
@@ -136,7 +136,7 @@ const BidQueryPage = () => {
         navigation.navigate(`requestPage${requestId}`);
 
         setLoading(false)
-        const token=await axios.get(`http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`);
+        const token=await axios.get(`http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId?._id}`);
         console.log("token",token.data);
         if(token.data.length > 0){
         const notification = {

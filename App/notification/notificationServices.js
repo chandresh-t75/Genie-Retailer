@@ -88,7 +88,7 @@ async function onDisplayNotificationHome(remoteMessage) {
       channelId,
       pressAction: {
         id: "default",
-        launchActivity: remoteMessage?.data?.userRequest,
+        
       },
       timestamp: Date.now(),
       importance: AndroidImportance.HIGH,
@@ -104,7 +104,7 @@ async function onDisplayNotificationHome(remoteMessage) {
         break;
       case EventType.PRESS:
         setTimeout(() => {
-          console.log("pressed", remoteMessage?.data);
+          // console.log("pressed", remoteMessage?.data);
           navigationService.navigate("home");
         }, 1200);
         break;

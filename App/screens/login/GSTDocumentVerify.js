@@ -81,7 +81,7 @@ const  GSTDocumentVerify = () => {
         dispatch(setUserDetails(res.data));
         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
       
-         navigation.navigate("completeProfile");
+         navigation.navigate("home");
         })
 
         

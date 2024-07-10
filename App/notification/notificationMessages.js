@@ -314,7 +314,7 @@ export const NotificationRequestAccepted = async (mess) => {
         },
         data: {
           redirect_to: mess.redirect_to,
-          userRequest: JSON.stringify(mess.requestInfo),
+        requestInfo: JSON.stringify(mess.requestInfo),
         },
       },
     };
