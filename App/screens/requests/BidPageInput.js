@@ -158,13 +158,13 @@ const BidPageInput = () => {
                 <Text className="text-[#FB8C00] text-[14px] " style={{ fontFamily: "Poppins-Medium" }}>Step 1/3</Text>
               </View>
               <Text style={{ fontFamily: "Poppins-Regular" }}>Type your response here to the customer</Text>
-              <View className="bg-white p-4 rounded-lg">
+              <View className="bg-white p-4 rounded-lg flex w-full">
                 <TextInput
                   multiline
                   numberOfLines={5}
                   placeholder="Start typing here"
                   placeholderTextColor="#dbcdbb"
-                  classname=""
+                  classname="w-full p-4"
                   onChangeText={handleBidDetails}
                   style={{ fontFamily: "Poppins-Regular" }}
                 />

@@ -16,15 +16,16 @@ const ViewRequestScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1,backgroundColor:"white"}}>
-            <View className=" flex z-40 flex-row items-center justify-center mt-[20px] mb-[24px] mx-[36px]">
             <TouchableOpacity
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding:20,paddingRight:10,zIndex:30}}
+            style={{ padding:20,paddingRight:20,zIndex:100,position:"absolute",top:8,left:16}}
           >
             <BackArrow  />
           </TouchableOpacity>
+            <View className=" flex z-40 flex-row items-center justify-center mt-[20px] mb-[24px] mx-[36px]">
+            
                 <Text className="flex flex-1 justify-center items-center text-center text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>View Request</Text>
                 {/* <Pressable onPress={() => { navigation.navigate('requestpreview'); }}>
                     <Text className="text-[14px]" ></Text>

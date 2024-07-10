@@ -64,7 +64,7 @@ const MenuScreen = () => {
 
                      }}>
                      <View className="p-4 rounded-full ">
-                       <BackArrow width={14} height={10} />
+                       <BackArrow />
                     </View>
                      </TouchableOpacity>
                     

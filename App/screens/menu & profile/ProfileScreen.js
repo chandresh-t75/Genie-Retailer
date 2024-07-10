@@ -287,7 +287,7 @@ const ProfileScreen = () => {
               }}
             >
               <View className="p-2 rounded-full">
-                <BackArrow width={14} height={10} />
+                <BackArrow />
               </View>
             </TouchableOpacity>
         <View className="mt-[20px] flex">

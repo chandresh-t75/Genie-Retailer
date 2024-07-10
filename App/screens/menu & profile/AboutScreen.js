@@ -20,9 +20,9 @@ const AboutScreen = () => {
             <ScrollView style={{ flex: 1 }} className="relative">
 
 
-                <View className="z-50 absolute top-[10px] left-[16px] ">
+                <View className="z-50 absolute top-[9px] left-[16px] ">
                     <TouchableOpacity onPress={() => { navigation.goBack(); }} style={{padding:20,borderRadius:100}}>
-                    <BackArrow width={14} height={10} />
+                    <BackArrow  />
 
                     </TouchableOpacity>
                 </View>

@@ -4,6 +4,7 @@ import ItemImg from "../assets/ItemImg.svg"
 import Time from "../assets/time.svg"
 import Calendar from "../assets/calendar.svg"
 import { formatDateTime } from '../screens/utils/lib'
+import ProductImg from "../assets/ProductImg.svg"
 
 const ProductOrderCard = ({product}) => {
     // console.log("productdetails",product);
@@ -27,8 +28,14 @@ const ProductOrderCard = ({product}) => {
                          </View>
                       }
                        <View className="w-[95px] h-[95px]  rounded-[15px]">
+                        {
+                            prod?.requestId?.requestImages?.length>0 ?
+                            (<Image source={ {uri: prod.requestId.requestImages[0] }} className="w-full h-full object-contain rounded-[15px]"  />):(
+                                <ProductImg width={90} height={90} className=" rounded-[15px]" />
+                            )
+                            
+                        }
           
-                              <Image source={{ uri:prod?.requestId?.requestImages?.length>0? prod.requestId.requestImages[0]:"https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg" }} className="w-full h-full object-contain rounded-[15px]"  />
                         
                           
                        </View>

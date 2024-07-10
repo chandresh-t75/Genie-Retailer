@@ -179,6 +179,7 @@ const RequestPage = () => {
                 );
                 if (result?.latestMessage?.bidType === "update"){
                   console.log("update");
+                  tmp={...result, unreadCount: 0,requestType:"closed"}
                   const data = [...filteredRequests];
                   dispatch(setOngoingRequests(data));
                   const data2 = [tmp, ...retailerHistory];
@@ -546,7 +547,7 @@ const RequestPage = () => {
             <BackArrow  />
           </TouchableOpacity>
 
-          <View className="gap-[9px] ">
+          <View className="gap-[9px] w-[70%]">
             <View className="flex-row gap-[18px] items-center">
               <View className=" flex items-center justify-center rounded-full ml-2 p-[4px] bg-white ">
                 {requestInfo?.customerId?.pic ? (
@@ -564,7 +565,7 @@ const RequestPage = () => {
                   <Profile className="w-full h-full rounded-full" />
                 )}
               </View>
-              <View className="w-[60%]">
+              <View className="">
                 <Text
                   className="text-[14px]  text-[#2e2c43] capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
@@ -590,20 +591,20 @@ const RequestPage = () => {
               setModal(!modal);
             }}
           >
-            <View className="px-[20px] py-[10px] ">
+            <View className="px-[20px] py-[10px] pr-[40px]">
               <ThreeDots />
             </View>
           </TouchableOpacity>
         </View>
         {modal && (
-          <View className="absolute top-[20px] right-[80px]  bg-white rounded-md">
+          <View className="absolute top-[16px] right-[80px]  bg-white rounded-md">
             <TouchableOpacity
               onPress={() => {
                 setModal(!modal);
                 navigation.navigate("viewrequest");
               }}
               style={{
-                padding: 8,
+                padding: 9,
                 borderBottomColor: "gray",
                 borderBottomWidth: 1,
                 marginHorizontal: 8,
@@ -619,7 +620,7 @@ const RequestPage = () => {
                 const requestId = requestInfo?.requestId?._id;
                 navigation.navigate("customer-report", { requestId });
               }}
-              style={{ padding: 8 }}
+              style={{ padding: 9 }}
             >
               <Text className="mx-5" style={{ fontFamily: "Poppins-Regular" }}>
                 Report Customer
@@ -1077,6 +1078,7 @@ const RequestPage = () => {
                     </Text>
                   </View>
                 )}
+                
               </View>
 
               <View className="w-full flex-row justify-between">
