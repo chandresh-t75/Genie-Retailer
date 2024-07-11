@@ -179,7 +179,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       if (history.data) {
         dispatch(setRetailerHistory(history.data));
       }
-      // console.log("history",history.data);
+      console.log("history",history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
       //console.error('Error fetching ongoing requests:', error);

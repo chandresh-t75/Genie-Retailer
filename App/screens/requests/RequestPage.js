@@ -170,26 +170,39 @@ const RequestPage = () => {
                   }
                 );
 
-                let tmp = { ...result, unreadCount: 0 };
+                let tmp = { ...result, unreadCount: 0 , updatedAt: new Date().toISOString()};
                 console.log("mar as read ",tmp)
 
                 dispatch(setRequestInfo(tmp));
                 const filteredRequests = ongoingRequests.filter(
                   (request) => request._id !== result?._id
                 );
-                if (result?.latestMessage?.bidType === "update"){
-                  console.log("update");
-                  tmp={...result, unreadCount: 0,requestType:"closed"}
-                  const data = [...filteredRequests];
-                  dispatch(setOngoingRequests(data));
-                  const data2 = [tmp, ...retailerHistory];
-                  dispatch(setRetailerHistory(data2));
-                } else {
+                
                   const data = [tmp, ...filteredRequests];
                   dispatch(setOngoingRequests(data));
-                }
+                
 
                 console.log("mark as read", res?.data, res?.data?.unreadCount);
+              }
+              if (result.requestType!=="closed"  && result?.latestMessage?.bidType === "update"){
+                console.log("update");
+                await axios.patch(
+                  "http://173.212.193.109:5000/chat/update-closed-chat",
+                  {
+                    id: result?._id,
+                  }
+                ).then(res=>{
+                const filteredRequests = ongoingRequests.filter(
+                  (request) => request._id !== result?._id
+                );
+
+                let tmp={...result, unreadCount: 0,requestType:"closed", updatedAt: new Date().toISOString()}
+                dispatch(setRequestInfo(tmp));
+                const data = [...filteredRequests];
+                dispatch(setOngoingRequests(data));
+                const data2 = [tmp, ...retailerHistory];
+                dispatch(setRetailerHistory(data2));
+                })
               }
               setLoading(false);
             });
@@ -328,23 +341,41 @@ const RequestPage = () => {
 
   // New message recieved from socket code
   useEffect(() => {
-    const handleMessageReceived = (newMessageReceived) => {
+    const handleMessageReceived = async(newMessageReceived) => {
       console.log("Message received from socket:", newMessageReceived);
       if (newMessageReceived?.bidType === "update") {
+        await axios.patch(
+          "http://173.212.193.109:5000/chat/update-closed-chat",
+          {
+            id: requestInfo?._id,
+          }
+        ).then(res=>{
+        const filteredRequests = ongoingRequests.filter(
+          (request) => request._id !== requestInfo?._id
+        );
+
         let tmp = {
           ...requestInfo,
           requestType: "closed",
           updatedAt: new Date().toISOString(),
           unreadCount: 0,
         };
-        console.log("update", tmp);
         dispatch(setRequestInfo(tmp));
-        const filteredRequests = ongoingRequests.filter(
-          (request) => request._id !== requestInfo?._id
-        );
-        dispatch(setOngoingRequests(filteredRequests));
-        const newHistory = [tmp, ...retailerHistory];
-        dispatch(setRetailerHistory(newHistory));
+        const data = [...filteredRequests];
+        dispatch(setOngoingRequests(data));
+        const data2 = [tmp, ...retailerHistory];
+        dispatch(setRetailerHistory(data2));
+        })
+      
+       
+        // console.log("update", tmp);
+        // dispatch(setRequestInfo(tmp));
+        // const filteredRequests = ongoingRequests.filter(
+        //   (request) => request._id !== requestInfo?._id
+        // );
+        // dispatch(setOngoingRequests(filteredRequests));
+        // const newHistory = [tmp, ...retailerHistory];
+        // dispatch(setRetailerHistory(newHistory));
       }
 
       setMessages((prevMessages) => {
