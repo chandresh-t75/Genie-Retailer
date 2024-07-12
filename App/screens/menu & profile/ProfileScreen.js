@@ -23,10 +23,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUserDetails } from "../../redux/reducers/storeDataSlice";
 import { launchCamera } from "react-native-image-picker";
 import { manipulateAsync } from "expo-image-manipulator";
-import DelImg from "../../assets/delImg.svg";
+import DelImg from "../../assets/delImgOrange.svg";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
 import BackArrow from "../../assets/BackArrow.svg";
-
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -273,27 +272,26 @@ const ProfileScreen = () => {
   return (
     <View className="bg-white">
       <ScrollView showsVerticalScrollIndicator={false}>
-      <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
-              }}
-              className="flex "
-              style={{
-                position: "absolute",
-                left: 10,
-                top: 0,
-                zIndex: 40,
-                padding: 20,
-              }}
-            >
-              <View className="p-2 rounded-full">
-                <BackArrow />
-              </View>
-            </TouchableOpacity>
-        <View className="mt-[20px] flex">
-          
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+          className="flex "
+          style={{
+            position: "absolute",
+            left: 10,
+            top: 0,
+            zIndex: 40,
+            padding: 20,
+            paddingTop: 40,
+          }}
+        >
+          <View className="p-2 rounded-full">
+            <BackArrow />
+          </View>
+        </TouchableOpacity>
+        <View className="mt-[40px] flex">
           <View className="flex  relative flex-row px-[32px] items-center">
-           
             <Text
               className="text-[16px] flex-1 text-center"
               style={{ fontFamily: "Poppins-Bold" }}
@@ -307,7 +305,7 @@ const ProfileScreen = () => {
           >
             {user?.storeName}
           </Text>
-          <View className="flex items-center relative justify-center">
+          <View className="flex items-center relative justify-center mb-[40px]">
             <View>
               {user?.storeImages.length > 0 && (
                 <View>
@@ -347,7 +345,9 @@ const ProfileScreen = () => {
               )}
               <TouchableOpacity
                 onPress={() => {
-                  handleEditIconPress("main");
+                  navigation.navigate("update-profile-image", {
+                    data: user?.storeImages,
+                  });
                 }}
               >
                 <View className="absolute right-[2px] bottom-[7px] w-[36px] h-[36px] bg-[#fb8c00] flex justify-center items-center rounded-full">
@@ -364,7 +364,12 @@ const ProfileScreen = () => {
               }}
             >
               {/* <EditIcon className="p-[10px]" /> */}
-              <Text style={{ fontFamily: "Poppins-Medium" }}>Add</Text>
+              <Text
+                style={{ fontFamily: "Poppins-Bold" }}
+                className="text-[#fb8c00]"
+              >
+                + Add
+              </Text>
             </TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -382,7 +387,7 @@ const ProfileScreen = () => {
                       onPress={() => deleteImage(index)}
                       style={styles.deleteIcon}
                     >
-                      <DelImg />
+                      <DelImg width={24} height={24} />
                     </Pressable>
                   </View>
                 </Pressable>
@@ -407,28 +412,32 @@ const ProfileScreen = () => {
             </Modal>
           </ScrollView>
           <View className="px-[32px] flex flex-col gap-[26px] mb-[20px] items-center">
-          <View className="px-[20px] mb-[10px]">
-          <Text style={{ fontFamily: "Poppins-Regular" }} className="mb-[10px] ">
-                Store Location
+            <View className="px-[20px] mb-[10px]">
+              <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="mb-[10px] "
+              >
+                Store Address
               </Text>
-          <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-            <TextInput
-              value={user?.location}
-              placeholder={user?.location}
-              placeholderTextColor={"#dbcdbb"}
-              className="w-[250px] text-[14px]  text-black capitalize"
-              style={{ fontFamily: "Poppins-Regular" }}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("update-location");
-              }}
-            >
-              <EditIcon className="px-[10px]" />
-            </TouchableOpacity>
-          </View>
-
-          </View>
+              <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+                <TextInput
+                  value={user?.location}
+                  placeholder={user?.location}
+                  placeholderTextColor={"#dbcdbb"}
+                  className="w-[250px] text-[14px]  text-black capitalize"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  multiline={true}
+                  scrollEnabled={true}
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("update-location");
+                  }}
+                >
+                  <EditIcon className="px-[10px]" />
+                </TouchableOpacity>
+              </View>
+            </View>
             <EditableField
               label="Store Name"
               value={storeName}
@@ -437,6 +446,8 @@ const ProfileScreen = () => {
               onEditPress={() => handleEditPress("storeName")}
               onSavePress={() => handleSavePress("storeName")}
               isLoading={isLoading}
+              multiline={true}
+              scrollEnabled={true}
             />
             <EditableField
               label="Store Owner Name"
@@ -447,30 +458,33 @@ const ProfileScreen = () => {
               onSavePress={() => handleSavePress("storeOwnerName")}
               isLoading={isLoading}
             />
-               <View className="px-[20px] mb-[10px]">
-          <Text style={{ fontFamily: "Poppins-Regular" }} className="mb-[10px] ">
+            <View className="px-[20px] mb-[10px]">
+              <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="mb-[10px] "
+              >
                 Store Category
               </Text>
-          <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-            <TextInput
-              value={user.storeCategory}
-              editable={false}
-              placeholder={storeCategory}
-              placeholderTextColor={"#dbcdbb"}
-              className="w-[250px] text-[14px]  text-black capitalize"
-              style={{ fontFamily: "Poppins-Regular" }}
-            />
-            {/* <TouchableOpacity
+              <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+                <TextInput
+                  value={user.storeCategory}
+                  editable={false}
+                  placeholder={storeCategory}
+                  placeholderTextColor={"#dbcdbb"}
+                  className="w-[250px] text-[14px] text-black capitalize"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  multiline={true}
+                  scrollEnabled={true}
+                />
+                {/* <TouchableOpacity
               onPress={() => {
                 navigation.navigate("update-category");
               }}
             >
               <EditIcon className="px-[10px]" />
             </TouchableOpacity> */}
-          </View>
-
-          </View>
-             
+              </View>
+            </View>
 
             <EditableField
               label="Mobile Number"
@@ -482,9 +496,6 @@ const ProfileScreen = () => {
               isLoading={isLoading}
             />
           </View>
-       
-        
-        
 
           <View className="px-[20px] flex  gap-[26px] mb-[60px]">
             <View className="flex-row items-center justify-between  my-[10px]">
@@ -519,7 +530,7 @@ const ProfileScreen = () => {
               <View>
                 <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
                   <Text
-                    className="text-center text-[14px] "
+                    className="text-center text-[14px]"
                     style={{ fontFamily: "Poppins-Regular" }}
                   >
                     No Certificates Uploaded
@@ -568,7 +579,7 @@ const EditableField = ({
     </View>
 
     <KeyboardAvoidingView className="flex ">
-      <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+      <View className={`flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]`} style={{backgroundColor: editable ? '#ffe7c8' : '#F9F9F9',}}>
         <TextInput
           value={value}
           onChangeText={onChangeText}

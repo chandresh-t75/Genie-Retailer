@@ -13,6 +13,8 @@ import {
   Image,
   Platform,
   Dimensions,
+  Animated,
+  Modal,
   
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -35,7 +37,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { manipulateAsync } from "expo-image-manipulator";
 import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
-import DelImg from "../../assets/delImg.svg"
+import DelImg from "../../assets/delImgOrange.svg"
 
 
 
@@ -72,7 +74,25 @@ const PanCardScreen = () => {
     panCard,
     uniqueToken
   );
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [scaleAnimation] = useState(new Animated.Value(0));
 
+  const handleImagePress = (image) => {
+    setSelectedImage(image);
+    Animated.timing(scaleAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleClose = () => {
+    Animated.timing(scaleAnimation, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setSelectedImage(null));
+  };
   const handlePanCard = (panCard) => {
     dispatch(setPanCard(panCard));
     setPanCardLocal(panCard);
@@ -327,7 +347,7 @@ const PanCardScreen = () => {
             <View className="flex flex-col justify-center items-center px-[32px] gap-[20px]">
               <StoreName width={width} className="object-cover" />
               <Text className="text-[14.5px]  text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>
-                Step 6/9
+                Step 6/6
               </Text>
             </View>
             <View style={{
@@ -353,21 +373,45 @@ const PanCardScreen = () => {
                 {
                   imagesLocal.length>0 && (
                     <View  className="rounded-[16px]">
-                  <Image
-                    source={{ uri: imagesLocal }}
-                    width={154}
-                    height={124}
-                    className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
-                  />
-                  <Pressable
+                
+                            <Pressable
+                          
+                          onPress={() => handleImagePress(imagesLocal)}
+                        >
+                          <View style={styles.imageWrapper}>
+                            <Image
+                              source={{ uri: imagesLocal }}
+                              style={styles.image}
+                            />
+                            <Pressable
                               onPress={() => deleteImage()}
                               style={styles.deleteIcon}
                             >
-                             <DelImg/>
+                              <DelImg width={24} height={24} />
                             </Pressable>
+                          </View>
+                        </Pressable>
                 </View>
                   )
                 }
+                 <Modal
+                      transparent
+                      visible={!!selectedImage}
+                      onRequestClose={handleClose}
+                    >
+                      <Pressable style={styles.modalContainer}  onPress={handleClose}>
+                        <Animated.Image
+                          source={{ uri: selectedImage }}
+                          style={[
+                            styles.modalImage,
+                            {
+                              transform: [{ scale: scaleAnimation }],
+                            },
+                          ]}
+                        />
+                        
+                      </Pressable>
+                    </Modal>
               </View>
              
                
@@ -399,7 +443,7 @@ const PanCardScreen = () => {
           </TouchableOpacity>
         )}
         {addMore && (
-          <View className="w-full absolute bottom-0 items-center left-0 right-0 px-[10px]">
+          <View className="w-full absolute bottom-0 items-center bg-white left-0 right-0 px-[10px]">
             <TouchableOpacity
               onPress={() => {
                 setAddMore(!addMore);
@@ -450,9 +494,63 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 5,
     right: 5,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     borderRadius: 50,
     padding: 1,
+  },
+  imageContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginHorizontal: 30,
+    gap: 5,
+    marginTop: 10,
+  },
+  imageWrapper: {
+    margin: 5,
+    borderRadius: 15,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "gray",
+  },
+  image: {
+    width: 168,
+    height: 232,
+    borderRadius: 10,
+  },
+  // deleteIc: {
+  //   position: 'absolute',
+  //   top: 5,
+  //   right: 5,
+  // },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  modalImage: {
+    width: 300,
+    height: 400,
+    borderRadius: 10,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+  },
+  deleteIcon: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 2,
+  },
+  overlay: {
+    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent greyish background
   },
 });
 export default PanCardScreen;

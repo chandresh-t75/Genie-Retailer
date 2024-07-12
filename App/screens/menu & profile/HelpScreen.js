@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, Pressable, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity ,ActivityIndicator} from 'react-native';
+import { View, Text, TextInput, Image, Pressable, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity ,ActivityIndicator, StyleSheet} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import SuccessConcernModal from '../../components/SuccessConcernModal';
 
 
 const HelpScreen = () => {
     const navigation = useNavigation();
     const [query, setQuery] = useState("");
     const user=useSelector(state=>state.storeData.userDetails);
-    
+    const [modalVisible,setModalVisible] = useState(false)
    //  navigation.navigate('menu')
     const [loading,setLoading] = useState(false);
 
@@ -36,8 +37,15 @@ const HelpScreen = () => {
               console.log("res", res.data);
               if (res) {
                 setLoading(false);
+                setModalVisible(true);
+                setTimeout(() => {
+                  setModalVisible(false);
+
                 navigation.navigate('home');
                 setQuery("");
+
+                  
+                }, 3000);
               }
             
     
@@ -61,7 +69,7 @@ const HelpScreen = () => {
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={{ paddingHorizontal: 30 }}>
                        
-                    <View className="z-50 absolute top-[9px] left-[16px] ">
+                    <View className="z-50 absolute left-[16px] " style={{marginTop:25}}>
 
                         <TouchableOpacity onPress={() => { navigation.goBack(); }} style={{padding:20,borderRadius:100,zIndex:50}}>
                       <BackArrow  />
@@ -71,7 +79,7 @@ const HelpScreen = () => {
 
 
 
-                <Text className="text-center pt-[20px] text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>Need any Help?</Text>
+                <Text className="text-center pt-[40px] text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>Need any Help?</Text>
 
                         <View style={{ marginTop: 40, marginBottom: 40 }}>
                             <View style={{ marginBottom: 40 }}>
@@ -99,6 +107,7 @@ const HelpScreen = () => {
                         </View>
                     </View>
                 </ScrollView>
+                <SuccessConcernModal modalVisible={modalVisible} setModalVisible={setModalVisible}/>
             </KeyboardAvoidingView>
 
             <TouchableOpacity
@@ -130,8 +139,20 @@ const HelpScreen = () => {
               SUBMIT
             </Text>)}
           </TouchableOpacity>
+          {modalVisible  && (
+                    <View style={styles.overlay} />
+                )}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+ 
+  overlay: {
+    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent greyish background
+  },
+});
 
 export default HelpScreen;

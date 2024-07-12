@@ -184,14 +184,14 @@ useEffect(()=>{
                     
                 </View>
     <View className="gap-[17px] mb-[20px] bg-white">
-      {!user.profikeCompleted ? (
-        <Text className="text-[14px] text-center" style={{ fontFamily: "Poppins-Bold" }}>
+      {!user.profileCompleted ? (
+        <Text className="text-[14px] text-center text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
           Please complete your store profile {"\n"} before starting
         </Text>
       ) : (
         <View className="flex-row gap-[5px] items-center justify-center">
           <View className="w-[16px] h-[16px] bg-[#E76063] rounded-full"></View>
-          <Text className="text-[14px] " style={{ fontFamily: "Poppins-Bold" }}>
+          <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
             {" "}
             Wait for request approval
           </Text>
@@ -205,29 +205,28 @@ useEffect(()=>{
             onPress={handleLocation}
             style={{
               backgroundColor: '#fff', // Ensure the background is white
-              // Add some margin if necessary for better shadow visibility
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
-              elevation: 5,
-              borderRadius:10
+              margin: 10, // Add some margin if necessary for better shadow visibility
+              shadowColor: '#bdbdbd',
+              shadowOffset: { width: 8, height: 6 },
+              shadowOpacity: 0.9,
+              shadowRadius: 24,
+              elevation: 20,
+              borderRadius:24
             }}
           >
-            <View className="w-[90%] flex-row items-center bg-white gap-[15px] h-[127px] rounded-3xl shadow-3xl px-[18px]">
-              <View className="w-full flex-row justify-between">
+            <View className="w-[95%] flex-row items-center bg-white gap-[15px] h-[127px] rounded-3xl shadow-3xl px-[18px]">
+              <View className="w-full flex-row gap-[30px]">
                 <View>
                   <Location />
                 </View>
 
-                <View className="flex ">
-                  <Text className="text-[14px] " style={{ fontFamily: "Poppins-Bold" }}>
-                    {" "}
+                <View className="flex flex-1">
+                  <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
+                   
                     Set Store Location{" "}
                   </Text>
-                  <Text className="text-[12px]" style={{ fontFamily: "Poppins-Regular" }}>
-                    We are fetching your location for the {"\n"}
-                    purchase reference of our customers
+                  <Text className="text-[12px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>
+                  We are fetching your location to {"\n"}help customers find your shop.
                   </Text>
                 </View>
                 <View className="flex-row gap-[8px]">
@@ -245,29 +244,28 @@ useEffect(()=>{
             onPress={handleStore}
             style={{
               backgroundColor: '#fff', // Ensure the background is white
-              // Add some margin if necessary for better shadow visibility
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
-              elevation: 5,
-              borderRadius:10
+              margin: 10, // Add some margin if necessary for better shadow visibility
+              shadowColor: '#bdbdbd',
+              shadowOffset: { width: 8, height: 6 },
+              shadowOpacity: 0.9,
+              shadowRadius: 24,
+              elevation: 20,
+              borderRadius:24
             }}
           >
-            <View className="w-[90%] flex-row items-center bg-white gap-[15px] h-[127px] rounded-3xl shadow-3xl px-[18px]">
-              <View className="w-full flex-row justify-between">
+            <View className="w-[95%] flex-row items-center bg-white gap-[15px] h-[127px] rounded-3xl shadow-3xl px-[18px]">
+              <View className="w-full flex-row gap-[30px]">
                 <View>
                   <Store />
                 </View>
 
-                <View className="flex ">
-                  <Text className="text-[14px]" style={{ fontFamily: "Poppins-Bold" }}>
-                    {" "}
+                <View className="flex flex-1 ">
+                  <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
+                   
                     Complete store profile{" "}
                   </Text>
-                  <Text className="text-[12px]" style={{ fontFamily: "Poppins-Regular" }}>
-                    We are fetching your location for the {"\n"}
-                    purchase reference of our customers
+                  <Text className="text-[12px] text-[#2E2C43]"  style={{ fontFamily: "Poppins-Regular" }}>
+                  Add store images for easy store identification.
                   </Text>
                 </View>
                 <View className="flex-row gap-[8px]">
@@ -278,22 +276,25 @@ useEffect(()=>{
           </TouchableOpacity>
         </View>
       )}
-      <View className="mt-[10px]flex items-center justify-center gap-[20px]">
+      <View className="mt-[10px] flex items-center justify-center gap-[5px]">
       {((user?.serviceProvider !== "true" && user?.serviceProvider!=="false" && user?.storeImages?.length === 0)) && ( 
       <View className="gap-[30px]">
          
             <View className="flex-row items-center justify-between gap-[20px]">
               <Line />
-              <Text style={{ fontFamily: "Poppins-SemiBold" }}>OR</Text>
+              <Text style={{ fontFamily: "Poppins-SemiBold" }} className="text-[#2E2C43]">OR</Text>
               <Line />
             </View>
           
 
           <View>
-            <Text className="text-[14px]  text-center" style={{ fontFamily: "Poppins-Bold" }}>
-              Are you a maintenance service providers ?{" "}
+            <Text className="text-[14px]  text-center text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
+            Are you an independent maintenance service provider? {" "}
             </Text>
-            <Text className="text-[14px]  text-center" style={{ fontFamily: "Poppins-Light" }}>
+            <Text className="text-[14px]  text-center text-[#2E2C43]" style={{ fontFamily: "Poppins-Light" }}>
+            like; Plumber, electrician, carpenter etc.
+            </Text>
+            <Text className="text-[14px]  text-center text-[#2E2C43]" style={{ fontFamily: "Poppins-Light" }}>
               (Don’t have store / shop)
             </Text>
           </View>
@@ -306,29 +307,28 @@ useEffect(()=>{
           onPress={handleServiceLocation}
           style={{
             backgroundColor: '#fff', // Ensure the background is white
-                        
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.3,
-            shadowRadius: 4,
-            elevation: 5,
-            borderRadius:10
+            margin: 10, // Add some margin if necessary for better shadow visibility
+            shadowColor: '#bdbdbd',
+            shadowOffset: { width: 8, height: 6 },
+            shadowOpacity: 0.9,
+            shadowRadius: 24,
+            elevation: 20,
+            borderRadius:24
           }}
         >
-          <View className="w-[90%] flex-row items-center bg-white gap-[15px] h-[127px] rounded-3xl shadow-3xl px-[18px]">
-            <View className="w-full flex-row justify-between">
+          <View className="w-[95%] flex-row items-center bg-white gap-[15px] h-[127px] rounded-3xl shadow-3xl px-[18px]">
+            <View className="w-full flex-row gap-[30px]">
               <View>
                 <Location />
               </View>
 
-              <View className="flex ">
-                <Text className="text-[14px] " style={{ fontFamily: "Poppins-Bold" }}>
-                  {" "}
-                  Set Store Location{" "}
+              <View className="flex flex-1">
+                <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
+                
+                  Set Your Location{" "}
                 </Text>
-                <Text className="text-[12px]" style={{ fontFamily: "Poppins-Regular" }}>
-                  We are fetching your location for the {"\n"}
-                  purchase reference of our customers
+                <Text className="text-[12px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>
+                We are fetching your location to {"\n"}help customers find your service region.
                 </Text>
               </View>
               <View className="flex-row gap-[8px]">

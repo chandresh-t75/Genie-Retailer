@@ -24,7 +24,7 @@ import AddMoreImage from "../../assets/AddMoreImg.svg";
 
 
 
-import DelImg from "../../assets/delImg.svg"
+import DelImg from "../../assets/delImgOrange.svg"
 import {
   FontAwesome,
   Entypo,
@@ -233,16 +233,16 @@ const AddImageScreen = () => {
   return (
     <>
       {!cameraScreen && (
-        <View style={{ flex: 1 }}> 
-          <View style={{ flex: 1 }}>
-            <View className="w-full z-40 pt-[20px] flex flex-row justify-between items-center px-[32px]">
+        <View style={{ flex: 1 }}  className="bg-white"> 
+          <View style={{ flex: 1 ,marginTop:30}}>
+            <View className="w-full z-40  flex flex-row justify-between items-center px-[32px]">
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{padding:20,paddingTop:10}}
+              style={{padding:24,paddingTop:16,position:"absolute",zIndex:100}}
             >
-                             <BackArrow width={14} height={10} />
+                             <BackArrow  />
 
             </TouchableOpacity>
               <Text className="text-[16px] flex flex-1 justify-center  items-center text-center" style={{ fontFamily: "Poppins-Bold" }}>
@@ -261,7 +261,7 @@ const AddImageScreen = () => {
                   </Text>)
                   }
               <Text className="text-[14px] text-center px-[32px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
-              Please remember to provide easy-to-understand image references that people can use to find you for purchasing.
+              Please remember to provide easy-to-understand image references that people can use to find your shop.
               </Text>
             </View>
 
@@ -299,7 +299,7 @@ const AddImageScreen = () => {
                               onPress={() => deleteImage(index)}
                               style={styles.deleteIcon}
                             >
-                              <DelImg/>
+                              <DelImg width={24} height={24}/>
                             </Pressable>
                           </View>
                         </Pressable>

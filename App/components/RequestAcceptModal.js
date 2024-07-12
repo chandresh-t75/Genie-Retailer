@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import ModalImg from "../assets/Cancel.svg";
+import ModalImg from "../assets/acceptRequest.svg";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import {
@@ -34,6 +34,7 @@ const RequestAcceptModal = ({
   setAcceptLocal,
   messages,
   setMessages,
+  type
 }) => {
   // const [modalVisible, setModalVisible] = useState(true);
   const navigation = useNavigation();
@@ -52,6 +53,7 @@ const RequestAcceptModal = ({
   //   "request",requestInfo);
 
   const [loading, setLoading] = useState(false);
+  // modalVisible=true
 
   // console.log("messages of ",messages)
   const handleModal = async () => {
@@ -235,35 +237,38 @@ const RequestAcceptModal = ({
       className=" flex justify-center items-center  rounded-lg h-full "
     >
       <View className="flex-1  justify-center items-center">
-        <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl">
-          <ModalImg classname="w-[117px] h-[75px]" />
-          <View className="">
+        <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl" style={{paddingVertical:50}}>
+          <ModalImg />
+          <View className="mt-[20px]">
             <Text className="text-[15px]  text-center" style={{ fontFamily: "Poppins-Bold" }}>
               Are you sure?{" "}
             </Text>
-            <Text className="text-[14px]  text-center  pt-[8px]" style={{ fontFamily: "Poppins-Regular" }}>
-              You are accepting{" "}
+            { type=="Request" && 
+              <Text className="text-[14px]  text-center  pt-[8px]" style={{ fontFamily: "Poppins-Regular" }}>
+              You are accepting the customer request
             </Text>
+            }
+            
           </View>
 
-          <View className="w-full flex flex-row  justify-center">
-            <View className="flex-1 mt-[5px]">
+          <View className="w-full flex flex-row justify-between">
+            <View className="flex-1 mt-[10px]">
               <TouchableOpacity
                 onPress={() => {
                   setModalVisible(false);
                 }}
               >
-                <Text className="text-[14.5px] text-[#FB8C00]  text-center" style={{ fontFamily: "Poppins-Regular" }}>
+                <Text className="text-[16px] text-[#FB8C00]  text-center" style={{ fontFamily: "Poppins-Regular" }}>
                   Close
                 </Text>
               </TouchableOpacity>
             </View>
-            <View className="flex-1 mt-[5px]">
+            <View className="flex-1 mt-[10px]">
               <TouchableOpacity onPress={handleModal}>
                 {loading ? (
                   <ActivityIndicator size="small" color="#FB8C00" />
                 ) : (
-                  <Text className="text-[14.5px] text-[#FB8C00]  text-center" style={{ fontFamily: "Poppins-SemiBold" }}>
+                  <Text className="text-[16px] text-[#FB8C00]  text-center" style={{ fontFamily: "Poppins-Bold" }}>
                     Accept
                   </Text>
                 )}

@@ -61,7 +61,7 @@ const ServiceDeliveryScreen = () => {
                 className="text-[14.5px]  text-[#FB8C00]"
                 style={{ fontFamily: "Poppins-Bold" }}
               >
-                Step 5/9
+                Step 5/6
               </Text>
             </View>
             <View className="my-[30px] flex flex-col gap-[33px] px-[32px]">
@@ -70,7 +70,7 @@ const ServiceDeliveryScreen = () => {
                   className="text-[16px] text-[#2e2c43]"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
-                  Do you provide home delivery or service at customer's
+                  Do you provide home delivery or service at the customer's
                   doorstep?
                 </Text>
                 <KeyboardAvoidingView className="flex flex-col gap-[22px]">

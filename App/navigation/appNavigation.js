@@ -37,6 +37,7 @@ import CustomerReport from '../screens/reports/CustomerReport';
 import GSTDocumentVerify from '../screens/login/GSTDocumentVerify';
 import UpdateCategory from '../screens/login/UpdateCategory';
 import UpdateLocation from '../screens/login/UpdateLocation';
+import ProfileImageUpdate from '../screens/login/ProfileImageUpdate';
 
 const Stack = createNativeStackNavigator();
 const GlobalNavigation = () => {
@@ -86,6 +87,8 @@ const GlobalNavigation = () => {
       <Stack.Screen name="gstVerify" component={GSTDocumentVerify} />
       <Stack.Screen name="update-category" component={UpdateCategory} />
       <Stack.Screen name="update-location" component={UpdateLocation} />
+      <Stack.Screen name="update-profile-image" component={ProfileImageUpdate} />
+
 
       <Stack.Screen name={`requestPage${userId}`} component={RequestPage} />
       {/* <Stack.Screen name="requestPage" component={RequestPage}  />  */}

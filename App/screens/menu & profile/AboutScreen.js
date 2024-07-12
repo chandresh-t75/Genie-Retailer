@@ -9,18 +9,19 @@ import Health  from "../../assets/aboutHealth.svg"
 import Analytics  from "../../assets/analytics.svg"
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 const AboutScreen = () => {
     const navigation = useNavigation();
-  const { width } = Dimensions.get("window");
+  const { width } = Dimensions.get("window")
 
     return (
         <View style={{ flex: 1 ,backgroundColor:"white"}}>
             <ScrollView style={{ flex: 1 }} className="relative">
 
 
-                <View className="z-50 absolute top-[9px] left-[16px] ">
+                <View className="z-50 absolute  left-[16px] " style={{marginTop:25}}>
                     <TouchableOpacity onPress={() => { navigation.goBack(); }} style={{padding:20,borderRadius:100}}>
                     <BackArrow  />
 
@@ -29,7 +30,7 @@ const AboutScreen = () => {
 
 
 
-                <Text className="text-center pt-[20px] text-[16px]  mb-[60px]" style={{ fontFamily: "Poppins-Bold" }}>About Culturtap Genie {"\n"}Business</Text>
+                <Text className="text-center pt-[40px] text-[16px]  mb-[60px]" style={{ fontFamily: "Poppins-Bold" }}>About Culturtap Genie {"\n"}Business</Text>
 
                 
 
@@ -39,7 +40,7 @@ const AboutScreen = () => {
                    </View>
                    <View className="gap-[20px]">
                       <Text className="text-center text-[14px] " style={{ fontFamily: "Poppins-Bold" }}>
-                      "Get Bigger Profit and More Sales with High Demand"
+                      "Get bigger profit and more sales with high demand"
                       </Text>
                       <Text className="text-center text-[14px] " style={{ fontFamily: "Poppins-Regular" }}>
                       Give the best offer to the customer to attract them, and you will experience high demand for your stock products if you engage in smart bargaining.

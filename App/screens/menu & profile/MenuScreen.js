@@ -11,6 +11,8 @@ import auth from '@react-native-firebase/auth';
 import ModalLogout from '../../components/ModalLogout';
 import { setServiceProvider, setUserDetails } from '../../redux/reducers/storeDataSlice';
 import BackArrow from "../../assets/BackArrow.svg";
+import RightArrow from "../../assets/arrow-right.svg";
+
 
 
 
@@ -51,7 +53,7 @@ const MenuScreen = () => {
   return (
     <View style={{ flex: 1,backgroundColor:"white" }}>
        
-         <View className="pt-[20px] flex  gap-[60px]" style={{ flex: 1 }} >
+         <View className="pt-[40px] flex  gap-[60px]" style={{ flex: 1 }} >
              <View className="flex z-40 flex-row px-[32px] items-center ">
                  
                      <TouchableOpacity onPress={() => {navigation.goBack()}} className="flex items-center "
@@ -75,17 +77,20 @@ const MenuScreen = () => {
             <TouchableOpacity onPress={()=>navigation.navigate("profile")} 
                   style={{
                     backgroundColor: '#fff', // Ensure the background is white
-                    margin: 16, // Add some margin if necessary for better shadow visibility
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 4,
-                    elevation: 5,
-                    borderRadius:16
+                     marginHorizontal: 16, // Add some margin if necessary for better shadow visibility
+                    shadowColor: '#bdbdbd',
+                    shadowOffset: { width: 9, height: 9},
+                    shadowOpacity: 0.35,
+                    shadowRadius: 50,
+                    elevation: 80,
+                    borderRadius:8,
+                   borderWidth: .5,
+                   borderColor: 'rgba(0, 0, 0, 0.05)'
                   }}
+
                 >
-                <View className="flex items-center    ">
-                    <View className="flex flex-row gap-[32px] bg-white py-[48px] justify-center  w-[90%] items-center ">
+                <View className="flex items-center   w-[100%] ">
+                    <View className="flex flex-row gap-[32px] bg-white py-[48px] justify-center  w-[70%] items-center ">
                         {
                              user?.storeImages?.length>0 ?( <Image source={{ uri:user?.storeImages[0] }} width={70} height={70} className="rounded-full" />):
                     (
@@ -93,8 +98,8 @@ const MenuScreen = () => {
                     )
 
                         }
-                        <View className="flex-col">
-                            <Text className="text-[16px]  text-center capitalize" style={{ fontFamily: "Poppins-Black" }}>{user?.storeOwnerName}</Text>
+                        <View className="flex-col w-[70%]">
+                            <Text className=" text-[16px] flex  capitalize" style={{ fontFamily: "Poppins-Black" }}>{user?.storeName}</Text>
                             <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeMobileNo}</Text>
                         </View>
                     </View>
@@ -102,14 +107,14 @@ const MenuScreen = () => {
                 </View>
             </TouchableOpacity>
 
-             <View className="px-[32px] flex flex-col gap-[40px]">
+             <View className="px-[50px] flex flex-col gap-[40px]">
                
                     <TouchableOpacity onPress={()=>navigation.navigate("about")}>
                         <View className="flex flex-row justify-between items-center">
                         <Text className="text-[15px]" style={{ fontFamily: "Poppins-Regular" }}>
                             About CulturTap Genie 
                         </Text>
-                        <FontAwesome6 name="arrow-right" size={15} color="black" />
+                        <RightArrow />
 
                         </View>
                     </TouchableOpacity>
@@ -118,7 +123,8 @@ const MenuScreen = () => {
                         <Text className="text-[15px]" style={{ fontFamily: "Poppins-Regular" }}>
                         Terms & Conditions 
                         </Text>
-                        <FontAwesome6 name="arrow-right" size={15} color="black" />
+                        <RightArrow />
+
 
                         </View>
                     </TouchableOpacity>
@@ -127,7 +133,8 @@ const MenuScreen = () => {
                         <Text className="text-[15px]" style={{ fontFamily: "Poppins-Regular" }}>
                         Need any Help ? 
                         </Text>
-                        <FontAwesome6 name="arrow-right" size={15} color="black" />
+                        <RightArrow />
+
 
                         </View>
                     </TouchableOpacity>
@@ -137,7 +144,8 @@ const MenuScreen = () => {
                         <Text className="text-[15px]" style={{ fontFamily: "Poppins-Regular" }}>
                         Log Out
                         </Text>
-                        <FontAwesome6 name="arrow-right" size={15} color="black" />
+                        <RightArrow />
+
                         </View>
                     </TouchableOpacity>
                     

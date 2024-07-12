@@ -31,7 +31,16 @@ const WriteAboutStoreScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} className="bg-white">
+      <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+              style={{padding:24,paddingTop:36,position:"absolute",zIndex:100}}
+            >
+                             <BackArrow  />
+
+            </TouchableOpacity>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <View style={{ flex: 1 }}>
           <View
@@ -39,19 +48,11 @@ const WriteAboutStoreScreen = () => {
               flexDirection: "row",
               justifyContent: "space-between",
               paddingHorizontal: 12,
-              marginTop: 20,
+              marginTop: 30,
             }}
           >
-            <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
-              }}
-              style={{padding:20,paddingTop:10}}
-            >
-                             <BackArrow width={14} height={10} />
-
-            </TouchableOpacity>
-            <Text style={{ flex: 1, textAlign: "center", fontSize: 16,fontFamily:"Poppins-Bold" }}>
+            
+            <Text style={{ flex: 1, textAlign: "center", fontSize: 16,fontFamily:"Poppins-Bold" }} className="text-[#2e2c43]">
             Tell us about your store {"\n"}
             & services
             </Text>
@@ -69,8 +70,9 @@ const WriteAboutStoreScreen = () => {
                 marginBottom: 29,
                 fontFamily:"Poppins-Regular"
               }}
+              className="text-[#2e2c43]"
             >
-              What do you sell or what services {"\n"}do you provide?
+              What do you sell, or what services {"\n"}do you provide?
             </Text>
           </View>
 
@@ -89,17 +91,19 @@ const WriteAboutStoreScreen = () => {
                 setQuery(val);
               }}
               value={query}
-              placeholder="Type here your store category......"
+              placeholder="Type about your store......"
               placeholderTextColor="#DBCDBB"
               style={{
                 flex: 1,
                 paddingHorizontal: 20,
                 paddingVertical: 10,
-                borderWidth: 0.3,
-                borderColor: "#2e2c43",
+                // borderWidth: 0.3,
+                // borderColor: "gray",
+                
                 borderRadius: 20,
                 fontFamily:"Poppins-Regular",
               }}
+              className="border-gray-400 border-[1px] border-opacity-25"
             />
           </View>
         </View>

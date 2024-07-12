@@ -109,7 +109,7 @@ const UserNameEntryScreen = () => {
               </View>
               <View className="flex flex-col justify-center items-center gap-[0px]">
                 <StoreName  width={width} className="object-cover" />
-                <Text className="text-[14.5px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>Step 3/9</Text>
+                <Text className="text-[14.5px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>Step 3/6</Text>
               </View>
               
               <View className="mt-[10px] flex flex-col gap-[15px] px-[32px] ">

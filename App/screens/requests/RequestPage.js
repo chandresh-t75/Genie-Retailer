@@ -94,6 +94,7 @@ const RequestPage = () => {
   const [feedback, setFeedback] = useState("");
   const [confirmPaymentModal, setConfirmPaymentModal] = useState(false);
   const [uploadGSTModal, setUploadGSTModal] = useState(false);
+  const [type, setType] = useState("");
 
   const [rating, setRating] = useState(1);
   // const { req } = route.params;
@@ -110,8 +111,7 @@ const RequestPage = () => {
   const currentRequest = useSelector(
     (state) => state.requestData.currentRequest
   );
-  const user=useSelector(state=>state.storeData.userDetails);
-
+  const user = useSelector((state) => state.storeData.userDetails);
 
   // console.log("params", currentRequest);
 
@@ -119,24 +119,22 @@ const RequestPage = () => {
   // const isChat = navigationState.routes[navigationState.index].name === 'requestPage';
   // console.log("params",isHome,isChat);
   const fetchUserDetails = async () => {
-    const userData = JSON.parse(await AsyncStorage.getItem('userData'));
+    const userData = JSON.parse(await AsyncStorage.getItem("userData"));
     // setUser(userData);
     dispatch(setUserDetails(userData));
-}
+  };
 
   const fetchRequestData = async () => {
     setLoading(true);
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       // setUser(userData);
-      console.log("User data found successfully",currentRequest);
-
+      console.log("User data found successfully", currentRequest);
 
       await axios
         .get(`http://173.212.193.109:5000/chat/get-particular-chat`, {
           params: {
-            
-            id:currentRequest?.requestId,
+            id: currentRequest?.requestId,
           },
         })
         .then(async (resu) => {
@@ -158,7 +156,6 @@ const RequestPage = () => {
 
               console.log("socket join chat setup successfully");
 
-            
               if (
                 result?.unreadCount > 0 &&
                 result?.latestMessage?.sender?.type === "UserRequest"
@@ -170,48 +167,60 @@ const RequestPage = () => {
                   }
                 );
 
-                let tmp = { ...result, unreadCount: 0 , updatedAt: new Date().toISOString()};
-                console.log("mar as read ",tmp)
+                let tmp = {
+                  ...result,
+                  unreadCount: 0,
+                  updatedAt: new Date().toISOString(),
+                };
+                console.log("mar as read ", tmp);
 
                 dispatch(setRequestInfo(tmp));
                 const filteredRequests = ongoingRequests.filter(
                   (request) => request._id !== result?._id
                 );
-                
-                  const data = [tmp, ...filteredRequests];
-                  dispatch(setOngoingRequests(data));
-                
+
+                const data = [tmp, ...filteredRequests];
+                dispatch(setOngoingRequests(data));
 
                 console.log("mark as read", res?.data, res?.data?.unreadCount);
               }
-              if (result.requestType!=="closed"  && result?.latestMessage?.bidType === "update"){
+              if (
+                result.requestType !== "closed" &&
+                result?.latestMessage?.bidType === "update"
+              ) {
                 console.log("update");
-                await axios.patch(
-                  "http://173.212.193.109:5000/chat/update-closed-chat",
-                  {
-                    id: result?._id,
-                  }
-                ).then(res=>{
-                const filteredRequests = ongoingRequests.filter(
-                  (request) => request._id !== result?._id
-                );
+                await axios
+                  .patch(
+                    "http://173.212.193.109:5000/chat/update-closed-chat",
+                    {
+                      id: result?._id,
+                    }
+                  )
+                  .then((res) => {
+                    const filteredRequests = ongoingRequests.filter(
+                      (request) => request._id !== result?._id
+                    );
 
-                let tmp={...result, unreadCount: 0,requestType:"closed", updatedAt: new Date().toISOString()}
-                dispatch(setRequestInfo(tmp));
-                const data = [...filteredRequests];
-                dispatch(setOngoingRequests(data));
-                const data2 = [tmp, ...retailerHistory];
-                dispatch(setRetailerHistory(data2));
-                })
+                    let tmp = {
+                      ...result,
+                      unreadCount: 0,
+                      requestType: "closed",
+                      updatedAt: new Date().toISOString(),
+                    };
+                    dispatch(setRequestInfo(tmp));
+                    const data = [...filteredRequests];
+                    dispatch(setOngoingRequests(data));
+                    const data2 = [tmp, ...retailerHistory];
+                    dispatch(setRetailerHistory(data2));
+                  });
               }
               setLoading(false);
             });
-        })
-      }
+        });
+    } catch (error) {
       // dispatch(setMessages(response.data));
 
       // socket.emit("join chat", response?.data[0].chat._id);
-     catch (error) {
       console.error("Error fetching messages:", error);
     }
   };
@@ -243,15 +252,15 @@ const RequestPage = () => {
     //   setLoading(false);
     // }
     // else{
-     
-      fetchRequestData();
-  
+
+    fetchRequestData();
+
     // }
 
     // setTimeout(()=>{
-      console.log("reqInfo from params", socketConnected);
+    console.log("reqInfo from params", socketConnected);
 
-      console.log('reqInfo from params',requestInfo);
+    console.log("reqInfo from params", requestInfo);
     // },2000);
 
     return () => {
@@ -316,7 +325,7 @@ const RequestPage = () => {
             body: lastMessage.message,
             requestInfo: {
               requestId: requestInfo?._id,
-              userId: requestInfo?.users[1]._id
+              userId: requestInfo?.users[1]._id,
             },
             tag: user?._id,
             image: lastMessage?.bidImages[0],
@@ -341,33 +350,31 @@ const RequestPage = () => {
 
   // New message recieved from socket code
   useEffect(() => {
-    const handleMessageReceived = async(newMessageReceived) => {
+    const handleMessageReceived = async (newMessageReceived) => {
       console.log("Message received from socket:", newMessageReceived);
       if (newMessageReceived?.bidType === "update") {
-        await axios.patch(
-          "http://173.212.193.109:5000/chat/update-closed-chat",
-          {
+        await axios
+          .patch("http://173.212.193.109:5000/chat/update-closed-chat", {
             id: requestInfo?._id,
-          }
-        ).then(res=>{
-        const filteredRequests = ongoingRequests.filter(
-          (request) => request._id !== requestInfo?._id
-        );
+          })
+          .then((res) => {
+            const filteredRequests = ongoingRequests.filter(
+              (request) => request._id !== requestInfo?._id
+            );
 
-        let tmp = {
-          ...requestInfo,
-          requestType: "closed",
-          updatedAt: new Date().toISOString(),
-          unreadCount: 0,
-        };
-        dispatch(setRequestInfo(tmp));
-        const data = [...filteredRequests];
-        dispatch(setOngoingRequests(data));
-        const data2 = [tmp, ...retailerHistory];
-        dispatch(setRetailerHistory(data2));
-        })
-      
-       
+            let tmp = {
+              ...requestInfo,
+              requestType: "closed",
+              updatedAt: new Date().toISOString(),
+              unreadCount: 0,
+            };
+            dispatch(setRequestInfo(tmp));
+            const data = [...filteredRequests];
+            dispatch(setOngoingRequests(data));
+            const data2 = [tmp, ...retailerHistory];
+            dispatch(setRetailerHistory(data2));
+          });
+
         // console.log("update", tmp);
         // dispatch(setRequestInfo(tmp));
         // const filteredRequests = ongoingRequests.filter(
@@ -453,7 +460,7 @@ const RequestPage = () => {
 
   const handlePress = (star) => {
     setRating(star);
-    console.log("star",star)
+    console.log("star", star);
   };
 
   const copyToClipboard = async () => {
@@ -490,51 +497,54 @@ const RequestPage = () => {
 
   const SubmitFeedback = async () => {
     setisLoading(true);
-      
-      try {
-        if(rating==0)return;
-        console.log("feedback",requestInfo?.customerId?._id,user?._id,rating,feedback,user?.storeName,requestInfo?._id)
-         await axios.post(
-          "http://173.212.193.109:5000/rating/rating-feedback",
-          {
-              user:{type:"User",refId:requestInfo?.customerId?._id},
-              sender:{type:"Retailer",refId:user?._id},
-              rating:rating,
-              feedback:feedback,
-              senderName:user?.storeName,
-              chatId:requestInfo?._id
-          }
-        ).then((response) => {
 
-        console.log("response of feedback", response.data);
-        let tmp = {
-          ...requestInfo,
-          rated:true,
-          updatedAt: new Date().toISOString(),
-        
-        };
-        console.log("update", tmp);
-        dispatch(setRequestInfo(tmp));
-      
-        const filteredRequests = retailerHistory.filter(
-          (request) => request._id !== requestInfo._id
-        );
-        const requests = retailerHistory.filter(
-          (request) => request._id === requestInfo._id
-        );
-        const updatedRequest = {
-          ...requests[0],
-          updatedAt: new Date().toISOString(),
-        };
-        //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
-
-        // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
-        const data = [updatedRequest, ...filteredRequests];
-        dispatch(setRetailerHistory(data));
-        setisLoading(false);
-        
-  
+    try {
+      if (rating == 0) return;
+      console.log(
+        "feedback",
+        requestInfo?.customerId?._id,
+        user?._id,
+        rating,
+        feedback,
+        user?.storeName,
+        requestInfo?._id
+      );
+      await axios
+        .post("http://173.212.193.109:5000/rating/rating-feedback", {
+          user: { type: "User", refId: requestInfo?.customerId?._id },
+          sender: { type: "Retailer", refId: user?._id },
+          rating: rating,
+          feedback: feedback,
+          senderName: user?.storeName,
+          chatId: requestInfo?._id,
         })
+        .then((response) => {
+          console.log("response of feedback", response.data);
+          let tmp = {
+            ...requestInfo,
+            rated: true,
+            updatedAt: new Date().toISOString(),
+          };
+          console.log("update", tmp);
+          dispatch(setRequestInfo(tmp));
+
+          const filteredRequests = retailerHistory.filter(
+            (request) => request._id !== requestInfo._id
+          );
+          const requests = retailerHistory.filter(
+            (request) => request._id === requestInfo._id
+          );
+          const updatedRequest = {
+            ...requests[0],
+            updatedAt: new Date().toISOString(),
+          };
+          //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
+
+          // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
+          const data = [updatedRequest, ...filteredRequests];
+          dispatch(setRetailerHistory(data));
+          setisLoading(false);
+        });
     } catch (error) {
       // setisLoading(false);
 
@@ -542,16 +552,14 @@ const RequestPage = () => {
     }
   };
 
-
-
   const remainingDays =
     daysDifference(user?.createdAt) > 0
       ? 0
       : 60 - daysDifference(user?.createdAt);
   // console.log("remainingDays: ", remainingDays);
 
-  // const lastMessage = messages[messages.length - 1];
-  // console.log("last Mesage: ", lastMessage);
+  const lastMessage = messages[messages.length - 1];
+  console.log("last Mesage: ", lastMessage);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -573,9 +581,9 @@ const RequestPage = () => {
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding:20,paddingRight:5,zIndex:30}}
+            style={{ padding: 20, paddingRight: 5, zIndex: 30 }}
           >
-            <BackArrow  />
+            <BackArrow />
           </TouchableOpacity>
 
           <View className="gap-[9px] w-[70%]">
@@ -601,11 +609,10 @@ const RequestPage = () => {
                   className="text-[14px]  text-[#2e2c43] capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
-                  {requestInfo?.customerId?.userName?.substring(0,20)}
-                  {
-                    requestInfo?.customerId?.userName?.length>20 && <Text>...
-                      </Text>
-                  }
+                  {requestInfo?.customerId?.userName?.substring(0, 20)}
+                  {requestInfo?.customerId?.userName?.length > 20 && (
+                    <Text>...</Text>
+                  )}
                 </Text>
                 <Text
                   className="text-[12px] text-[#79B649]"
@@ -738,95 +745,102 @@ const RequestPage = () => {
                             {message?.message}
                           </Text>
                         </View>
-                        {
-                          !requestInfo?.rated &&
+                        {!requestInfo?.rated && (
                           <View className="px-[32px] py-[10px] bg-[#ffe7c8] rounded-[24px] ">
-                          <View className=" mt-[19px] ">
-                            <Text
-                              className="text-[14px]"
-                              style={{ fontFamily: "Poppins-Regular" }}
-                            >
-                              Rate your experience with customer
-                            </Text>
-                            <View className="flex-row gap-[5px] mt-[10px]">
-                              {[...Array(5)].map((_, index) => {
-                                const star = index + 1;
-                                return (
-                                  <TouchableOpacity
-                                    key={star}
-                                    onPress={() => handlePress(star)}
-                                  >
-                                    <FontAwesome
-                                      name={star <= rating ? "star" : "star-o"}
-                                      size={32}
-                                      color="#fb8c00"
-                                      className="mx-[5px]"
-                                    />
-                                  </TouchableOpacity>
-                                );
-                              })}
-                            </View>
-                          </View>
-
-                          <View className="mb-[20px]">
-                            <Text
-                              className="text-[14px]  mx-[6px] mt-[30px] mb-[15px]"
-                              style={{ fontFamily: "Poppins-Regular" }}
-                            >
-                              Feedback for customer
-                            </Text>
-
-                            <KeyboardAvoidingView className="h-[100px] bg-[#f9f9f9] rounded-xl ">
-                              <TextInput
-                                multiline
-                                numberOfLines={4}
-                                onChangeText={(val) => {
-                                  setFeedback(val);
-                                }}
-                                value={feedback}
-                                placeholder="Type here..."
-                                placeholderTextColor="#dbcdbb"
-                                className="w-full h-[100px] overflow-y-scroll px-[20px] border-[0.3px] border-[#2e2c43] rounded-xl "
-                                style={{
-                                  padding: 20,
-                                  height: 300,
-                                  flex: 1,
-                                  textAlignVertical: "top",
-                                  fontFamily: "Poppins-Regular",
-                                }}
-                              />
-                            </KeyboardAvoidingView>
-                          </View>
-                          <TouchableOpacity
-                            disabled={!rating && !feedback}
-                             onPress={()=>{SubmitFeedback()}}
-                            style={{
-                              height: 50,
-                              width: "100%",
-                              backgroundColor:
-                                !rating && !feedback ? "#e6e6e6" : "#FB8C00",
-                              justifyContent: "center", // Center content vertically
-                              alignItems: "center", // Center content horizontally
-                            }}
-                          >
-                            {feedbackLoading ? (
-                              <ActivityIndicator size="small" color="#ffffff" />
-                            ) : (
+                            <View className=" mt-[19px] ">
                               <Text
-                                style={{
-                                  fontSize: 18,
-                                  fontFamily: "Poppins-Black",
-                                  color:
-                                    !rating && !feedback ? "#888888" : "white",
-                                }}
+                                className="text-[14px]"
+                                style={{ fontFamily: "Poppins-Regular" }}
                               >
-                                Submit
+                                Rate your experience with customer
                               </Text>
-                            )}
-                          </TouchableOpacity>
-                        </View>
-                        }
-                        
+                              <View className="flex-row gap-[5px] mt-[10px]">
+                                {[...Array(5)].map((_, index) => {
+                                  const star = index + 1;
+                                  return (
+                                    <TouchableOpacity
+                                      key={star}
+                                      onPress={() => handlePress(star)}
+                                    >
+                                      <FontAwesome
+                                        name={
+                                          star <= rating ? "star" : "star-o"
+                                        }
+                                        size={32}
+                                        color="#fb8c00"
+                                        className="mx-[5px]"
+                                      />
+                                    </TouchableOpacity>
+                                  );
+                                })}
+                              </View>
+                            </View>
+
+                            <View className="mb-[20px]">
+                              <Text
+                                className="text-[14px]  mx-[6px] mt-[30px] mb-[15px]"
+                                style={{ fontFamily: "Poppins-Regular" }}
+                              >
+                                Feedback for customer
+                              </Text>
+
+                              <KeyboardAvoidingView className="h-[100px] bg-[#f9f9f9] rounded-xl ">
+                                <TextInput
+                                  multiline
+                                  numberOfLines={4}
+                                  onChangeText={(val) => {
+                                    setFeedback(val);
+                                  }}
+                                  value={feedback}
+                                  placeholder="Type here..."
+                                  placeholderTextColor="#dbcdbb"
+                                  className="w-full h-[100px] overflow-y-scroll px-[20px] border-[0.3px] border-[#2e2c43] rounded-xl "
+                                  style={{
+                                    padding: 20,
+                                    height: 300,
+                                    flex: 1,
+                                    textAlignVertical: "top",
+                                    fontFamily: "Poppins-Regular",
+                                  }}
+                                />
+                              </KeyboardAvoidingView>
+                            </View>
+                            <TouchableOpacity
+                              disabled={!rating && !feedback}
+                              onPress={() => {
+                                SubmitFeedback();
+                              }}
+                              style={{
+                                height: 50,
+                                width: "100%",
+                                backgroundColor:
+                                  !rating && !feedback ? "#e6e6e6" : "#FB8C00",
+                                justifyContent: "center", // Center content vertically
+                                alignItems: "center", // Center content horizontally
+                              }}
+                            >
+                              {feedbackLoading ? (
+                                <ActivityIndicator
+                                  size="small"
+                                  color="#ffffff"
+                                />
+                              ) : (
+                                <Text
+                                  style={{
+                                    fontSize: 18,
+                                    fontFamily: "Poppins-Black",
+                                    color:
+                                      !rating && !feedback
+                                        ? "#888888"
+                                        : "white",
+                                  }}
+                                >
+                                  Submit
+                                </Text>
+                              )}
+                            </TouchableOpacity>
+                          </View>
+                        )}
                       </View>
                     );
                   } else if (message?.sender?.refId !== user?._id) {
@@ -918,32 +932,34 @@ const RequestPage = () => {
                   this request
                 </Text>
 
-                {messages && messages[messages.length - 1]?.bidImages && messages[messages.length - 1]?.bidImages?.length>0 && (
-                  <ScrollView
-                    horizontal
-                    contentContainerStyle={{
-                      paddingHorizontal: 10,
-                      marginTop: 10,
-                      flexDirection: "row",
-                      gap: 4,
-                    }}
-                    showsHorizontalScrollIndicator={false}
-                    style={{ maxHeight: 150 }}
-                  >
-                    {messages[messages.length - 1]?.bidImages.map(
-                      (image, index) => (
-                        <View key={index} className="rounded-3xl">
-                          <Image
-                            source={{ uri: image }}
-                            width={100}
-                            height={140}
-                            className="rounded-3xl border-[1px] border-slate-400 object-contain"
-                          />
-                        </View>
-                      )
-                    )}
-                  </ScrollView>
-                )}
+                {messages &&
+                  messages[messages.length - 1]?.bidImages &&
+                  messages[messages.length - 1]?.bidImages?.length > 0 && (
+                    <ScrollView
+                      horizontal
+                      contentContainerStyle={{
+                        paddingHorizontal: 10,
+                        marginTop: 10,
+                        flexDirection: "row",
+                        gap: 4,
+                      }}
+                      showsHorizontalScrollIndicator={false}
+                      style={{ maxHeight: 150 }}
+                    >
+                      {messages[messages.length - 1]?.bidImages.map(
+                        (image, index) => (
+                          <View key={index} className="rounded-3xl">
+                            <Image
+                              source={{ uri: image }}
+                              width={100}
+                              height={140}
+                              className="rounded-3xl border-[1px] border-slate-400 object-contain"
+                            />
+                          </View>
+                        )
+                      )}
+                    </ScrollView>
+                  )}
 
                 {messages && messages[messages.length - 1]?.bidPrice && (
                   <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
@@ -964,7 +980,10 @@ const RequestPage = () => {
                 <TouchableOpacity
                   onPress={() => {
                     user?.freeSpades > 0
-                      ? setAcceptRequestModal(true)
+                      ? (() => {
+                          setAcceptRequestModal(true);
+                          setType("Request");
+                        })()
                       : setConfirmPaymentModal(true);
                   }}
                   style={{ flex: 1 }}
@@ -1069,32 +1088,34 @@ const RequestPage = () => {
                   Are you accepting the customer offer ?
                 </Text>
                 <View>
-                {messages && messages[messages.length - 1]?.bidImages && messages[messages.length - 1]?.bidImages?.length>0  && (
-                  <ScrollView
-                    horizontal
-                    contentContainerStyle={{
-                      paddingHorizontal: 10,
-                      marginTop: 10,
-                      flexDirection: "row",
-                      gap: 4,
-                    }}
-                    showsHorizontalScrollIndicator={false}
-                    style={{ maxHeight: 150 }}
-                  >
-                    {messages[messages.length - 1]?.bidImages.map(
-                      (image, index) => (
-                        <View key={index} className="rounded-3xl">
-                          <Image
-                            source={{ uri: image }}
-                            width={100}
-                            height={140}
-                            className="rounded-3xl border-[1px] border-slate-400 object-contain"
-                          />
-                        </View>
-                      )
+                  {messages &&
+                    messages[messages.length - 1]?.bidImages &&
+                    messages[messages.length - 1]?.bidImages?.length > 0 && (
+                      <ScrollView
+                        horizontal
+                        contentContainerStyle={{
+                          paddingHorizontal: 10,
+                          marginTop: 10,
+                          flexDirection: "row",
+                          gap: 4,
+                        }}
+                        showsHorizontalScrollIndicator={false}
+                        style={{ maxHeight: 150 }}
+                      >
+                        {messages[messages.length - 1]?.bidImages.map(
+                          (image, index) => (
+                            <View key={index} className="rounded-3xl">
+                              <Image
+                                source={{ uri: image }}
+                                width={100}
+                                height={140}
+                                className="rounded-3xl border-[1px] border-slate-400 object-contain"
+                              />
+                            </View>
+                          )
+                        )}
+                      </ScrollView>
                     )}
-                  </ScrollView>
-                )}
                 </View>
                 {messages && messages[messages.length - 1]?.bidPrice && (
                   <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
@@ -1109,12 +1130,11 @@ const RequestPage = () => {
                     </Text>
                   </View>
                 )}
-                
               </View>
 
               <View className="w-full flex-row justify-between">
                 <TouchableOpacity
-                  onPress={() => setAcceptRequestModal(true)}
+                  onPress={() => {setAcceptRequestModal(true);setType("Offer")}}
                   style={{ flex: 1 }}
                 >
                   <View className="h-[63px] flex items-center justify-center border-[1px] bg-[#FB8C00] border-[#FB8C00]">
@@ -1206,6 +1226,7 @@ const RequestPage = () => {
         messages={messages}
         setMessages={setMessages}
         // requestInfo={requestInfo}
+        type={type}
         setAcceptLocal={setAcceptLocal}
       />
       <ConfirmPaymentModal
@@ -1227,6 +1248,12 @@ const RequestPage = () => {
           <ActivityIndicator size="large" color="#fb8c00" />
         </View>
       )}
+
+      {/* {requestInfo?.requestType !== "closed" &&
+            requestInfo?.requestType === "new" &&
+            available === false &&
+            <View style={styles.overlayimg} />
+            } */}
     </View>
   );
 };
@@ -1235,6 +1262,16 @@ const styles = StyleSheet.create({
   overlay: {
     zIndex: 100,
     flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    //  position:"absolute",
+    //  bottom:0// Semi-transparent greyish background
+  },
+  overlayimg: {
+    zIndex: 100,
+    // flex: 1,
+    marginTop: 170,
+
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     //  position:"absolute",

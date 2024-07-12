@@ -149,7 +149,6 @@ const LocationScreen = () => {
           lattitude: latitude,
           longitude: longitude,
           serviceProvider:data==="service"?"true":"false",
-          uniqueToken: uniqueToken,
           coords:{
             type:"Point",
             coordinates:[longitude, latitude]
@@ -222,7 +221,7 @@ const LocationScreen = () => {
                 </View>
              
               <Text className="text-[14px] text-[#2e2c43] mt-[10px]" style={{ fontFamily: "Poppins-Regular" }}>
-                Enter your Location
+                Type your store address
               </Text>
              
                 <View className="flex  items-center">

@@ -15,7 +15,8 @@ import Home4 from "../../assets/Home4.svg";
 import Home5 from "../../assets/Home5.svg";
 import Home6 from "../../assets/Home6.svg";
 import Home7 from "../../assets/Home7.svg";
-import BackArrow from "../../assets/arrow-left.svg";
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 import ThumbIcon from "../../assets/ThumbIcon.svg";
 import { useNavigation } from "@react-navigation/native";
@@ -29,7 +30,7 @@ const TermsandConditions = () => {
     <View style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
         <View className="flex items-center gap-[32px] bg-white">
-        <View className="z-50 absolute top-[9px] left-[16px] ">
+        <View className="z-50 absolute left-[16px] " style={{marginTop:25}}>
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -41,7 +42,7 @@ const TermsandConditions = () => {
           </View>
 
           <Text
-            className="text-center pt-[20px] text-[16px]  "
+            className="text-center pt-[40px] text-[16px]  "
             style={{ fontFamily: "Poppins-Bold" }}
           >
             Terms & Conditions
@@ -111,6 +112,9 @@ const TermsandConditions = () => {
             </View>
           </View>
           <View className="gap-[20px]  items-center">
+          <Text className="text-[14px]  px-[32px] text-center" style={{ fontFamily: "Poppins-Bold" }}>
+                 Continue bargaining, accept {"\n"} suitable offer
+                    </Text>
             <Text
               className="text-[14px] px-[32px]  text-[#2E2C43]  text-center"
               style={{ fontFamily: "Poppins-Regular" }}
@@ -160,7 +164,7 @@ const TermsandConditions = () => {
               className="text-[14px]  text-[#2E2C43]  text-center"
               style={{ fontFamily: "Poppins-Bold" }}
             >
-              How to send bid to the customer?
+              How to send offer to the customer?
             </Text>
             <View className="gap-[20px] items-center px-[32px]">
               <View className="flex-row gap-[5px] justify-center items-center">
@@ -174,7 +178,7 @@ const TermsandConditions = () => {
                   className="text-[14px]  text-[#2E2C43]  text-center"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
-                  Type your query{" "}
+                  Type your response{" "}
                 </Text>
               </View>
               <Home4 width={width} className=" " />
@@ -190,9 +194,7 @@ const TermsandConditions = () => {
                 <Text
                   className="text-[14px]  text-[#2E2C43]  text-center"
                   style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  Step 2. Click the real product image for product match and
-                  confirm if it's available.
+                >Click the real product image for right product match and confirm availability.
                 </Text>
               </View>
               <Home5 width={width} className=" " />
@@ -266,7 +268,7 @@ const TermsandConditions = () => {
               </View>
             </View>
             </View>
-            <Text className="text-[14px] px-[32px] text-center mb-2" style={{fontFamily:"Poppins-Regular"}}>This app is free for now, but there will be fewer charges like 100 rupees for 100 customers soon.</Text>
+            <Text className="text-[14px] px-[32px] text-center mb-2 border-[1px] py-[10px] " style={{fontFamily:"Poppins-Regular",borderColor:"green",color:"green"}}>There are charges like 100 rupees for 1000 customers. So please accept and proceed with the customer's request carefully. Only accept requests when you have the right product availability.</Text>
              <Text className="text-[14px] px-[32px] text-center mb-2"style={{fontFamily:"Poppins-Regular"}}>Unlock Your Business Potential – Download CulturTap Genie Business and Transform Your Sales Now!</Text>
 
             <ThumbIcon className=" " />

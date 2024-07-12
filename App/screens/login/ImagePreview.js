@@ -60,7 +60,7 @@ const [loading,setLoading] = useState(false);
           _id: userId,
           storeImages: newImages,
           storeDescription: storeDescription,
-          uniqueToken: uniqueToken,
+          
         }
       );
 
@@ -92,13 +92,13 @@ const [loading,setLoading] = useState(false);
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{padding:10,paddingTop:10}}
+              style={{padding:24,paddingTop:10,position:"absolute",zIndex:100}}
             >
-                             <BackArrow width={14} height={10} />
+                             <BackArrow  />
 
             </TouchableOpacity>
           <Text className="flex flex-1 justify-center items-center text-center text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>
-            Select Store Profile Pic
+            Select Store Profile{"\n"}Picture
           </Text>
         </View>
 
@@ -133,7 +133,7 @@ const [loading,setLoading] = useState(false);
           <TouchableOpacity key={index} onPress={() => handleImageClick(index)}>
             <View
               className={`rounded-3xl ${
-                selectedImageIndex === index ? 'border-2 border-[#fb8c00]' : 'border-[1px] border-slate-400'
+                selectedImageIndex === index ? 'border-4 border-[#fb8c00]' : 'border-[1px] border-slate-400'
               }`}
             >
               <Image

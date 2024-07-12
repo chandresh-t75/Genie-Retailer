@@ -21,21 +21,43 @@ import { setStoreCategory } from "../../redux/reducers/storeDataSlice";
 
 const searchData = [
   { id: 1, name: 'Miscelleneous' },
-  { id: 2, name: 'Spare Parts' },
-  { id: 3, name: 'Mobile Repair' },
-  { id: 4, name: 'Electronics & Electrical Items' },
-  { id: 5, name: 'Home Appliances' },
-  { id: 6, name: 'Furniture' },
-  { id: 7, name: 'Clothing' },
-  { id: 8, name: 'Footwear' },
-  { id: 9, name: 'Health & Beauty' },
-  { id: 10, name: 'Books & Stationery' },
-  { id: 11, name: 'Sports & Outdoors' },
-  { id: 12, name: 'Groceries & Food' },
-  { id: 13, name: 'Paint & Supplies' },
-  { id: 14, name: 'Music & Instruments' },
-  { id: 15, name: 'Jewelry & Accessories' },
-  { id: 16, name: 'Others' },
+  { id: 2, name: 'Fashion/clothings-Top, bottom, dresses'},
+  { id: 3, name: 'Tailor - Makes or alters clothing' },
+  { id: 4, name: 'Drycleaning & Laundry - Clothes and accessories' },
+  { id: 5, name: 'Fashion accessories - Shoes, begs etc' },
+  { id: 6, name: 'Fashion accessories - Eyewear etc' },
+  { id: 7, name: 'Fashion accessories - Jewelry, Gold & Diamond' },
+  { id: 8, name: 'Grocery & Kirana' },
+  { id: 9, name: 'Automotive parts/Services - 2 wheeler Fuel based' },
+  { id: 10, name: 'Automotive parts/Services - 4 wheeler Fuel based' },
+  { id: 11, name: 'Automotive parts/Services - 2-wheeler EV' },
+  { id: 12, name: 'Automotive parts/Services - 4-wheeler EV' },
+  { id: 13, name: 'Automotive parts/ service- 3-wheeler, commercial vehicles & EV' },
+  { id: 14, name: 'Consumer Electronics Services & Accessories - Mobile, Laptop, digital products etc' },
+  { id: 15, name: 'Consumer Electronics Services & accessories - Home appliances and   equipment etc' },
+  { id: 16, name: 'Consumer Electronics & Accessories - Mobile, Laptop, digital products etc' },
+  { id: 17, name: 'Consumer Electronics & accessories - Home appliances and equipment etc' },
+  { id: 18, name: 'Electrical hardware & accessories - Inverter, batteries, Solar etc' },
+  { id: 19, name: 'Electrical hardware & accessories- Wiring, equipments, lights etc' },
+  { id: 20, name: 'Electrical services - Electrician' },
+  { id: 21, name: 'Fashion accessories - Jewelry, Gold & Diamond' },
+  { id: 22, name: 'Electrical equipment services- Ac, Fridge, Cooler repair etc' },
+  { id: 23, name: 'Sports accessories & Services - Cricket, Football, Basketball etc' },
+  { id: 24, name: 'Sports Nutrition - Whey Pro etc' },
+  { id: 25, name: 'Home furnishing - furniture etc' },
+  { id: 26, name: 'Home furnishing - Blanket, Pillow, Curtains etc ' },
+  { id: 27, name: 'Carpanter service - Repair' },
+  { id: 28, name: 'Kitchen Utensils and Kitchenware' },
+  { id: 29, name: 'Hardware - Cement, Hand tools, Powertools etc' },
+  { id: 30, name: 'Plants & Gardening Accessories' },
+  { id: 31, name: 'Gardening Services' },
+  { id: 32, name: 'Pet care & food' },
+  { id: 33, name: 'Medical store & Healthcare' },
+  { id: 34, name: 'Clock repair & services' },
+  { id: 35, name: 'Luxury watches' },
+  { id: 36, name: 'Toys and kids games' },
+  { id: 37, name: 'Paintings & Art' },
+ 
 ];
 
 const SearchCategoryScreen = () => {
@@ -78,7 +100,7 @@ const SearchCategoryScreen = () => {
           className="flex-1 px-0 mb-[63px]"
           showsVerticalScrollIndicator={false}
         >
-          <View className=" flex z-40 flex-row items-center mt-[20px] mb-[10px]">
+          <View className=" flex z-40 flex-row items-center mt-[30px] mb-[10px]">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backButton}
@@ -91,18 +113,19 @@ const SearchCategoryScreen = () => {
             </Text>
           </View>
           <Text className="text-[14.5px] text-[#FB8C00] text-center mb-[10px] " style={{ fontFamily: "Poppins-SemiBold" }}>
-            Step 4/9
+            Step 4/6
           </Text>
 
-          <View className="flex flex-row gap-2 h-[60px]  border-[1px] items-center border-[#000000] rounded-[24px] mb-[50px]">
-            <Octicons name="search" size={19} className="pl-[20px]" />
+          <View className="flex flex-row h-[60px]  border-[1px] items-center border-[#000000] border-opacity-25 rounded-[24px] mb-[50px] bg-white" >
+            <Octicons name="search" size={19} className="pl-[20px] absolute" />
             <TextInput
-              placeholder="Search here......."
+              placeholder="Search here...."
               placeholderTextColor="#DBCDBB"
               value={searchQuery}
               onChangeText={handleTextChange}
-              className="flex  text-center text-[14px]  flex-1"
+              className="flex  text-center text-[14px] justify-center items-center  flex-1 px-[10px]"
               style={{ fontFamily: "Poppins-Italic" }}
+              
             />
           </View>
           <View className="px-[10px]">
@@ -111,7 +134,7 @@ const SearchCategoryScreen = () => {
                 key={result.id}
                 onPress={() => handleSelectResult(result)}
               >
-                <View className="flex flex-row items-start py-[10px] gap-[24px]">
+                <View className="flex flex-row  items-center py-[20px] gap-[20px]">
                   <View
                     className={`w-[16px] h-[16px] border-[1px] border-[#fd8c00] items-center ${
                       result.id === selectedOption.id ? "bg-[#fd8c00]" : ""
@@ -121,7 +144,7 @@ const SearchCategoryScreen = () => {
                       <Octicons name="check" size={12} color="white" />
                     )}
                   </View>
-                  <Text style={{ fontFamily: "Poppins-Regular" }}>{result.name}</Text>
+                  <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[16px] flex w-[90%]">{result.name}</Text>
                 </View>
               </TouchableOpacity>
             ))}

@@ -215,7 +215,7 @@ import {
                   </View>
                
                 <Text className="text-[14px] text-[#2e2c43] mt-[10px]" style={{ fontFamily: "Poppins-Regular" }}>
-                  Enter your Location
+                  Type your store address
                 </Text>
                
                   <View className="flex  items-center">

@@ -238,14 +238,16 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         }, 200);
       }}
       style={{
-        backgroundColor: "#fff",
-        margin: 10,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 5,
-        borderRadius: 16,
+        backgroundColor: '#fff', // Ensure the background is white
+        margin: 10, // Add some margin if necessary for better shadow visibility
+        shadowColor: '#bdbdbd',
+        shadowOffset: { width: 8, height: 6 },
+        shadowOpacity: 0.9,
+        shadowRadius: 24,
+        elevation: 20,
+        borderRadius:24,
+         borderWidth: .5,
+        borderColor: 'rgba(0, 0, 0, 0.05)'
       }}
     >
       <ProductOrderCard product={item} />
@@ -253,7 +255,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   );
 
   return (
-    <View>
+    <View className="bg-white">
       <View
       // refreshControl={
       //   // <RefreshControl
@@ -268,7 +270,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           retailerHistory?.length > 0) && (
           <View className="flex items-center">
             <View>
-              <View className="flex-row justify-around px-[10px]   gap-[5x] mb-[20px]">
+              <View className="flex-row justify-around px-[10px]    mb-[20px]">
                 <TouchableOpacity onPress={() => setTab("New")}>
                   <View className="flex-row  gap-[5px]   p-[4px]">
                     <Text
@@ -323,14 +325,14 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                   {/* customer remaining card */}
                   <View
                     style={{
-                      backgroundColor: "#fff", // Ensure the background is white
+                      backgroundColor: '#fff', // Ensure the background is white
                       margin: 10, // Add some margin if necessary for better shadow visibility
-                      shadowColor: "#000",
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 4,
-                      elevation: 5,
-                      borderRadius: 16,
+                      shadowColor: '#bdbdbd',
+                      shadowOffset: { width: 8, height: 6 },
+                      shadowOpacity: 0.9,
+                      shadowRadius: 24,
+                      elevation: 20,
+                      borderRadius:24
                     }}
                   >
                     <View className="max-w-[340px] flex flex-row p-[20px] gap-[20px] items-center">
@@ -375,16 +377,16 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                   {/* gst verification card */}
                   {!userData.documentVerified && (
                     <View
-                      style={{
-                        backgroundColor: "#fff", // Ensure the background is white
-                        margin: 10, // Add some margin if necessary for better shadow visibility
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 4,
-                        elevation: 5,
-                        borderRadius: 16,
-                      }}
+                    style={{
+                      backgroundColor: '#fff', // Ensure the background is white
+                      margin: 10, // Add some margin if necessary for better shadow visibility
+                      shadowColor: '#bdbdbd',
+                      shadowOffset: { width: 8, height: 6 },
+                      shadowOpacity: 0.9,
+                      shadowRadius: 24,
+                      elevation: 20,
+                      borderRadius:24
+                    }}
                       className="max-w-[340px]"
                     >
                       <View className="w-full flex flex-row p-[20px] gap-[20px] items-center">
@@ -452,7 +454,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                     }}
                     ListEmptyComponent={
                       <Text
-                        className="text-[14px] text-center mb-[20px]"
+                        className="text-[14px] text-center mb-[20px] mt-[20px]"
                         style={{ fontFamily: "Poppins-Regular" }}
                       >
                         No New Requests
@@ -489,7 +491,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           newRequests?.length > 0 ||
           ongoingRequests?.length > 0 ||
           retailerHistory?.length > 0
-        ) && <HomeScreenRequests />}
+        ) && <HomeScreenRequests modalVisible={ modalVisible} setModalVisible={ setModalVisible } />}
       </View>
     </View>
   );

@@ -281,7 +281,7 @@ const MobileNumberEntryScreen = () => {
                       className="object-cover"
                     />
                     <Text className="text-[14.5px]  text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>
-                      Step 1/9
+                      Step 1/6
                     </Text>
                   </View>
                   <View className="mt-[44.4px] mb-[60px]  px-[32px]">
@@ -388,7 +388,7 @@ const MobileNumberEntryScreen = () => {
                     className="object-cover"
                   />
                   <Text className="text-[14.5px]  text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>
-                    Step 2/9
+                    Step 2/6
                   </Text>
                 </View>
 
