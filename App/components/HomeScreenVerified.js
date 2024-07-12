@@ -179,7 +179,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       if (history.data) {
         dispatch(setRetailerHistory(history.data));
       }
-      console.log("history",history.data);
+      // console.log("history",history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
       //console.error('Error fetching ongoing requests:', error);
@@ -232,7 +232,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         };
         const requestId = req?.requestId;
         dispatch(setCurrentRequest(req));
-        console.log("request details", req);
+        // console.log("request details", req);
         setTimeout(() => {
           navigation.navigate(`requestPage${requestId}`);
         }, 200);

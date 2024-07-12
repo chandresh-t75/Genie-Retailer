@@ -52,7 +52,7 @@ const LocationScreen = () => {
 
 
   useEffect(() => {
-    fetchLocation();
+    handleRefreshLocation();
   }, []);
 
   const getLocationName = async (lat, lon) => {
@@ -79,7 +79,7 @@ const LocationScreen = () => {
   };
 
   const fetchLocation = async () => {
-    setLoading(true);
+    
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -88,13 +88,12 @@ const LocationScreen = () => {
       }
 
       let location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.BestForNavigation,
-        // Add timeout to avoid infinite wait in case of failure
-        timeout: 10000,
-        // Optionally, maximum age of a previously cached location
-        maximumAge: 1000,
+        
+        accuracy: Location.Accuracy.Lowest,
+      timeInterval: 10000, // 10 seconds
+      distanceInterval: 1,
       });
-      // console.log(location);
+      console.log(location);
       const { latitude, longitude } = location.coords;
       setLatitude(Number(latitude)); // Ensure values are stored as numbers
       setLongitude(Number(longitude));
@@ -104,20 +103,40 @@ const LocationScreen = () => {
       setLoc({ latitude, longitude });
      
       await getLocationName(latitude, longitude);
+
      
 
       // }
     } catch (error) {
       console.error("Error fetching location:", error);
-    } finally {
-      setLoading(false);
+    } 
+  };
+
+  const handleRefreshLocation = async() => {
+    setLoading(true);
+    try{
+    for (let i = 0; i < 3; i++) {
+      try {
+        console.log("Refreshing location",i)
+        await fetchLocation();
+  
+       
+      } catch (error) {
+        console.error(`Attempt ${i + 1} failed:`, error);
+        if (i === retries - 1) {
+          throw error;
+        }
+      }
     }
+    
+  }catch(error){
+    console.error(`location failed:`, error);
+        
+  }finally {
+    setLoading(false);
+  }
+    
   };
-
-  const handleRefreshLocation = () => {
-    fetchLocation();
-  };
-
   const handleLocation = (storeLocation) => {
     // Update the mobile number state
     setStoreLocationLocal(storeLocation);
@@ -132,6 +151,7 @@ const LocationScreen = () => {
   };
   
   const handleLocationFetching = async () => {
+    setLoading(true);
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
     const userId = userData._id;
 
@@ -170,6 +190,7 @@ const LocationScreen = () => {
         dispatch(setServiceProvider("false"));
       }
       navigation.navigate("completeProfile");
+      setLoading(false)
     } catch (error) {
       console.error("Failed to update location:", error);
       // Optionally handle error differently here

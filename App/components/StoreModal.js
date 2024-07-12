@@ -26,8 +26,8 @@ const StoreModal = ({modalConfirmVisible,setModalConfirmVisible}) => {
                       <ModalImg width={195} height={125}/>
                         <Text className="text-[16px]  text-center" style={{ fontFamily: "Poppins-Bold" }}>Set your store name</Text>
                         <View className="flex gap-[8px]">
-                            <Text className="text-[14px] text-center" style={{ fontFamily: "Poppins-Regular" }}>If you have your own store , you have to set your store name and owner name separately. </Text>
-                            <Text className="text-[14px] text-center " style={{ fontFamily: "Poppins-Regular" }}>If you have not your own store ,You are an independent service provider,  you can set same name for store name and store owner name . </Text>
+                            <Text className="text-[14px] text-center text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>If you have your own store , you have to set your store name and owner name separately. </Text>
+                            <Text className="text-[14px] text-center text-[#001B33] " style={{ fontFamily: "Poppins-Regular" }}>If you have not your own store ,You are an independent service provider,  you can set same name for store name and store owner name . </Text>
                         </View>
                         
                             <View className="w-full flex flex-row  justify-center">

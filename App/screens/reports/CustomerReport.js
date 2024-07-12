@@ -71,12 +71,12 @@ const CustomerReport = () => {
 
 
 
-                <Text className="text-center pt-[20px] text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>Report Customer</Text>
+                <Text className="text-center pt-[20px] text-[16px] text-[#001B33]" style={{ fontFamily: "Poppins-Bold" }}>Report Customer</Text>
 
                         <View style={{ marginTop: 40, marginBottom: 40 }}>
                             <View style={{ marginBottom: 40 }}>
-                                <Text style={{ fontSize: 16, fontFamily:"Poppins-Bold" }}>RequestId:</Text>
-                                <Text style={{ fontFamily: "Poppins-Regular" }}>{requestId}</Text>
+                                <Text style={{ fontSize: 16, fontFamily:"Poppins-Bold" }} className="text-[#001B33]">RequestId:</Text>
+                                <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#001B33]">{requestId} </Text>
                             </View>
                             <TextInput
                                 multiline
@@ -85,16 +85,16 @@ const CustomerReport = () => {
                                 value={query}
                                 placeholder="Type here..."
                                 placeholderTextColor="#000000"
-                                style={{ backgroundColor: '#D9D9D9', padding: 20, height: 300, flex: 1, textAlignVertical: 'top',fontFamily:"Poppins-Regular" }}
+                                style={{ backgroundColor: '#D9D9D9',color:"#001B33", padding: 20, height: 300, flex: 1, textAlignVertical: 'top',fontFamily:"Poppins-Regular" }}
                             />
 
                         </View>
 
                         <View className="mb-[40px]">
-                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10,fontFamily:"Poppins-Bold" }}>Or</Text>
-                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 ,fontFamily:"Poppins-Regular"}}>Submit your concern with us at</Text>
+                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10,fontFamily:"Poppins-Bold",color:"#001B33" }}>Or</Text>
+                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 ,fontFamily:"Poppins-Regular",color:"#001B33"}}>Submit your concern with us at</Text>
                             <Pressable onPress={() => console.log("hii email")}>
-                                <Text style={{ color: '#FB8C00' ,fontSize: 16, textAlign: 'center' ,fontFamily:"Poppins-Bold"}}>Info@culturtap.com</Text>
+                                <Text style={{ color: '#FB8C00' ,fontSize: 16, textAlign: 'center' ,fontFamily:"Poppins-Bold",}}>Info@culturtap.com</Text>
                             </Pressable>
                         </View>
                     </View>

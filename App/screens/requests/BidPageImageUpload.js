@@ -303,7 +303,7 @@ const BidPageImageUpload = () => {
                   </TouchableOpacity>
                   {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-50 absolute -top-10 right-0">Copied!</Text>}
                 </View>
-                <Text style={{ fontFamily: "Poppins-Regular" }}>
+                <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
                   {requestInfo?.requestId?.requestDescription
                     ?.split(" ")
                     .slice(0, 12)
@@ -327,7 +327,7 @@ const BidPageImageUpload = () => {
                     Step 2/3
                   </Text>
                 </View>
-                <Text style={{ fontFamily: "Poppins-Regular" }}>
+                <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
                   Provide product images for better reference to customers to
                   showcase product quality and confirm availability.
                 </Text>

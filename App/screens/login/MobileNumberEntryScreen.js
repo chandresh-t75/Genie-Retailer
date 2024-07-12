@@ -287,17 +287,17 @@ const MobileNumberEntryScreen = () => {
                   <View className="mt-[44.4px] mb-[60px]  px-[32px]">
                     <View className="flex flex-col gap-[5px]">
                       <View className="flex flex-col gap-[5px]">
-                        <Text className="text-[18px] " style={{ fontFamily: "Poppins-ExtraBold" }}>
+                        <Text className="text-[18px] text-[#2E2C43]" style={{ fontFamily: "Poppins-ExtraBold" }}>
                           Please enter store owner
                         </Text>
                       </View>
                       <View className="flex flex-col gap-[15px]">
-                        <Text className="  text-[14px]  " style={{ fontFamily: "Poppins-Regular" }}>
+                        <Text className="  text-[14px] text-[#2E2C43] " style={{ fontFamily: "Poppins-Regular" }}>
                           Mobile Number
                         </Text>
                         <View className="flex flex-row items-center gap-[10px] px-[8px] bg-[#F9F9F9] py-[11px] border-[1px] border-[#c9c8c7] border-opacity-10 rounded-[16px] ">
                           <View className="text-[16px] font-extrabold border-r-[1px] border-[#b6b5b4] flex flex-row gap-[9px] pr-[9px] items-center">
-                            <Text className="text-[16px]" style={{ fontFamily: "Poppins-ExtraBold" }}>
+                            <Text className="text-[16px] text-[#2E2C43]" style={{ fontFamily: "Poppins-ExtraBold" }}>
                               +91
                             </Text>
                             <Entypo
@@ -314,7 +314,7 @@ const MobileNumberEntryScreen = () => {
                             keyboardType="numeric"
                             onChangeText={handleMobileNo}
                             maxLength={10}
-                            className="w-full text-[16px]  text-black "
+                            className="w-full text-[16px]  text-[#2E2C43] "
                             style={{ fontFamily: "Poppins-Regular" }}
                           />
                         </View>
@@ -400,6 +400,7 @@ const MobileNumberEntryScreen = () => {
                       color: "#001b33",
                       marginTop: 16,
                     }}
+                  
                   >
                     ENTER OTP
                   </Text>

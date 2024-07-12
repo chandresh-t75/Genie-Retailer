@@ -140,7 +140,7 @@ const BidPageInput = () => {
                                 </TouchableOpacity>
                                 {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-50 absolute -top-10 right-0">Copied!</Text>}
           </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
+          <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
             {requestInfo?.requestId?.requestDescription
               ?.split(" ")
               .slice(0, 12)
@@ -157,7 +157,7 @@ const BidPageInput = () => {
                 <Text className="" style={{ fontFamily: "Poppins-Bold" }}>Send an offer</Text>
                 <Text className="text-[#FB8C00] text-[14px] " style={{ fontFamily: "Poppins-Medium" }}>Step 1/3</Text>
               </View>
-              <Text style={{ fontFamily: "Poppins-Regular" }}>Type your response here to the customer</Text>
+              <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">Type your response here to the customer</Text>
               <View className="bg-white p-4 rounded-lg flex w-full">
                 <TextInput
                   multiline

@@ -57,8 +57,9 @@ const TermsandConditions = () => {
 
           <View className="flex flex-col  px-[32px]">
             <Text
-              className="text-[14px] text-center"
+              className="text-[14px] text-center text-[#001B33]"
               style={{ fontFamily: "Poppins-Regular" }}
+              
             >
               CulturTap Genie is a platform where Genie connects you with
               customers online. You need to attract customers by offering the
@@ -67,7 +68,7 @@ const TermsandConditions = () => {
           </View>
           <View className="flex flex-col justify-center items-center gap-2 ">
             <Text
-              className="text-[14px]  text-[#2E2C43] px-[32px] text-center"
+              className="text-[14px]   px-[32px] text-center"
               style={{ fontFamily: "Poppins-SemiBold" }}
             >
               You get a notification first, like this.
@@ -90,7 +91,7 @@ const TermsandConditions = () => {
           </View>
           <View className="flex items-center gap-2 mb-[10px]">
             <Text
-              className="text-[14px] px-[32px]  text-[#2E2C43]  text-center"
+              className="text-[14px] px-[32px] text-[#001B33]  text-center"
               style={{ fontFamily: "Poppins-Regular" }}
             >
               If you have the right product or service availability, you can
@@ -112,11 +113,11 @@ const TermsandConditions = () => {
             </View>
           </View>
           <View className="gap-[20px]  items-center">
-          <Text className="text-[14px]  px-[32px] text-center" style={{ fontFamily: "Poppins-Bold" }}>
+          <Text className="text-[14px]  px-[32px] text-center " style={{ fontFamily: "Poppins-Bold" }}>
                  Continue bargaining, accept {"\n"} suitable offer
                     </Text>
             <Text
-              className="text-[14px] px-[32px]  text-[#2E2C43]  text-center"
+              className="text-[14px] px-[32px]  text-[#001B33]  text-center"
               style={{ fontFamily: "Poppins-Regular" }}
             >
               If you're okay with the price the customer offered, choose yes. If
@@ -139,7 +140,7 @@ const TermsandConditions = () => {
           </View>
           <View className="gap-[24px]  items-center">
             <Text
-              className="text-[14px] px-[32px]  text-[#2E2C43]  text-center my-[10px]"
+              className="text-[14px] px-[32px]  text-[#001B33] text-center my-[10px]"
               style={{ fontFamily: "Poppins-Regular" }}
             >
               You can ask a question to a customer or make a new offer.
@@ -161,7 +162,7 @@ const TermsandConditions = () => {
           </View>
           <View className="px-[32px] items-center gap-[30px] mt-[10px]">
             <Text
-              className="text-[14px]  text-[#2E2C43]  text-center"
+              className="text-[14px]  text-center"
               style={{ fontFamily: "Poppins-Bold" }}
             >
               How to send offer to the customer?
@@ -175,7 +176,7 @@ const TermsandConditions = () => {
                   Step1.
                 </Text>
                 <Text
-                  className="text-[14px]  text-[#2E2C43]  text-center"
+                  className="text-[14px]  text-[#001B33]  text-center"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
                   Type your response{" "}
@@ -192,7 +193,7 @@ const TermsandConditions = () => {
                   Step 2.
                 </Text>
                 <Text
-                  className="text-[14px]  text-[#2E2C43]  text-center"
+                  className="text-[14px]  text-[#001B33]text-center"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >Click the real product image for right product match and confirm availability.
                 </Text>
@@ -208,7 +209,7 @@ const TermsandConditions = () => {
                   Step 3.
                 </Text>
                 <Text
-                  className="text-[14px]  text-[#2E2C43]  text-center"
+                  className="text-[14px]  text-[#001B33] text-center"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
                   Type your offered price to the customer{" "}
@@ -219,7 +220,7 @@ const TermsandConditions = () => {
           </View>
           <View className="gap-[20px] -mt-[10px] items-center">
             <Text
-              className="text-[14px] px-[32px]  text-[#2E2C43]  text-center"
+              className="text-[14px] px-[32px] text-[#001B33]   text-center"
               style={{ fontFamily: "Poppins-Regular" }}
             >
               Preview & Send your offer
@@ -232,7 +233,7 @@ const TermsandConditions = () => {
               <View style={styles.listItem}>
                 <Text style={styles.dot}></Text>
                
-                <Text style={{fontFamily:"Poppins-Regular",fontSize:14}}>
+                <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}>
                 <Text style={styles.boldText}>Do's:</Text>
                   {" "}
                   Only accept customer requests if you have the product
@@ -243,7 +244,7 @@ const TermsandConditions = () => {
               <View style={styles.listItem}>
                 <Text style={styles.dot}></Text>
                 
-                <Text style={{fontFamily:"Poppins-Regular",fontSize:14}}>
+                <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}>
                 <Text style={styles.boldText}>Don’ts:</Text>
                   {" "}
                   Customer complaints may lead to a permanent account block or a
@@ -252,7 +253,7 @@ const TermsandConditions = () => {
               </View>
               <View style={styles.listItem}>
                 <Text style={styles.dot}></Text>
-                <Text style={{fontFamily:"Poppins-Regular",fontSize:14}}>
+                <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}>
                 <Text style={styles.boldText}>Support:</Text>
                   {" "}
                   Tell us what you want to start, and we'll create your business
@@ -261,7 +262,7 @@ const TermsandConditions = () => {
               </View>
               <View style={styles.listItem}>
                 <Text style={styles.dot}></Text>
-                <Text style={{fontFamily:"Poppins-Regular",fontSize:14}}> 
+                <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}> 
                 <Text style={styles.boldText}>Grow Your Business:</Text>
                 {" "}
                 We will help you attract and keep customers.</Text>
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily:"Poppins-Black",
     marginTop: 10,
-
+    
     marginBottom: 30,
   },
   listItem: {

@@ -182,7 +182,7 @@ useEffect(()=>{
             <View className="flex flex-col mt-[20px]  gap-[32px] ">
                 <View className="flex flex-row justify-between items-center px-[32px]">
                   
-                        <TouchableOpacity onPress={()=>navigation.navigate("menu")} style={{padding:4}}>
+                        <TouchableOpacity onPress={()=>navigation.navigate("menu")} style={{padding:8}}>
                            <View className="bg-[#FB8C00] p-[4px] rounded-full">
                             <Profile />
                             </View>
@@ -190,7 +190,7 @@ useEffect(()=>{
                    
                     <GinieIcon/>
                     
-                        <TouchableOpacity onPress={()=>navigation.navigate("history")} style={{padding:4}}>
+                        <TouchableOpacity onPress={()=>navigation.navigate("history")} style={{padding:8}}>
                         <View className="bg-[#FB8C00] p-[4px] rounded-full">
                             <History height={28} width={28}/>
                             </View>

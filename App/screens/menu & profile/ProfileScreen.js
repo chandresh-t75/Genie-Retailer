@@ -300,7 +300,7 @@ const ProfileScreen = () => {
             </Text>
           </View>
           <Text
-            className="text-center mb-[20px] capitalize"
+            className="text-center mb-[20px] capitalize text-[#2E2C43]"
             style={{ fontFamily: "Poppins-Regular" }}
           >
             {user?.storeName}
@@ -357,7 +357,7 @@ const ProfileScreen = () => {
             </View>
           </View>
           <View className="flex-row items-center justify-between px-[32px] my-[10px]">
-            <Text style={{ fontFamily: "Poppins-Regular" }}>Store Images</Text>
+            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2E2C43]">Store Images</Text>
             <TouchableOpacity
               onPress={() => {
                 handleEditIconPress("other");
@@ -415,7 +415,7 @@ const ProfileScreen = () => {
             <View className="px-[20px] mb-[10px]">
               <Text
                 style={{ fontFamily: "Poppins-Regular" }}
-                className="mb-[10px] "
+                className="mb-[10px] text-[#2E2C43] "
               >
                 Store Address
               </Text>
@@ -424,10 +424,11 @@ const ProfileScreen = () => {
                   value={user?.location}
                   placeholder={user?.location}
                   placeholderTextColor={"#dbcdbb"}
-                  className="w-[250px] text-[14px]  text-black capitalize"
+                  className="w-[250px] text-[14px]  text-[#2E2C43] capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
                   multiline={true}
                   scrollEnabled={true}
+                  editable={false}
                 />
                 <TouchableOpacity
                   onPress={() => {
@@ -461,7 +462,7 @@ const ProfileScreen = () => {
             <View className="px-[20px] mb-[10px]">
               <Text
                 style={{ fontFamily: "Poppins-Regular" }}
-                className="mb-[10px] "
+                className="mb-[10px] text-[#2E2C43]"
               >
                 Store Category
               </Text>
@@ -471,7 +472,7 @@ const ProfileScreen = () => {
                   editable={false}
                   placeholder={storeCategory}
                   placeholderTextColor={"#dbcdbb"}
-                  className="w-[250px] text-[14px] text-black capitalize"
+                  className="w-[250px] text-[14px] text-[#2E2C43] capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
                   multiline={true}
                   scrollEnabled={true}
@@ -497,9 +498,9 @@ const ProfileScreen = () => {
             />
           </View>
 
-          <View className="px-[20px] flex  gap-[26px] mb-[60px]">
+          <View className="px-[32px] flex  gap-[26px] mb-[60px]">
             <View className="flex-row items-center justify-between  my-[10px]">
-              <Text style={{ fontFamily: "Poppins-Regular" }}>
+              <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2E2C43]">
                 GST/Labor certificate
               </Text>
             </View>
@@ -530,7 +531,7 @@ const ProfileScreen = () => {
               <View>
                 <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
                   <Text
-                    className="text-center text-[14px]"
+                    className="text-center text-[14px] text-[#2E2C43]"
                     style={{ fontFamily: "Poppins-Regular" }}
                   >
                     No Certificates Uploaded
@@ -586,7 +587,7 @@ const EditableField = ({
           editable={editable}
           placeholder={label}
           placeholderTextColor={"#dbcdbb"}
-          className="w-[250px] text-[14px]  text-black capitalize"
+          className="w-[250px] text-[14px]  text-[#2E2C43] capitalize"
           style={{ fontFamily: "Poppins-Regular" }}
         />
         {label != "Mobile Number" && (

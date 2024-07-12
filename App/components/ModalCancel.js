@@ -34,8 +34,8 @@ const ModalCancel= ({modalVisible,setModalVisible,index,imagesLocal,setImagesLoc
                   <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl">
                       <ModalImg classname="w-[117px] h-[75px]"/>
                         <View className="">
-                             <Text className="text-[15px]  text-center" style={{ fontFamily: "Poppins-Bold" }}> Are you sure? </Text>
-                              <Text className="text-[14px]  text-center  pt-[8px]" style={{ fontFamily: "Poppins-Regular" }}>You are removing a Image reference. </Text>
+                             <Text className="text-[15px]  text-center text-[#001B33]" style={{ fontFamily: "Poppins-Bold" }}> Are you sure? </Text>
+                              <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>You are removing a Image reference. </Text>
                               
                         </View>
                         

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, ScrollView, Animated, Modal, Pressable, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DPIcon from "../assets/DPIcon.svg";
 import { formatDateTime, handleDownload, handleDownloadPress } from "../screens/utils/lib";
 import { Feather } from '@expo/vector-icons'; 
@@ -9,6 +9,14 @@ const RetailerMessage = ({ bidDetails, user }) => {
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [downloadProgress, setDownloadProgress] = useState({});
   
+  useEffect(() => {
+    if (downloadProgress[1] === 1) {
+      const timer = setTimeout(() => {
+        handleClose();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [downloadProgress]);
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
@@ -60,10 +68,10 @@ const RetailerMessage = ({ bidDetails, user }) => {
         </View>
         <View className="w-[60%]">
           <View className="flex flex-row justify-between">
-            <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-ExtraBold" }}>You</Text>
-            <Text className="text-[12px] text-[#2e2c43] " style={{ fontFamily: "Poppins-Regular" }}>{formattedTime}</Text>
+            <Text className="text-[14px] " style={{ fontFamily: "Poppins-ExtraBold" }}>You</Text>
+            <Text className="text-[12px] text-[#263238] " style={{ fontFamily: "Poppins-Regular" }}>{formattedTime}</Text>
           </View>
-          <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
+          <Text className="text-[14px] text-[#263238]" style={{ fontFamily: "Poppins-Regular" }}>
             {bidDetails?.message}
           </Text>
         </View>
@@ -140,8 +148,9 @@ const RetailerMessage = ({ bidDetails, user }) => {
                <TouchableOpacity
                 style={{
                   width: 300,
-                  backgroundColor: "#fb8c00",
+                  backgroundColor: "white",
                   height:50, 
+                 
                   borderRadius: 100,
                   marginTop:20,
                   justifyContent: "center",
@@ -152,7 +161,8 @@ const RetailerMessage = ({ bidDetails, user }) => {
                   handleDownload(
                     selectedImage,
                     downloadProgress,
-                    setDownloadProgress
+                    setDownloadProgress,
+                    
                   )
                  
                 }
@@ -160,7 +170,7 @@ const RetailerMessage = ({ bidDetails, user }) => {
                 {downloadProgress[1] !== undefined && (
                 <View style={[
                   styles.progress,
-                  { backgroundColor: interpolateColor(downloadProgress[1]) },
+                  { borderColor: interpolateColor(downloadProgress[1]) },
                 ]}>
                   <Text style={styles.progresstext}>
   {downloadProgress[1] !== 1 ? `${Math.round(downloadProgress[1] * 100)}%` : "Downloaded"}
@@ -170,10 +180,21 @@ const RetailerMessage = ({ bidDetails, user }) => {
              
                {
                 !downloadProgress[1] &&
-                <View className="w-full flex flex-row  gap-[20px]  justify-center items-center">
+                <View className="w-full flex flex-row  gap-[20px]  justify-center items-center" style={ {borderColor: "#fb8c00",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 100,
+                  height:50,
+                  borderWidth:3}}>
 
-                <Text className="text-white text-[16px]" style={{ fontFamily: "Poppins-Bold" }} >Download</Text>
-                <Feather name="download" size={18} color="white" />
+                 
+                <Text className=" text-[16px] text-[#fb8c00]" style={{ fontFamily: "Poppins-Bold" }} >Download</Text>
+                <Feather name="download" size={18} color="#fb8c00" />
                 </View>
                }
                 
@@ -192,7 +213,7 @@ const RetailerMessage = ({ bidDetails, user }) => {
       )}
       {bidDetails?.bidPrice > 0 && (
         <View className="flex-row gap-[5px]">
-          <Text style={{ fontFamily: "Poppins-Medium" }}>Expected Price: </Text>
+          <Text style={{ fontFamily: "Poppins-Medium" }} className="text-[#263238]">Expected Price: </Text>
           <Text className=" text-[#79B649]" style={{ fontFamily: "Poppins-SemiBold" }}>
             Rs. {bidDetails.bidPrice}
           </Text>
@@ -273,7 +294,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    height:50
+    height:50,
+    borderWidth:3
   },
   progressText: {
     color: "white",
@@ -281,7 +303,7 @@ const styles = StyleSheet.create({
     
   },
   progresstext: {
-    color: "white",
+    color: "green",
     fontSize: 16,
     fontFamily:"Poppins-Bold",
     width:"100%",

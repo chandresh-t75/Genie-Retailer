@@ -25,9 +25,9 @@ const RemainingCustomerModal = ({modalConfirmVisible,setModalConfirmVisible}) =>
           <View className="flex-1  justify-center items-center">
                   <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl">
                       <RemainingCustomer width={139} height={115}/>
-                        <Text className="text-[16px]  text-center" style={{ fontFamily: "Poppins-Black" }}>Your online request limit</Text>
+                        <Text className="text-[16px]  text-center text-[#001B33]" style={{ fontFamily: "Poppins-Black" }}>Your online request limit</Text>
                         <View className="flex gap-[8px]">
-                            <Text className="text-[12px] text-center" style={{ fontFamily: "Poppins-Regular" }}>There are charges like 100 rupees for 1000 customers. So please accept and proceed with the customer's request carefully. Only accept requests when you have the right product availability.</Text>
+                            <Text className="text-[12px] text-center text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>There are charges like 100 rupees for 1000 customers. So please accept and proceed with the customer's request carefully. Only accept requests when you have the right product availability.</Text>
                             <Text className="text-[12px] text-center text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>T & C* Applied</Text>
                         </View>
                         

@@ -251,7 +251,7 @@ const BidQueryPage = () => {
                                 </TouchableOpacity>
                                 {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-40 absolute -top-10  right-0">Copied!</Text>}
           </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
+          <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
             {requestInfo?.requestId?.requestDescription
               ?.split(" ")
               .slice(0, 12)

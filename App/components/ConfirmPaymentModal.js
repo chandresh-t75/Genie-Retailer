@@ -25,9 +25,9 @@ const ConfirmPaymentModal = ({modalConfirmVisible,setModalConfirmVisible}) => {
           <View className="flex-1  justify-center items-center">
                   <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[20px] shadow-gray-600 shadow-2xl">
                       <RemainingCustomer width={139} height={115}/>
-                        <Text className="text-[16px]  text-center" style={{ fontFamily: "Poppins-Black" }}>Your remaining customers{"\n"}are over</Text>
+                        <Text className="text-[16px]  text-center text-[#001B33]" style={{ fontFamily: "Poppins-Black" }}>Your remaining customers{"\n"}are over</Text>
                         <View className="flex gap-[8px]">
-                            <Text className="text-[12px] text-center" style={{ fontFamily: "Poppins-Regular" }}>Please proceed for payment to accept new requests.</Text>
+                            <Text className="text-[12px] text-center text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>Please proceed for payment to accept new requests.</Text>
                             <Text className="text-[12px] text-center text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>T & C* Applied</Text>
                         </View>
                         

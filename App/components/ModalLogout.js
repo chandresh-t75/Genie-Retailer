@@ -80,10 +80,10 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
         <View className="bg-white w-[85%] px-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl  pt-[80px] pb-[40px]">
           <ModalImg classname="w-[117px] h-[75px]" />
           <View className="">
-            <Text className="text-[15px] text-center" style={{ fontFamily: "Poppins-Bold" }}>
+            <Text className="text-[15px] text-center text-[#001B33]" style={{ fontFamily: "Poppins-Bold" }}>
               Are you sure?{" "}
             </Text>
-            <Text className="text-[14px]  text-center  pt-[8px]" style={{ fontFamily: "Poppins-Regular" }}>
+            <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>
               you are trying to logout{" "}
             </Text>
           </View>

@@ -25,8 +25,8 @@ const ModalScreenConfirm = ({modalConfirmVisible,setModalConfirmVisible}) => {
                   <View className="bg-white w-[90%] p-[30px] pt-[40px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl">
                       <ModalImg classname="w-[117px] h-[75px]"/>
                         <View className="">
-                            <Text className="text-[15px] text-center text-[#2E2C43]" style={{ fontFamily: "Poppins-SemiBold" }}>Please go to the store before creating your business profile.</Text>
-                            <Text className="text-[12px] font-normal text-center  pt-[8px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>We will fetch the location of your shop to help customers find it. </Text>
+                            <Text className="text-[15px] text-center text-[#001B33]" style={{ fontFamily: "Poppins-SemiBold" }}>Please go to the store before creating your business profile.</Text>
+                            <Text className="text-[12px] font-normal text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>We will fetch the location of your shop to help customers find it. </Text>
                         </View>
                         
                             <View className="w-full flex flex-row  justify-center">

@@ -33,7 +33,7 @@ const SuccessConcernModal= ({modalVisible,setModalVisible}) => {
                        
                             <View >
                               
-                                  <Text className="text-[14.5px]   text-center" style={{ fontFamily: "Poppins-SemiBold" }}>Help request submitted {"\n"}
+                                  <Text className="text-[14.5px]   text-center text-[#001B33]" style={{ fontFamily: "Poppins-SemiBold" }}>Help request submitted {"\n"}
                                   successfully</Text>
                        
                                

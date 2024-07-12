@@ -27,6 +27,7 @@ import {
   import AsyncStorage from "@react-native-async-storage/async-storage";
   import axios from "axios";
   import BackArrow from "../../assets/arrow-left.svg"
+import ModalUpdateLocationConfirm from "../../components/ModalUpdateLocationConfirm";
   
   
   
@@ -52,7 +53,7 @@ import {
   
   
     useEffect(() => {
-      fetchLocation();
+      handleRefreshLocation();
     }, []);
   
     const getLocationName = async (lat, lon) => {
@@ -79,7 +80,7 @@ import {
     };
   
     const fetchLocation = async () => {
-      setLoading(true);
+      
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
@@ -88,13 +89,13 @@ import {
         }
   
         let location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.BestForNavigation,
-          // Add timeout to avoid infinite wait in case of failure
-          timeout: 10000,
-          // Optionally, maximum age of a previously cached location
-          maximumAge: 1000,
+         
+       
+          accuracy: Location.Accuracy.Lowest, // Increase accuracy level
+          timeInterval: 5000, // Set time interval to 5 seconds
+          distanceInterval: 0.1,
         });
-        // console.log(location);
+        console.log(location);
         const { latitude, longitude } = location.coords;
         setLatitude(Number(latitude)); // Ensure values are stored as numbers
         setLongitude(Number(longitude));
@@ -104,18 +105,39 @@ import {
         setLoc({ latitude, longitude });
        
         await getLocationName(latitude, longitude);
+
        
   
         // }
       } catch (error) {
         console.error("Error fetching location:", error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
   
-    const handleRefreshLocation = () => {
-      fetchLocation();
+    const handleRefreshLocation = async() => {
+      setLoading(true);
+      try{
+      for (let i = 0; i < 3; i++) {
+        try {
+          console.log("Refreshing location",i)
+          await fetchLocation();
+    
+         
+        } catch (error) {
+          console.error(`Attempt ${i + 1} failed:`, error);
+          if (i === retries - 1) {
+            throw error;
+          }
+        }
+      }
+      
+    }catch(error){
+      console.error(`location failed:`, error);
+          
+    }finally {
+      setLoading(false);
+    }
+      
     };
   
     const handleLocation = (storeLocation) => {
@@ -132,7 +154,7 @@ import {
     };
     
     const handleLocationFetching = async () => {
-    
+      setLoading(true);
   
       try {
         console.log("Location:", storeLocation, "user", user);
@@ -163,6 +185,7 @@ import {
         
         
         navigation.navigate("profile");
+        setLoading(false);
       } catch (error) {
         console.error("Failed to update location:", error);
         // Optionally handle error differently here
@@ -279,7 +302,7 @@ import {
               setModalVisible={setModalVisible}
               setModalConfirmVisible={setModalConfirmVisible}
             />
-            <ModalScreenConfirm
+            <ModalUpdateLocationConfirm
               modalConfirmVisible={modalConfirmVisible}
               setModalConfirmVisible={setModalConfirmVisible}
             />

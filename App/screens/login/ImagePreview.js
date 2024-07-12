@@ -97,7 +97,7 @@ const [loading,setLoading] = useState(false);
                              <BackArrow  />
 
             </TouchableOpacity>
-          <Text className="flex flex-1 justify-center items-center text-center text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>
+          <Text className="flex flex-1 justify-center items-center text-center text-[16px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
             Select Store Profile{"\n"}Picture
           </Text>
         </View>

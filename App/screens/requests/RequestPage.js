@@ -61,6 +61,8 @@ import ConfirmPaymentModal from "../../components/ConfirmPaymentModal";
 import UploadGSTModal from "../../components/UploadGSTModal";
 import { daysDifference } from "../utils/lib";
 import { setUserDetails } from "../../redux/reducers/storeDataSlice";
+import { Dimensions } from "react-native";
+import LocationMessage from "../../components/LocationMessage";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -73,6 +75,7 @@ const RequestPage = () => {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
   const scrollViewRef = useRef(null);
+  const { width } = Dimensions.get("window");
 
   // const [requestInfo, setRequestInfo] = useState();
   // const [user, setUser] = useState();
@@ -561,6 +564,14 @@ const RequestPage = () => {
   const lastMessage = messages[messages.length - 1];
   console.log("last Mesage: ", lastMessage);
 
+  const [viewHeight, setViewHeight] = useState(0);
+
+  const handleLayout = (event) => {
+    const { height } = event.nativeEvent.layout;
+    setViewHeight(height);
+    console.log("heightof section",height)
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       {attachmentScreen && (
@@ -576,7 +587,8 @@ const RequestPage = () => {
         </View>
       )}
       <View className="relative">
-        <View className=" relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px]">
+        <View onLayout={handleLayout}>
+        <View className="relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px]">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -635,20 +647,20 @@ const RequestPage = () => {
           </TouchableOpacity>
         </View>
         {modal && (
-          <View className="absolute top-[16px] right-[80px]  bg-white rounded-md">
+          <View className="absolute z-50 top-[16px] right-[80px]  bg-white rounded-md">
             <TouchableOpacity
               onPress={() => {
                 setModal(!modal);
                 navigation.navigate("viewrequest");
               }}
               style={{
-                padding: 9,
+                padding: 12,
                 borderBottomColor: "gray",
                 borderBottomWidth: 1,
                 marginHorizontal: 8,
               }}
             >
-              <Text className="mx-5" style={{ fontFamily: "Poppins-Regular" }}>
+              <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
                 View Request
               </Text>
             </TouchableOpacity>
@@ -658,9 +670,9 @@ const RequestPage = () => {
                 const requestId = requestInfo?.requestId?._id;
                 navigation.navigate("customer-report", { requestId });
               }}
-              style={{ padding: 9 }}
+              style={{ padding: 12 }}
             >
-              <Text className="mx-5" style={{ fontFamily: "Poppins-Regular" }}>
+              <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
                 Report Customer
               </Text>
             </TouchableOpacity>
@@ -692,7 +704,7 @@ const RequestPage = () => {
               </Text>
             )}
           </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
+          <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
             {requestInfo?.requestId?.requestDescription
               ?.split(" ")
               .slice(0, 12)
@@ -703,8 +715,17 @@ const RequestPage = () => {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}
         </View>
+        </View>
 
         {/*  message are mapped here */}
+
+        {messages[messages?.length - 1]?.bidType === "true" && messages[messages?.length - 1]?.bidAccepted === "new" &&
+                        messages[messages?.length - 1]?.sender?.type ===
+                        "UserRequest" && <View style={{ backgroundColor: "rgba(0,0,0,0.3 )", height:1000,width:width, position: 'absolute', zIndex: 100, top:viewHeight }}></View>}
+
+{requestInfo?.requestType !== "closed" &&
+          requestInfo?.requestType === "new" &&
+          available === false && <View style={{ backgroundColor: "rgba(0,0,0,0.3)", height:1000,width:width, position: 'absolute', zIndex: 100, top:viewHeight }}></View>}
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
@@ -864,8 +885,17 @@ const RequestPage = () => {
                         >
                           <UserMessage bidDetails={message} />
                         </View>
-                      );
-                    } else {
+                      ); 
+                    }else if (message?.bidType === "location"){
+                      return (
+                        <View
+                          key={message?._id}
+                          className="flex flex-row justify-start"
+                        >
+                          <LocationMessage bidDetails={message} />
+                        </View>
+                      ); 
+                    }  else {
                       return (
                         <View
                           key={message?._id}
@@ -898,6 +928,7 @@ const RequestPage = () => {
                         </View>
                       );
                     }
+                   
                   }
                 })}
             </View>
@@ -1024,7 +1055,8 @@ const RequestPage = () => {
             (messages[messages.length - 1]?.bidType === "true" &&
               messages[messages.length - 1]?.bidAccepted === "rejected") ||
             messages[messages.length - 1]?.bidType === "false" ||
-            messages[messages.length - 1]?.bidType === "image") && (
+            messages[messages.length - 1]?.bidType === "image" ||
+            messages[messages.length - 1]?.bidType === "location") && (
             <View
               className="flex flex-row bg-white items-center justify-center"
               style={{ padding: 10 }}
@@ -1170,7 +1202,8 @@ const RequestPage = () => {
           ((messages[messages.length - 1]?.bidType === "true" &&
             messages[messages.length - 1]?.bidAccepted === "rejected") ||
             messages[messages.length - 1]?.bidType === "false" ||
-            messages[messages.length - 1]?.bidType === "image") && (
+            messages[messages.length - 1]?.bidType === "image"||
+            messages[messages.length - 1]?.bidType === "location") && (
             <View className="gap-[20px] bg-white pt-2">
               <TouchableOpacity
                 onPress={() =>

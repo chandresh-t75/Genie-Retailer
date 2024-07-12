@@ -226,42 +226,7 @@ const PanCardScreen = () => {
     }
   }
 
-  // const getImageUrl = async (image) => {
-  //   setLoading(true);
-  //   const CLOUDINARY_URL =
-  //     "https://api.cloudinary.com/v1_1/kumarvivek/image/upload";
-  //   const base64Img = `data:image/jpg;base64,${image.base64}`;
-  //   const data = {
-  //     file: base64Img,
-  //     upload_preset: "CulturTap",
-  //     quality: 50,
-  //   };
-
-  //   try {
-  //     const response = await fetch(CLOUDINARY_URL, {
-  //       body: JSON.stringify(data),
-  //       headers: {
-  //         "content-type": "application/json",
-  //       },
-  //       method: "POST",
-  //     });
-
-  //     const result = await response.json();
-  //     if (result.secure_url) {
-  //       setImagesLocal(result.secure_url);
-  //       dispatch(setPanScreenImage(result.secure_url));
-  //       dispatch(setPanCard(result.secure_url));
-  //       setPanCardLocal(result.secure_url);
-  //       console.log("panImage",result.secure_url);
-
-  //       setCameraScreen(false);
-  //       setLoading(false);
-  //     }
-  //   } catch (err) {
-  //     setLoading(false);
-  //     console.log(err);
-  //   }
-  // };
+ 
 
 
 
@@ -356,7 +321,7 @@ const PanCardScreen = () => {
               }}
             >
               <Text
-                style={{ fontSize: 16, color: "#2e2c43", fontFamily: "Poppins-SemiBold" }}
+                style={{ fontSize: 16, color: "#2e2c43", fontFamily: "Poppins-SemiBold" } }
               >
                 Please submit your documents
               </Text>
@@ -451,7 +416,7 @@ const PanCardScreen = () => {
               }}
             >
               <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
+                <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
                 <FontAwesome name="arrow-right" size={15} color="black" />
 
               </View>
@@ -464,7 +429,7 @@ const PanCardScreen = () => {
               }}
             >
               <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+                <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
                 <FontAwesome name="arrow-right" size={15} color="black" />
               </View>
             </TouchableOpacity>

@@ -83,8 +83,8 @@ const HelpScreen = () => {
 
                         <View style={{ marginTop: 40, marginBottom: 40 }}>
                             <View style={{ marginBottom: 40 }}>
-                                <Text style={{ fontSize: 16, fontFamily:"Poppins-Bold" }}>Help</Text>
-                                <Text style={{ fontFamily: "Poppins-Regular" }}>Tell us your concern!</Text>
+                                <Text style={{ fontSize: 16, fontFamily:"Poppins-Bold" }} className="text-[#001B33]">Help</Text>
+                                <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#001B33]">Tell us your concern!</Text>
                             </View>
                             <TextInput
                                 multiline
@@ -99,10 +99,10 @@ const HelpScreen = () => {
                         </View>
 
                         <View className="mb-[40px]">
-                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10,fontFamily:"Poppins-Bold" }}>Or</Text>
-                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 ,fontFamily:"Poppins-Regular"}}>Submit your concern with us at</Text>
+                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10,fontFamily:"Poppins-Bold" }} className="text-[#001B33]">Or</Text>
+                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 ,fontFamily:"Poppins-Regular"}} className="text-[#001B33]">Submit your concern with us at</Text>
                             <Pressable onPress={() => console.log("hii email")}>
-                                <Text style={{ color: '#FB8C00' ,fontSize: 16, textAlign: 'center' ,fontFamily:"Poppins-Bold"}}>Info@culturtap.com</Text>
+                                <Text style={{ color: '#FB8C00' ,fontSize: 16, textAlign: 'center' ,fontFamily:"Poppins-Bold"}} className="text-[#001B33]">Info@culturtap.com</Text>
                             </Pressable>
                         </View>
                     </View>

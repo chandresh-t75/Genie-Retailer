@@ -159,7 +159,7 @@ const BidOfferedPrice = () => {
                                 </TouchableOpacity>
                                 {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-50 absolute -top-10 right-0">Copied!</Text>}
           </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
+          <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
             {requestInfo?.requestId?.requestDescription
               ?.split(" ")
               .slice(0, 12)
@@ -178,7 +178,7 @@ const BidOfferedPrice = () => {
                     Step 3/3
                   </Text>
               </View>
-              <Text style={{ fontFamily: "Poppins-Regular" }}>Tell the customer your offered price.</Text>
+              <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">Tell the customer your offered price.</Text>
               <View className="bg-white p-4 rounded-lg text-center">
                 <TextInput
                   onChangeText={handleOfferedPrice}

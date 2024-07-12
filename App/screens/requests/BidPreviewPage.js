@@ -250,7 +250,7 @@ const BidPreviewPage = () => {
                                 </TouchableOpacity>
                                 {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-50 absolute -top-10 right-0">Copied!</Text>}
           </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
+          <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
             {requestInfo?.requestId?.requestDescription
               ?.split(" ")
               .slice(0, 12)
@@ -264,14 +264,14 @@ const BidPreviewPage = () => {
 
           <View className="flex gap-[21px]  pt-[10px] pb-[100px]">
             <View className="flex-row justify-between px-[40px]">
-              <Text className="" style={{ fontFamily: "Poppins-Bold" }}>Preview your offer response</Text>
+              <Text  style={{ fontFamily: "Poppins-Bold" }} className="text-[#2e2c43]">Preview your offer response</Text>
             </View>
             <View className="px-[40px]">
               {/* <Text>{user?.storeOwnerName}</Text> */}
-              <Text style={{ fontFamily: "Poppins-Regular" }}>{bidDetails}</Text>
+              <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">{bidDetails}</Text>
             </View>
             <View className="gap-[10px]">
-              <Text className=" text-[14px] px-[40px]" style={{ fontFamily: "Poppins-SemiBold" }}>
+              <Text className=" text-[14px] px-[40px] text-[#2e2c43]" style={{ fontFamily: "Poppins-SemiBold" }}>
                 Reference Images
               </Text>
               {bidImages ? (
@@ -312,13 +312,13 @@ const BidPreviewPage = () => {
               )}
             </View>
             <View className="gap-[0px] px-[40px]">
-              <Text className=" text-[14px]" style={{ fontFamily: "Poppins-SemiBold" }}>Offered Price</Text>
+              <Text className=" text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-SemiBold" }}>Offered Price</Text>
               <Text className=" text-[24px] text-[#558B2F]" style={{ fontFamily: "Poppins-Bold" }}>
                  {bidOfferedPrice?`Rs ${bidOfferedPrice}`:"Na"}
               </Text>
             </View>
             <View className="gap-[0px] px-[40px]">
-              <Text className=" text-[14px]" style={{ fontFamily: "Poppins-SemiBold" }}>
+              <Text className=" text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-SemiBold" }}>
                 Product Warranty
               </Text>
               <Text className=" text-[24px] text-[#558B2F]" style={{ fontFamily: "Poppins-Bold" }}>

@@ -29,6 +29,15 @@ const UserMessage = ({ bidDetails }) => {
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [downloadProgress, setDownloadProgress] = useState({});
 
+  useEffect(() => {
+    if (downloadProgress[1] === 1) {
+      const timer = setTimeout(() => {
+        handleClose();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [downloadProgress]);
+
   const handleImagePress = (image) => {
     setSelectedImage(image);
     Animated.timing(scaleAnimation, {
@@ -83,21 +92,21 @@ const UserMessage = ({ bidDetails }) => {
         <View className="w-[60%]">
           <View className="w-full flex  flex-row justify-between">
             <Text
-              className="w-[70%] text-[14px] flex flex-wrap flex-row text-[#2e2c43] capitalize"
+              className="w-[70%] text-[14px] flex flex-wrap flex-row  capitalize"
               style={{ fontFamily: "Poppins-ExtraBold" }}
             >
               {requestInfo?.customerId?.userName}
             </Text>
 
             <Text
-              className="text-[12px] text-[#2e2c43] "
+              className="text-[12px] text-[#263238] "
               style={{ fontFamily: "Poppins-Regular" }}
             >
               {formattedTime}
             </Text>
           </View>
           <Text
-            className="text-[14px] text-[#2e2c43]"
+            className="text-[14px] text-[#263238]"
             style={{ fontFamily: "Poppins-Regular" }}
           >
             {bidDetails.message}
@@ -154,13 +163,15 @@ const UserMessage = ({ bidDetails }) => {
                 </View>
               )}
             </View>
+            
           ))}
-          <Modal
+            <Modal
             transparent
             visible={!!selectedImage}
             onRequestClose={handleClose}
             downloadProgress={downloadProgress}
             setDownloadProgress={setDownloadProgress}
+           
           >
             <Pressable style={styles.modalContainer} onPress={handleClose}>
               <Animated.Image
@@ -172,13 +183,14 @@ const UserMessage = ({ bidDetails }) => {
                   },
                 ]}
               />
-              <TouchableOpacity
+               <TouchableOpacity
                 style={{
                   width: 300,
-                  backgroundColor: "#fb8c00",
-                  height: 50,
+                  backgroundColor: "white",
+                  height:50, 
+                 
                   borderRadius: 100,
-                  marginTop: 20,
+                  marginTop:20,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -187,46 +199,59 @@ const UserMessage = ({ bidDetails }) => {
                   handleDownload(
                     selectedImage,
                     downloadProgress,
-                    setDownloadProgress
+                    setDownloadProgress,
+                    
                   )
+                 
                 }
               >
                 {downloadProgress[1] !== undefined && (
-                  <View
-                    style={[
-                      styles.progress,
-                      {
-                        backgroundColor: interpolateColor(downloadProgress[1]),
-                      },
-                    ]}
-                  >
-                    <Text style={styles.progresstext}>
-                      {downloadProgress[1] !== 1
-                        ? `${Math.round(downloadProgress[1] * 100)}%`
-                        : "Downloaded"}
-                    </Text>
-                  </View>
-                )}
+                <View style={[
+                  styles.progress,
+                  { borderColor: interpolateColor(downloadProgress[1]) },
+                ]}>
+                  <Text style={styles.progresstext}>
+  {downloadProgress[1] !== 1 ? `${Math.round(downloadProgress[1] * 100)}%` : "Downloaded"}
+</Text>
+                </View>
+              )}
+             
+               {
+                !downloadProgress[1] &&
+                <View className="w-full flex flex-row  gap-[20px]  justify-center items-center" style={ {borderColor: "#fb8c00",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 100,
+                  height:50,
+                  borderWidth:3}}>
 
-                {!downloadProgress[1] && (
-                  <View className="w-full flex flex-row  gap-[20px]  justify-center items-center">
-                    <Text
-                      className="text-white text-[16px]"
-                      style={{ fontFamily: "Poppins-Bold" }}
-                    >
-                      Download
-                    </Text>
-                    <Feather name="download" size={18} color="white" />
-                  </View>
-                )}
+                 
+                <Text className=" text-[16px] text-[#fb8c00]" style={{ fontFamily: "Poppins-Bold" }} >Download</Text>
+                <Feather name="download" size={18} color="#fb8c00" />
+                </View>
+               }
+                
+              
+
+
+             
+
+
+               
               </TouchableOpacity>
+              
             </Pressable>
           </Modal>
         </ScrollView>
       )}
       {bidDetails?.bidPrice > 0 && (
-        <View className="flex-row gap-[5px]">
-          <Text style={{ fontFamily: "Poppins-Medium" }}>Expected Price: </Text>
+        <View className="flex-row gap-[5px] ">
+          <Text style={{ fontFamily: "Poppins-Medium" }} className="text-[#263238]">Expected Price: </Text>
           <Text
             className="font-bold text-[#79B649]"
             style={{ fontFamily: "Poppins-SemiBold" }}
@@ -307,17 +332,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    height: 50,
+    height:50,
+    borderWidth:3
   },
   progressText: {
     color: "white",
     fontSize: 16,
+    
   },
   progresstext: {
-    color: "white",
+    color: "green",
     fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    width: "100%",
-    textAlign: "center",
+    fontFamily:"Poppins-Bold",
+    width:"100%",
+    textAlign:"center"
   },
 });

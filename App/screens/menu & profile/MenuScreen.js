@@ -83,7 +83,7 @@ const MenuScreen = () => {
                     shadowOpacity: 0.35,
                     shadowRadius: 50,
                     elevation: 80,
-                    borderRadius:8,
+                    borderRadius:16,
                    borderWidth: .5,
                    borderColor: 'rgba(0, 0, 0, 0.05)'
                   }}
@@ -100,7 +100,7 @@ const MenuScreen = () => {
                         }
                         <View className="flex-col w-[70%]">
                             <Text className=" text-[16px] flex  capitalize" style={{ fontFamily: "Poppins-Black" }}>{user?.storeName}</Text>
-                            <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeMobileNo}</Text>
+                            <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeMobileNo}</Text>
                         </View>
                     </View>
 

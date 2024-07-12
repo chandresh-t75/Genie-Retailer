@@ -202,7 +202,7 @@ const  GSTDocumentVerify = () => {
      setImagesLocal("");
      dispatch(setPanCard(""));
         setPanCardLocal("");
-  };
+  }; 
   
 
 
