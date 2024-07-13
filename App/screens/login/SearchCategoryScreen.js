@@ -125,8 +125,8 @@ const SearchCategoryScreen = () => {
             Step 4/6
           </Text>
 
-          <View className="flex flex-row h-[60px] border-[1px] items-center border-[#000000] border-opacity-25 rounded-[24px] mb-[50px] bg-white">
-  <Octicons name="search" size={19} style={{ paddingLeft: 20, position: 'absolute', left: 0 }} />
+  <View className="flex flex-row h-[60px] border-[1px] items-center border-[#000000] border-opacity-25 rounded-[24px] mb-[50px] bg-white">
+  <Octicons name="search" size={19} style={{paddingLeft: 20, position: 'absolute', left: 0 }} />
   <TextInput
     placeholder="Search here...."
     placeholderTextColor="#DBCDBB"

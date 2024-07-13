@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, BackHandler, TouchableOpacity, RefreshControl, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ScrollView, BackHandler, TouchableOpacity, RefreshControl, StyleSheet, Dimensions } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Profile from "../assets/ProfileIcon.svg"
@@ -175,9 +175,8 @@ useEffect(()=>{
 
 
     return (
-        <View className="flex-1 bg-white ">
+        <View className="flex-1 bg-white " >
             <ScrollView 
-          
           >
             <View className="flex flex-col mt-[20px]  gap-[32px] ">
                 <View className="flex flex-row justify-between items-center px-[32px]">

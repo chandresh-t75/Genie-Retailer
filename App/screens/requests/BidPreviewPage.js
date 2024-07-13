@@ -153,7 +153,7 @@ const BidPreviewPage = () => {
             userId: requestInfo?.users[1]._id
           },
            tag: user?._id,
-           price: bidOfferedPrice,
+           price:bidOfferedPrice,
            image:response?.data?.bidImages?.length>0?response?.data?.bidImages[0]:"",
            redirect_to: "bargain",
          };
