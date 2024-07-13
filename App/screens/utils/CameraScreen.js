@@ -49,7 +49,7 @@ const CameraScreen = () => {
   const ongoingRequests = useSelector(
     (state) => state.requestData.ongoingRequests || []
   );
-  const user=useSelector(state=>state.storeData.userDetails);
+  const user = useSelector(state => state.storeData.userDetails);
 
 
 
@@ -59,12 +59,12 @@ const CameraScreen = () => {
     const formData = new FormData();
     // imageUri.forEach((uri, index) => {
     formData.append('bidImages', {
-        uri: imageUri,  // Correctly use the URI property from ImagePicker result
-        type: 'image/jpeg', // Adjust this based on the image type
-        name: `photo-${Date.now()}.jpg`,
+      uri: imageUri,  // Correctly use the URI property from ImagePicker result
+      type: 'image/jpeg', // Adjust this based on the image type
+      name: `photo-${Date.now()}.jpg`,
     });        // });
 
-    formData.append('sender', JSON.stringify({   type: "Retailer", refId: user?._id, }));
+    formData.append('sender', JSON.stringify({ type: "Retailer", refId: user?._id, }));
     formData.append('userRequest', requestInfo?.requestId?._id);
     formData.append('message', query);
     formData.append('bidType', "false");
@@ -73,13 +73,12 @@ const CameraScreen = () => {
     await axios
       .post("http://173.212.193.109:5000/chat/send-message", formData, {
         headers: {
-            'Content-Type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
         },
       })
       .then(async (res) => {
-        console.log(res.data);
+        // console.log(res.data);
         let mess = [...messages];
-        console.log("query send", mess);
         mess.push(res.data);
         //  console.log("query update",mess);
 
@@ -88,24 +87,24 @@ const CameraScreen = () => {
 
         // setAttachmentScreen(false);
         const filteredRequests = ongoingRequests.filter(
-          (request) => request._id !==requestInfo._id
+          (request) => request._id !== requestInfo._id
         );
         const requests = ongoingRequests.filter(
-          (request) => request._id ===requestInfo._id
+          (request) => request._id === requestInfo._id
         );
-        const updatedRequest={...requests[0],updatedAt:new Date().toISOString(),unreadCount:0}
+        const updatedRequest = { ...requests[0], updatedAt: new Date().toISOString(), unreadCount: 0 }
 
-        const data=[updatedRequest,...filteredRequests];
-         dispatch(setOngoingRequests(data));
-         dispatch(setRequestInfo(updatedRequest));
-       
-        const req={
-          requestId:updatedRequest?._id,
-          userId:updatedRequest?.users[0]._id
+        const data = [updatedRequest, ...filteredRequests];
+        dispatch(setOngoingRequests(data));
+        dispatch(setRequestInfo(updatedRequest));
+
+        const req = {
+          requestId: updatedRequest?._id,
+          userId: updatedRequest?.users[0]._id
         };
 
         // console.log("notification send", notification);
-        const requestId=req?.requestId
+        const requestId = req?.requestId
         navigation.navigate(`requestPage${requestId}`);
         setIsLoading(false)
         const token = await axios.get(
@@ -122,14 +121,14 @@ const CameraScreen = () => {
             },
             tag: user?._id,
             redirect_to: "bargain",
-            image:res?.data?.bidImages?.length>0?res?.data?.bidImages[0]:"",
+            image: res?.data?.bidImages?.length > 0 ? res?.data?.bidImages[0] : "",
           };
 
           sendCustomNotificationAttachment(notification);
         }
       })
       .catch((err) => {
-    setIsLoading(false)
+        setIsLoading(false)
 
         console.log(err);
       });
@@ -223,7 +222,7 @@ const CameraScreen = () => {
           const newImageUri = response.assets[0].uri;
           const compressedImage = await manipulateAsync(
             newImageUri,
-            [{ resize: { width: 600, height: 800 } }], 
+            [{ resize: { width: 600, height: 800 } }],
             { compress: 0.5, format: "jpeg", base64: true }
           );
           // await getImageUrl(compressedImage);
@@ -249,13 +248,13 @@ const CameraScreen = () => {
     if (!result.canceled) {
       // getImageUrl(result.assets[0]);
       const newImageUri = result.assets[0].uri;
-          const compressedImage = await manipulateAsync(
-            newImageUri,
-            [{ resize: { width: 600, height: 800 } }], 
-            { compress: 0.5, format: "jpeg", base64: true }
-          );
-          // await getImageUrl(compressedImage);
-          setImageUri(compressedImage.uri);
+      const compressedImage = await manipulateAsync(
+        newImageUri,
+        [{ resize: { width: 600, height: 800 } }],
+        { compress: 0.5, format: "jpeg", base64: true }
+      );
+      // await getImageUrl(compressedImage);
+      setImageUri(compressedImage.uri);
     }
   };
 
@@ -325,12 +324,12 @@ const CameraScreen = () => {
                 sendAttachment();
               }}
             >
-               {isLoading ? (
+              {isLoading ? (
                 <View className="bg-[#fb8c00] p-[20px] rounded-full">
                   <ActivityIndicator size="small" color="#ffffff" />
                 </View>
               ) : (
-              <Send />)}
+                <Send />)}
             </TouchableOpacity>
           </View>
         </View>
