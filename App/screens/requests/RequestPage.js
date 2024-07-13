@@ -63,6 +63,9 @@ import { daysDifference } from "../utils/lib";
 import { setUserDetails } from "../../redux/reducers/storeDataSlice";
 import { Dimensions } from "react-native";
 import LocationMessage from "../../components/LocationMessage";
+import SendDocument from "../../components/SendDocument";
+import UserDocumentMessage from "../../components/userDocumentMessage";
+import RetailerDocumentMessage from "../../components/RetailerDocumentMessage";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -569,7 +572,7 @@ const RequestPage = () => {
   const handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
     setViewHeight(height);
-    console.log("heightof section",height)
+    console.log("heightof section", height)
   };
 
   return (
@@ -588,144 +591,144 @@ const RequestPage = () => {
       )}
       <View className="relative">
         <View onLayout={handleLayout}>
-        <View className="relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px]">
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={{ padding: 20, paddingRight: 5, zIndex: 30 }}
-          >
-            <BackArrow />
-          </TouchableOpacity>
+          <View className="relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px]">
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+              style={{ padding: 20, paddingRight: 5, zIndex: 30 }}
+            >
+              <BackArrow />
+            </TouchableOpacity>
 
-          <View className="gap-[9px] w-[70%]">
-            <View className="flex-row gap-[18px] items-center">
-              <View className=" flex items-center justify-center rounded-full ml-2 p-[4px] bg-white ">
-                {requestInfo?.customerId?.pic ? (
-                  <Image
-                    source={{ uri: requestInfo?.customerId?.pic }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      objectFit: "cover",
-                    }}
+            <View className="gap-[9px] w-[70%]">
+              <View className="flex-row gap-[18px] items-center">
+                <View className=" flex items-center justify-center rounded-full ml-2 p-[4px] bg-white ">
+                  {requestInfo?.customerId?.pic ? (
+                    <Image
+                      source={{ uri: requestInfo?.customerId?.pic }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 20,
+                        objectFit: "cover",
+                      }}
                     // className="w-[40px] h-[40px] rounded-full"
-                  />
-                ) : (
-                  <Profile className="w-full h-full rounded-full" />
-                )}
-              </View>
-              <View className="">
-                <Text
-                  className="text-[14px]  text-[#2e2c43] capitalize"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  {requestInfo?.customerId?.userName?.substring(0, 20)}
-                  {requestInfo?.customerId?.userName?.length > 20 && (
-                    <Text>...</Text>
+                    />
+                  ) : (
+                    <Profile className="w-full h-full rounded-full" />
                   )}
-                </Text>
-                <Text
-                  className="text-[12px] text-[#79B649]"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  Online
-                </Text>
+                </View>
+                <View className="">
+                  <Text
+                    className="text-[14px]  text-[#2e2c43] capitalize"
+                    style={{ fontFamily: "Poppins-Regular" }}
+                  >
+                    {requestInfo?.customerId?.userName?.substring(0, 20)}
+                    {requestInfo?.customerId?.userName?.length > 20 && (
+                      <Text>...</Text>
+                    )}
+                  </Text>
+                  <Text
+                    className="text-[12px] text-[#79B649]"
+                    style={{ fontFamily: "Poppins-Regular" }}
+                  >
+                    Online
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              setModal(!modal);
-            }}
-          >
-            <View className="px-[20px] py-[10px] pr-[40px]">
-              <ThreeDots />
+            <TouchableOpacity
+              onPress={() => {
+                setModal(!modal);
+              }}
+            >
+              <View className="px-[20px] py-[10px] pr-[40px]">
+                <ThreeDots />
+              </View>
+            </TouchableOpacity>
+          </View>
+          {modal && (
+            <View className="absolute z-50 top-[16px] right-[80px]  bg-white rounded-md">
+              <TouchableOpacity
+                onPress={() => {
+                  setModal(!modal);
+                  navigation.navigate("viewrequest");
+                }}
+                style={{
+                  padding: 12,
+                  borderBottomColor: "gray",
+                  borderBottomWidth: 1,
+                  marginHorizontal: 8,
+                }}
+              >
+                <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
+                  View Request
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModal(!modal);
+                  const requestId = requestInfo?.requestId?._id;
+                  navigation.navigate("customer-report", { requestId });
+                }}
+                style={{ padding: 12 }}
+              >
+                <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
+                  Report Customer
+                </Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        </View>
-        {modal && (
-          <View className="absolute z-50 top-[16px] right-[80px]  bg-white rounded-md">
-            <TouchableOpacity
-              onPress={() => {
-                setModal(!modal);
-                navigation.navigate("viewrequest");
-              }}
-              style={{
-                padding: 12,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginHorizontal: 8,
-              }}
-            >
-              <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
-                View Request
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setModal(!modal);
-                const requestId = requestInfo?.requestId?._id;
-                navigation.navigate("customer-report", { requestId });
-              }}
-              style={{ padding: 12 }}
-            >
-              <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
-                Report Customer
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
+          )}
 
-        <View className="px-[40px] pb-[20px] flex bg-[#ffe7c8]">
-          <View className="flex-row gap-[10px] relative items-center">
-            <Text
-              className="text-[16px] "
-              style={{ fontFamily: "Poppins-Bold" }}
-            >
-              Request Id
-            </Text>
-            <Text style={{ fontFamily: "Poppins-Regular" }}>
-              {requestInfo?.requestId?._id}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                copyToClipboard();
-              }}
-              style={{ padding: 4 }}
-            >
-              <Copy />
-            </TouchableOpacity>
-            {copied && (
-              <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">
-                Copied!
+          <View className="px-[40px] pb-[20px] flex bg-[#ffe7c8]">
+            <View className="flex-row gap-[10px] relative items-center">
+              <Text
+                className="text-[16px] "
+                style={{ fontFamily: "Poppins-Bold" }}
+              >
+                Request Id
               </Text>
-            )}
-          </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
-            {requestInfo?.requestId?.requestDescription
-              ?.split(" ")
-              .slice(0, 12)
-              .join(" ")}
-            ....
-          </Text>
-          {/* {
+              <Text style={{ fontFamily: "Poppins-Regular" }}>
+                {requestInfo?.requestId?._id}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  copyToClipboard();
+                }}
+                style={{ padding: 4 }}
+              >
+                <Copy />
+              </TouchableOpacity>
+              {copied && (
+                <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">
+                  Copied!
+                </Text>
+              )}
+            </View>
+            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
+              {requestInfo?.requestId?.requestDescription
+                ?.split(" ")
+                .slice(0, 12)
+                .join(" ")}
+              ....
+            </Text>
+            {/* {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}
-        </View>
+          </View>
         </View>
 
         {/*  message are mapped here */}
 
         {messages[messages?.length - 1]?.bidType === "true" && messages[messages?.length - 1]?.bidAccepted === "new" &&
-                        messages[messages?.length - 1]?.sender?.type ===
-                        "UserRequest" && <View style={{ backgroundColor: "rgba(0,0,0,0.3 )", height:1000,width:width, position: 'absolute', zIndex: 100, top:viewHeight }}></View>}
+          messages[messages?.length - 1]?.sender?.type ===
+          "UserRequest" && <View style={{ backgroundColor: "rgba(0,0,0,0.3 )", height: 1000, width: width, position: 'absolute', zIndex: 100, top: viewHeight }}></View>}
 
-{requestInfo?.requestType !== "closed" &&
+        {requestInfo?.requestType !== "closed" &&
           requestInfo?.requestType === "new" &&
-          available === false && <View style={{ backgroundColor: "rgba(0,0,0,0.3)", height:1000,width:width, position: 'absolute', zIndex: 100, top:viewHeight }}></View>}
+          available === false && <View style={{ backgroundColor: "rgba(0,0,0,0.3)", height: 1000, width: width, position: 'absolute', zIndex: 100, top: viewHeight }}></View>}
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
@@ -885,8 +888,8 @@ const RequestPage = () => {
                         >
                           <UserMessage bidDetails={message} />
                         </View>
-                      ); 
-                    }else if (message?.bidType === "location"){
+                      );
+                    } else if (message?.bidType === "location") {
                       return (
                         <View
                           key={message?._id}
@@ -894,8 +897,18 @@ const RequestPage = () => {
                         >
                           <LocationMessage bidDetails={message} />
                         </View>
-                      ); 
-                    }  else {
+                      );
+                    }
+                    else if (message?.bidType === "document") {
+                      return (
+                        <View
+                          key={message?._id}
+                          className="flex flex-row justify-start"
+                        >
+                          <UserDocumentMessage bidDetails={message} />
+                        </View>
+                      );
+                    } else {
                       return (
                         <View
                           key={message?._id}
@@ -918,7 +931,21 @@ const RequestPage = () => {
                           />
                         </View>
                       );
-                    } else {
+                    }
+                    else if (message?.bidType === "document") {
+                      return (
+                        <View
+                          key={message?._id}
+                          className="flex flex-row justify-end"
+                        >
+                          <RetailerDocumentMessage
+                            bidDetails={message}
+
+                          />
+                        </View>
+                      );
+                    }
+                    else {
                       return (
                         <View
                           key={message?._id}
@@ -928,7 +955,7 @@ const RequestPage = () => {
                         </View>
                       );
                     }
-                   
+
                   }
                 })}
             </View>
@@ -940,9 +967,8 @@ const RequestPage = () => {
 
       {/* Typing Area */}
       <View
-        className={`absolute bottom-0 left-0 right-0 pt-[10] ${
-          attachmentScreen ? "-z-50" : "z-50"
-        } `}
+        className={`absolute bottom-0 left-0 right-0 pt-[10] ${attachmentScreen ? "-z-50" : "z-50"
+          } `}
       >
         {requestInfo?.requestType !== "closed" &&
           requestInfo?.requestType === "new" &&
@@ -1012,9 +1038,9 @@ const RequestPage = () => {
                   onPress={() => {
                     user?.freeSpades > 0
                       ? (() => {
-                          setAcceptRequestModal(true);
-                          setType("Request");
-                        })()
+                        setAcceptRequestModal(true);
+                        setType("Request");
+                      })()
                       : setConfirmPaymentModal(true);
                   }}
                   style={{ flex: 1 }}
@@ -1056,7 +1082,7 @@ const RequestPage = () => {
               messages[messages.length - 1]?.bidAccepted === "rejected") ||
             messages[messages.length - 1]?.bidType === "false" ||
             messages[messages.length - 1]?.bidType === "image" ||
-            messages[messages.length - 1]?.bidType === "location") && (
+            messages[messages.length - 1]?.bidType === "location" || messages[messages.length - 1]?.bidType === "document") && (
             <View
               className="flex flex-row bg-white items-center justify-center"
               style={{ padding: 10 }}
@@ -1166,7 +1192,7 @@ const RequestPage = () => {
 
               <View className="w-full flex-row justify-between">
                 <TouchableOpacity
-                  onPress={() => {setAcceptRequestModal(true);setType("Offer")}}
+                  onPress={() => { setAcceptRequestModal(true); setType("Offer") }}
                   style={{ flex: 1 }}
                 >
                   <View className="h-[63px] flex items-center justify-center border-[1px] bg-[#FB8C00] border-[#FB8C00]">
@@ -1202,8 +1228,8 @@ const RequestPage = () => {
           ((messages[messages.length - 1]?.bidType === "true" &&
             messages[messages.length - 1]?.bidAccepted === "rejected") ||
             messages[messages.length - 1]?.bidType === "false" ||
-            messages[messages.length - 1]?.bidType === "image"||
-            messages[messages.length - 1]?.bidType === "location") && (
+            messages[messages.length - 1]?.bidType === "image" ||
+            messages[messages.length - 1]?.bidType === "location" || messages[messages.length - 1]?.bidType === "document") && (
             <View className="gap-[20px] bg-white pt-2">
               <TouchableOpacity
                 onPress={() =>
@@ -1246,7 +1272,7 @@ const RequestPage = () => {
       <RequestCancelModal
         modalVisible={cancelRequestModal}
         setModalVisible={setCancelRequestModal}
-        // requestInfo={requestInfo}
+      // requestInfo={requestInfo}
       />
       {/* <RequestCancelModal
         modalVisible={closeRequestModal}

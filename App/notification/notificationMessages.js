@@ -1,14 +1,14 @@
 import { getAccessToken, getAccessTokenRetailer } from "./notification";
 
 export const BidAcceptedOtherRetailer = async (mess) => {
-  console.log("notify",mess.token)
+  console.log("notify", mess.token)
 
   try {
     const tokens = mess.token.slice(1);
 
     const accessToken = await getAccessTokenRetailer();
 
-    const url ="https://fcm.googleapis.com/v1/projects/genie-retailer/messages:send"; // Replace YOUR_PROJECT_ID with your actual project ID
+    const url = "https://fcm.googleapis.com/v1/projects/genie-retailer/messages:send"; // Replace YOUR_PROJECT_ID with your actual project ID
 
     const headers = {
       "Content-Type": "application/json; charset=UTF-8",
@@ -24,44 +24,44 @@ export const BidAcceptedOtherRetailer = async (mess) => {
       android: {
         priority: "high",
         notification: {
-          sound:"default"
-           },
-      data: {
-        redirect_to: "requestPage",
-        requestInfo: JSON.stringify(mess.requestInfo),
-      },
-    }
-}
-
-    for (const token of tokens) {
-      if(token?.length > 0) {
-      const message = {
-        message: {
-          token: token,
-          ...notification,
+          sound: "default"
         },
-      };
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(message),
-      });
-
-      const textResponse = await response.text();
-      console.log("Raw response:", textResponse);
-
-      if (!response.ok) {
-        console.error("Failed to send notification error:", textResponse);
-        throw new Error("Failed to send notification");
-      } else {
-        const successResponse = JSON.parse(textResponse);
-        console.log(
-          "Notification sent successfully:",
-         
-        );
+        data: {
+          redirect_to: "requestPage",
+          requestInfo: JSON.stringify(mess.requestInfo),
+        },
       }
     }
+
+    for (const token of tokens) {
+      if (token?.length > 0) {
+        const message = {
+          message: {
+            token: token,
+            ...notification,
+          },
+        };
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(message),
+        });
+
+        const textResponse = await response.text();
+        console.log("Raw response:", textResponse);
+
+        if (!response.ok) {
+          console.error("Failed to send notification error:", textResponse);
+          throw new Error("Failed to send notification");
+        } else {
+          const successResponse = JSON.parse(textResponse);
+          console.log(
+            "Notification sent successfully:",
+
+          );
+        }
+      }
     }
   } catch (e) {
     console.error("Failed to send notification:", e);
@@ -120,11 +120,11 @@ export const sendCustomNotificationToSingleUser = async (mess) => {
 
 export const sendCustomNotificationChat = async (mess) => {
   // console.log("requestNotify",JSON.stringify(`${mess.requestInfo}`));
-  console.log("token notify",mess.token)
+  console.log("token notify", mess.token)
   try {
     const message = {
       message: {
-        token:mess?.token,
+        token: mess?.token,
         notification: {
           title: mess.title,
           body: mess.body,
@@ -135,7 +135,7 @@ export const sendCustomNotificationChat = async (mess) => {
           notification: {
             sound: "default",
             //   icon: "fcm_push_icon",
-              // color:"#fcb800",
+            // color:"#fcb800",
             tag: mess?.tag,
           },
         },
@@ -147,10 +147,10 @@ export const sendCustomNotificationChat = async (mess) => {
     };
 
     const accessToken = await getAccessToken();
-    console.log("access token",accessToken);
+    console.log("access token", accessToken);
     // if(mess?.token.length > 0) {
 
-    const notificationResponse = await fetch( `https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
+    const notificationResponse = await fetch(`https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
       {
         method: "POST",
         headers: {
@@ -171,21 +171,22 @@ export const sendCustomNotificationChat = async (mess) => {
       const successResponse = JSON.parse(textResponse);
       console.log("Notification sent successfully:");
     }
-  // }
+    // }
   } catch (e) {
     console.error("Failed to send notification:", e);
   }
 };
+
 export const sendCustomNotificationBid = async (mess) => {
-  console.log("notify",mess.token)
+  console.log("notify", mess.token)
 
   try {
     const message = {
       message: {
-        token:mess?.token,
+        token: mess?.token,
         notification: {
-          title: `${mess.title} send a bid of ${mess.price}`,
-          body: mess.body,
+          title: mess.title,
+          body: `Offered Price: Rs ${mess.price}`,
           image: mess?.image,
         },
         android: {
@@ -194,7 +195,7 @@ export const sendCustomNotificationBid = async (mess) => {
             sound: "default",
             //   icon: "fcm_push_icon",
             //   color:"#fcb800",
-             tag:mess?.tag
+            tag: mess?.tag
           },
         },
         data: {
@@ -205,7 +206,7 @@ export const sendCustomNotificationBid = async (mess) => {
     };
 
     const accessToken = await getAccessToken();
-    
+
 
     const notificationResponse = await fetch(
       `https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
@@ -234,12 +235,12 @@ export const sendCustomNotificationBid = async (mess) => {
   }
 };
 export const sendCustomNotificationAttachment = async (mess) => {
-  console.log("notify",mess.token)
+  console.log("notify", mess.token)
 
   try {
     const message = {
       message: {
-        token:mess?.token,
+        token: mess?.token,
         notification: {
           title: mess.title,
           body: mess.body,
@@ -251,7 +252,7 @@ export const sendCustomNotificationAttachment = async (mess) => {
             sound: "default",
             //   icon: "fcm_push_icon",
             //   color:"#fcb800",
-              tag:mess?.tag
+            tag: mess?.tag
           },
         },
         data: {
@@ -262,7 +263,7 @@ export const sendCustomNotificationAttachment = async (mess) => {
     };
 
     const accessToken = await getAccessToken();
-   
+
     const notificationResponse = await fetch(
       `https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
       {
@@ -285,19 +286,76 @@ export const sendCustomNotificationAttachment = async (mess) => {
       const successResponse = JSON.parse(textResponse);
       console.log("Notification sent successfully:");
     }
-  
+
+  } catch (e) {
+    console.error("Failed to send notification:", e);
+  }
+};
+
+export const sendCustomNotificationDocument = async (mess) => {
+  console.log("notify", mess.token)
+
+  try {
+    const message = {
+      message: {
+        token: mess?.token,
+        notification: {
+          title: mess.title,
+          body: "Sent a document",
+        },
+        android: {
+          priority: "high",
+          notification: {
+            sound: "default",
+            //   icon: "fcm_push_icon",
+            //   color:"#fcb800",
+            tag: mess?.tag
+          },
+        },
+        data: {
+          redirect_to: mess.redirect_to,
+          requestInfo: JSON.stringify(mess.requestInfo),
+        },
+      },
+    };
+
+    const accessToken = await getAccessToken();
+
+    const notificationResponse = await fetch(
+      `https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(message),
+      }
+    );
+
+    const textResponse = await notificationResponse.text();
+    console.log("Raw response:", textResponse);
+
+    if (!notificationResponse.ok) {
+      console.error("Failed to send notification error:", textResponse);
+      throw new Error("Failed to send notification");
+    } else {
+      const successResponse = JSON.parse(textResponse);
+      console.log("Notification sent successfully:");
+    }
+
   } catch (e) {
     console.error("Failed to send notification:", e);
   }
 };
 
 export const NotificationRequestAccepted = async (mess) => {
-  console.log("notify",mess.token)
+  console.log("notify", mess.token)
 
   try {
     const message = {
       message: {
-        token:mess?.token,
+        token: mess?.token,
         notification: {
           title: `${mess.title} has accepted your request`,
           body: "Congrats!",
@@ -314,7 +372,7 @@ export const NotificationRequestAccepted = async (mess) => {
         },
         data: {
           redirect_to: mess.redirect_to,
-        requestInfo: JSON.stringify(mess.requestInfo),
+          requestInfo: JSON.stringify(mess.requestInfo),
         },
       },
     };
@@ -344,17 +402,17 @@ export const NotificationRequestAccepted = async (mess) => {
       const successResponse = JSON.parse(textResponse);
       console.log("Notification sent successfully:");
     }
-  
+
   } catch (e) {
     console.error("Failed to send notification:", e);
   }
 };
 export const NotificationBidAccepted = async (mess) => {
-  console.log("notify",mess.token)
+  console.log("notify", mess.token)
   try {
     const message = {
       message: {
-        token:mess.token,
+        token: mess.token,
         notification: {
           title: `${mess.title} has accepted the bid at ${mess.price}`,
           body: mess?.details,
@@ -370,14 +428,14 @@ export const NotificationBidAccepted = async (mess) => {
           },
         },
         data: {
-          redirect_to:"bargain",
+          redirect_to: "bargain",
           requestInfo: JSON.stringify(mess.requestInfo),
         },
       },
     };
 
     const accessToken = await getAccessToken();
-  
+
 
     const notificationResponse = await fetch(
       `https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
@@ -401,19 +459,19 @@ export const NotificationBidAccepted = async (mess) => {
       const successResponse = JSON.parse(textResponse);
       console.log("Notification sent successfully:");
     }
-  
+
   } catch (e) {
     console.error("Failed to send notification:", e);
   }
 };
 
 export const NotificationBidRejected = async (mess) => {
-  console.log("notify",mess.token)
+  console.log("notify", mess.token)
 
   try {
     const message = {
       message: {
-        token:mess?.token,
+        token: mess?.token,
         notification: {
           title: `${mess.title} has rejected your bid`,
           body: "Hi,I have rejected your bid!",

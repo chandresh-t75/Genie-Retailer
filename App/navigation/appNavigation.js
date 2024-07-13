@@ -38,21 +38,22 @@ import GSTDocumentVerify from '../screens/login/GSTDocumentVerify';
 import UpdateCategory from '../screens/login/UpdateCategory';
 import UpdateLocation from '../screens/login/UpdateLocation';
 import ProfileImageUpdate from '../screens/login/ProfileImageUpdate';
+import SendDocument from '../components/SendDocument';
 
 const Stack = createNativeStackNavigator();
 const GlobalNavigation = () => {
-  const [userId,setUserId] = useState("")
+  const [userId, setUserId] = useState("")
 
 
   const currentRequest = useSelector(
     (state) => state.requestData.currentRequest
   );
-          const chatUserId =currentRequest?.requestId;
-          console.log("Chat User ID in App.js:", chatUserId);
-          useEffect(() => {
-            setUserId(chatUserId);
-          }, [chatUserId]);
-  
+  const chatUserId = currentRequest?.requestId;
+  console.log("Chat User ID in App.js:", chatUserId);
+  useEffect(() => {
+    setUserId(chatUserId);
+  }, [chatUserId]);
+
 
   return (
 
@@ -67,7 +68,7 @@ const GlobalNavigation = () => {
       <Stack.Screen name="splash" component={SplashScreen} />
       <Stack.Screen name="loader" component={MessageLoaderSkeleton} />
 
-      <Stack.Screen name="home" component={HomeScreen}   />
+      <Stack.Screen name="home" component={HomeScreen} />
       <Stack.Screen name="mobileNumber" component={MobileNumberEntryScreen} />
       <Stack.Screen name="registerUsername" component={UserNameEntryScreen} />
       <Stack.Screen name="panCard" component={PanCardScreen} />
@@ -92,7 +93,7 @@ const GlobalNavigation = () => {
 
       <Stack.Screen name={`requestPage${userId}`} component={RequestPage} />
       {/* <Stack.Screen name="requestPage" component={RequestPage}  />  */}
-     <Stack.Screen name="bidPageInput" component={BidPageInput} />
+      <Stack.Screen name="bidPageInput" component={BidPageInput} />
       <Stack.Screen name="bidPageImageUpload" component={BidPageImageUpload} />
       <Stack.Screen name="bidOfferedPrice" component={BidOfferedPrice} />
       <Stack.Screen name="bidPreviewPage" component={BidPreviewPage} />
@@ -102,7 +103,7 @@ const GlobalNavigation = () => {
       <Stack.Screen name="termsandconditions" component={TermsandConditions} />
       <Stack.Screen name="help" component={HelpScreen} />
       <Stack.Screen name="viewrequest" component={ViewRequestScreen} />
-   
+      <Stack.Screen name="send-document" component={SendDocument} />
     </Stack.Navigator>
   )
 }
