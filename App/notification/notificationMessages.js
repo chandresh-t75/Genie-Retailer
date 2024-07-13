@@ -176,6 +176,7 @@ export const sendCustomNotificationChat = async (mess) => {
     console.error("Failed to send notification:", e);
   }
 };
+
 export const sendCustomNotificationBid = async (mess) => {
   console.log("notify", mess.token)
 
@@ -244,6 +245,63 @@ export const sendCustomNotificationAttachment = async (mess) => {
           title: mess.title,
           body: mess.body,
           image: mess?.image,
+        },
+        android: {
+          priority: "high",
+          notification: {
+            sound: "default",
+            //   icon: "fcm_push_icon",
+            //   color:"#fcb800",
+            tag: mess?.tag
+          },
+        },
+        data: {
+          redirect_to: mess.redirect_to,
+          requestInfo: JSON.stringify(mess.requestInfo),
+        },
+      },
+    };
+
+    const accessToken = await getAccessToken();
+
+    const notificationResponse = await fetch(
+      `https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(message),
+      }
+    );
+
+    const textResponse = await notificationResponse.text();
+    console.log("Raw response:", textResponse);
+
+    if (!notificationResponse.ok) {
+      console.error("Failed to send notification error:", textResponse);
+      throw new Error("Failed to send notification");
+    } else {
+      const successResponse = JSON.parse(textResponse);
+      console.log("Notification sent successfully:");
+    }
+
+  } catch (e) {
+    console.error("Failed to send notification:", e);
+  }
+};
+
+export const sendCustomNotificationDocument = async (mess) => {
+  console.log("notify", mess.token)
+
+  try {
+    const message = {
+      message: {
+        token: mess?.token,
+        notification: {
+          title: mess.title,
+          body: "Sent a document",
         },
         android: {
           priority: "high",
