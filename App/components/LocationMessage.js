@@ -38,68 +38,68 @@ const LocationMessage = ({ bidDetails }) => {
     // Request permission to access location
     console.log("location");
     const customerLocation = {
-        lattitude:bidDetails.latitude,
-        longitude:bidDetails.longitude
+      lattitude: bidDetails.latitude,
+      longitude: bidDetails.longitude
     }
 
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Permission to access location was denied.');
-        return;
+      Alert.alert('Permission Denied', 'Permission to access location was denied.');
+      return;
     }
 
     // Get current location
     // console.log("storelocation", storeLocation);
     // console.log('userLocation while map opening', userLongitude, userLatitude);
- 
-        // setCurrentLocation({
-        //     latitude: location.coords.latitude,
-        //     longitude: location.coords.longitude,
-        // });
-        // console.log('location details of user at bargaining', location);
-    
+
+    // setCurrentLocation({
+    //     latitude: location.coords.latitude,
+    //     longitude: location.coords.longitude,
+    // });
+    // console.log('location details of user at bargaining', location);
+
 
     console.log(
-        "current and store location",
-        user.lattitude,
-        user.longitude,
-        customerLocation
+      "current and store location",
+      user.lattitude,
+      user.longitude,
+      customerLocation
     );
 
     // if (userLongitude === 0 || userLatitude === 0 || !storeLocation) {
     //     Alert.alert('Error', 'Current location or friend location is not available.');
     //     return;
     // }
-    
-        const url = `https://www.google.com/maps/dir/?api=1&origin=${user?.lattitude},${user?.longitude}&destination=${customerLocation.lattitude},${customerLocation.longitude}&travelmode=driving`;
 
-        Linking.openURL(url).catch((err) =>
-            console.error("An error occurred", err)
-        );
-    
-};
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${user?.lattitude},${user?.longitude}&destination=${customerLocation.lattitude},${customerLocation.longitude}&travelmode=driving`;
+
+    Linking.openURL(url).catch((err) =>
+      console.error("An error occurred", err)
+    );
+
+  };
 
   return (
     <View className="flex gap-[19px]   rounded-3xl w-[297px]  py-[20px] items-center bg-[#fafafa]">
-       <View className="flex-row gap-[18px]">
-        
-          <View>
-            {requestInfo?.customerId?.pic ? (
-              <Image
-                source={{ uri: requestInfo?.customerId?.pic }}
-                style={{ width: 40, height: 40, borderRadius: 20 }}
-                // className="w-[40px] h-[40px] rounded-full"
-              />
-            ) : (
-              <Image
-                source={{
-                  uri: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
-                }}
-                style={{ width: 40, height: 40, borderRadius: 20 }}
-                // className="w-[40px] h-[40px] rounded-full"
-              />
-            )}
-        
+      <View className="flex-row gap-[18px]">
+
+        <View>
+          {requestInfo?.customerId?.pic ? (
+            <Image
+              source={{ uri: requestInfo?.customerId?.pic }}
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+            // className="w-[40px] h-[40px] rounded-full"
+            />
+          ) : (
+            <Image
+              source={{
+                uri: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+              }}
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+            // className="w-[40px] h-[40px] rounded-full"
+            />
+          )}
+
         </View>
         <View className="w-[60%] flex-col gap-2">
           <View className="w-full flex  flex-row justify-between">
@@ -110,45 +110,49 @@ const LocationMessage = ({ bidDetails }) => {
               {requestInfo?.customerId?.userName}
             </Text>
 
-            <Text
+            {/* <Text
               className="text-[12px] text-[#263238] "
               style={{ fontFamily: "Poppins-Regular" }}
             >
               {formattedTime}
-            </Text>
+            </Text> */}
           </View>
 
           <Text
             className="text-[#263238] text-[14px]"
             style={{ fontFamily: "Poppins-Regular" }}
           >
-           Customer sent you the delivery location.
+            Customer sent you the delivery location.
           </Text>
-     
-            <View className="flex-row gap-1 items-center">
-              <Ionicons name="location-outline" size={26} color="black" />
-              <Text
-                className=" overflow-hidden text-[#001b33] text-[12px]"
-                style={{ fontFamily: "Poppins-Regular" }}
-              >{bidDetails?.message.length > 45 ? `${bidDetails?.message.slice(0, 45)}..` : bidDetails.message}.</Text>
-            </View>
-            
-            <TouchableOpacity onPress={()=>{handleOpenGoogleMaps() }} className="flex-row  items-center gap-[5px]" style={{
-                flexDirection:"row",
-                alignItems: "center",
-                gap:6
-                }}>
-             
-              <Text
-                className="text-[14px] text-[#fb8c00]"
-                style={{ fontFamily: "Poppins-Bold",paddingVertical:4 }}
-              >
-                Go to the map
-              </Text>
-              <RightArrow width={15} />
-            </TouchableOpacity>
-       
+
+          <View className="flex-row gap-1 items-center">
+            <Ionicons name="location-outline" size={26} color="black" />
+            <Text
+              className=" overflow-hidden text-[#001b33] text-[12px]"
+              style={{ fontFamily: "Poppins-Regular" }}
+            >{bidDetails?.message.length > 45 ? `${bidDetails?.message.slice(0, 45)}..` : bidDetails.message}.</Text>
+          </View>
+
+          <TouchableOpacity onPress={() => { handleOpenGoogleMaps() }} className="flex-row  items-center gap-[5px]" style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6
+          }}>
+
+            <Text
+              className="text-[14px] text-[#fb8c00]"
+              style={{ fontFamily: "Poppins-Bold", paddingVertical: 4 }}
+            >
+              Go to the map
+            </Text>
+            <RightArrow width={15} />
+          </TouchableOpacity>
+
         </View>
+      </View>
+      <View className="flex-row justify-end items-center gap-[5px]  w-full px-[30px]">
+        <Text className="text-[12px] text-[#7c7c7c]" style={{ fontFamily: "Poppins-Regular" }}>{formattedTime},</Text>
+        <Text className="text-[12px] text-[#7c7c7c] " style={{ fontFamily: "Poppins-Regular" }}>{formattedDate.slice(0, 6)}</Text>
       </View>
     </View>
   );
