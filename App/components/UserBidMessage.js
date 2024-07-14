@@ -9,6 +9,7 @@ import { Feather } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { formatDateTime, handleDownload, handleDownloadPress } from "../screens/utils/lib";
 
+console.log('updateBid Message flow');
 const UserBidMessage = ({ bidDetails }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
@@ -48,6 +49,7 @@ const UserBidMessage = ({ bidDetails }) => {
 
   // console.log("bidDetails", bidDetails);
   // const userDetails = useSelector(store => store.user.userDetails);
+
   const requestInfo = useSelector(
     (state) => state.requestData.requestInfo || {}
   );
