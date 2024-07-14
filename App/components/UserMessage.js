@@ -77,7 +77,7 @@ const UserMessage = ({ bidDetails }) => {
             <Image
               source={{ uri: requestInfo?.customerId?.pic }}
               style={{ width: 40, height: 40, borderRadius: 20 }}
-              // className="w-[40px] h-[40px] rounded-full"
+            // className="w-[40px] h-[40px] rounded-full"
             />
           ) : (
             <Image
@@ -85,7 +85,7 @@ const UserMessage = ({ bidDetails }) => {
                 uri: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
               }}
               style={{ width: 40, height: 40, borderRadius: 20 }}
-              // className="w-[40px] h-[40px] rounded-full"
+            // className="w-[40px] h-[40px] rounded-full"
             />
           )}
         </View>
@@ -98,12 +98,12 @@ const UserMessage = ({ bidDetails }) => {
               {requestInfo?.customerId?.userName}
             </Text>
 
-            <Text
+            {/* <Text
               className="text-[12px] text-[#263238] "
               style={{ fontFamily: "Poppins-Regular" }}
             >
               {formattedTime}
-            </Text>
+            </Text> */}
           </View>
           <Text
             className="text-[14px] text-[#263238]"
@@ -127,12 +127,12 @@ const UserMessage = ({ bidDetails }) => {
           {bidDetails?.bidImages.map((image, index) => (
             <View
               key={index}
-              style={{ position: "relative", width: 96, height: 132 }}
+              style={{ position: "relative", width: 190, height: 232 }}
             >
               <Pressable onPress={() => handleImagePress(image)}>
                 <Image
                   source={{ uri: image }}
-                  style={{ height: 132, width: 96, borderRadius: 20 }}
+                  style={{ height: 232, width: 190, borderRadius: 20 }}
                 />
               </Pressable>
               <TouchableOpacity
@@ -140,8 +140,8 @@ const UserMessage = ({ bidDetails }) => {
                   position: "absolute",
                   bottom: 5,
                   right: 5,
-                  backgroundColor: "gray",
-                  padding: 2,
+                  backgroundColor: "#ffe7c0",
+                  padding: 3,
                   borderRadius: 100,
                 }}
                 onPress={() =>
@@ -153,7 +153,7 @@ const UserMessage = ({ bidDetails }) => {
                   )
                 }
               >
-                <Feather name="download" size={18} color="white" />
+                <Feather name="download" size={16} color="#fb8c00" />
               </TouchableOpacity>
               {downloadProgress[index] !== undefined && (
                 <View style={styles.progressContainer}>
@@ -163,15 +163,15 @@ const UserMessage = ({ bidDetails }) => {
                 </View>
               )}
             </View>
-            
+
           ))}
-            <Modal
+          <Modal
             transparent
             visible={!!selectedImage}
             onRequestClose={handleClose}
             downloadProgress={downloadProgress}
             setDownloadProgress={setDownloadProgress}
-           
+
           >
             <Pressable style={styles.modalContainer} onPress={handleClose}>
               <Animated.Image
@@ -183,14 +183,14 @@ const UserMessage = ({ bidDetails }) => {
                   },
                 ]}
               />
-               <TouchableOpacity
+              <TouchableOpacity
                 style={{
                   width: 300,
                   backgroundColor: "white",
-                  height:50, 
-                 
+                  height: 50,
+
                   borderRadius: 100,
-                  marginTop:20,
+                  marginTop: 20,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -200,51 +200,53 @@ const UserMessage = ({ bidDetails }) => {
                     selectedImage,
                     downloadProgress,
                     setDownloadProgress,
-                    
+
                   )
-                 
+
                 }
               >
                 {downloadProgress[1] !== undefined && (
-                <View style={[
-                  styles.progress,
-                  { borderColor: interpolateColor(downloadProgress[1]) },
-                ]}>
-                  <Text style={styles.progresstext}>
-  {downloadProgress[1] !== 1 ? `${Math.round(downloadProgress[1] * 100)}%` : "Downloaded"}
-</Text>
-                </View>
-              )}
-             
-               {
-                !downloadProgress[1] &&
-                <View className="w-full flex flex-row  gap-[20px]  justify-center items-center" style={ {borderColor: "#fb8c00",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 100,
-                  height:50,
-                  borderWidth:3}}>
+                  <View style={[
+                    styles.progress,
+                    { borderColor: interpolateColor(downloadProgress[1]) },
+                  ]}>
+                    <Text style={styles.progresstext}>
+                      {downloadProgress[1] !== 1 ? `${Math.round(downloadProgress[1] * 100)}%` : "Downloaded"}
+                    </Text>
+                  </View>
+                )}
 
-                 
-                <Text className=" text-[16px] text-[#fb8c00]" style={{ fontFamily: "Poppins-Bold" }} >Download</Text>
-                <Feather name="download" size={18} color="#fb8c00" />
-                </View>
-               }
-                
-              
+                {
+                  !downloadProgress[1] &&
+                  <View className="w-full flex flex-row  gap-[20px]  justify-center items-center" style={{
+                    borderColor: "#fb8c00",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 100,
+                    height: 50,
+                    borderWidth: 3
+                  }}>
 
 
-             
+                    <Text className=" text-[16px] text-[#fb8c00]" style={{ fontFamily: "Poppins-Bold" }} >Download</Text>
+                    <Feather name="download" size={18} color="#fb8c00" />
+                  </View>
+                }
 
 
-               
+
+
+
+
+
+
               </TouchableOpacity>
-              
+
             </Pressable>
           </Modal>
         </ScrollView>
@@ -289,6 +291,10 @@ const UserMessage = ({ bidDetails }) => {
 
 
             </View> */}
+      <View className="flex-row justify-end items-center gap-[5px]  w-full px-[30px]">
+        <Text className="text-[12px] text-[#7c7c7c]" style={{ fontFamily: "Poppins-Regular" }}>{formattedTime},</Text>
+        <Text className="text-[12px] text-[#7c7c7c] " style={{ fontFamily: "Poppins-Regular" }}>{formattedDate.slice(0, 6)}</Text>
+      </View>
     </View>
   );
 };
@@ -332,19 +338,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    height:50,
-    borderWidth:3
+    height: 50,
+    borderWidth: 3
   },
   progressText: {
     color: "white",
     fontSize: 16,
-    
+
   },
   progresstext: {
     color: "green",
     fontSize: 16,
-    fontFamily:"Poppins-Bold",
-    width:"100%",
-    textAlign:"center"
+    fontFamily: "Poppins-Bold",
+    width: "100%",
+    textAlign: "center"
   },
 });

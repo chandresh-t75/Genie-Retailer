@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDateTime } from '../screens/utils/lib';
-
+import DocumentIcon from '../assets/DocumentIcon.svg';
 const RetailerDocumentMessage = ({ bidDetails }) => {
     // console.log("bidDetails", bidDetails);
 
@@ -35,39 +35,44 @@ const RetailerDocumentMessage = ({ bidDetails }) => {
                     <View className="w-[75%]">
                         <View className="flex-row justify-between">
                             <Text className="text-[14px] text-[#2e2c43] " style={{ fontFamily: "Poppins-Bold" }}>You</Text>
-                            <Text className="text-[12px]" style={{ fontFamily: "Poppins-Regular" }}>{formattedTime}</Text>
+                            {/* <Text className="text-[12px]" style={{ fontFamily: "Poppins-Regular" }}>{bidDetails.createdAt}</Text> */}
                         </View>
 
                         {bidDetails.message.length > 0 && <View>
                             <Text className="text-[12px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>{bidDetails.message}</Text>
                         </View>}
-                        <View className="flex-row gap-[10px] pb-[10px]">
+                        <View className="flex-row gap-[10px] pb-[10px] items-center -translate-x-2 pt-[10px]">
                             <View>
-                                <MaterialCommunityIcons name="file-document-multiple-outline" size={40} color="#2E2C43" />
+                                <DocumentIcon width={50} height={50} color="#7c7c7c" />
                             </View>
                             <View>
-                                <Text>{bidDetails?.bidImages[0].slice(bidDetails?.bidImages[0].length - 15, bidDetails?.bidImages[0].length)}</Text>
+                                <Text className="text-[#7c7c7c] text-[13px]" style={{ fontFamily: 'Poppins-Regular' }}>{bidDetails?.bidImages[0].slice(bidDetails?.bidImages[0].length - 15, bidDetails?.bidImages[0].length)}</Text>
                                 <View className="flex-row items-center gap-[10px]">
                                     <View>
 
                                         <TouchableOpacity
                                             style={{
-                                                backgroundColor: "gray",
+                                                backgroundColor: "#ffe7c8",
                                                 padding: 3,
                                                 borderRadius: 100,
                                             }}
                                             onPress={() => { handleDownloadDocument() }}
                                         >
-                                            <Feather name="download" size={18} color="white" />
+                                            <Feather name="download" size={16} color="#fb8c00" />
                                         </TouchableOpacity>
                                     </View>
-                                    <Text>{(bidDetails.bidPrice) / (1e6) < 1 ? `${(parseFloat(bidDetails.bidPrice) / (1e3)).toFixed(1)}kb` : `${(parseFloat(bidDetails.bidPrice) / (1e6)).toFixed(1)}Mb`}</Text>
+                                    <Text className=" text-[13px]" style={{ fontFamily: 'Poppins-Regular', color: '#7c7c7c' }}>{(bidDetails.bidPrice) / (1e6) < 1 ? `${(parseFloat(bidDetails.bidPrice) / (1e3)).toFixed(1)}kb` : `${(parseFloat(bidDetails.bidPrice) / (1e6)).toFixed(1)}Mb`}</Text>
                                 </View>
                             </View>
                         </View>
                     </View>
+
                 </View>
 
+            </View>
+            <View className="flex-row justify-end items-center gap-[5px]  w-full px-[30px]">
+                <Text className="text-[12px] text-[#7c7c7c]" style={{ fontFamily: "Poppins-Regular" }}>{formattedTime},</Text>
+                <Text className="text-[12px] text-[#7c7c7c] " style={{ fontFamily: "Poppins-Regular" }}>{formattedDate.slice(0, 6)}</Text>
             </View>
 
 
