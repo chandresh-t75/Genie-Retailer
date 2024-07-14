@@ -19,7 +19,6 @@ import ThreeDots from "../../assets/ThreeDotIcon.svg";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import Copy from "../../assets/Copy.svg";
 
-
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Profile from "../../assets/ProfileIcon2.svg";
@@ -33,9 +32,10 @@ import ModalCancel from "../../components/ModalCancel";
 import { AntDesign, Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { manipulateAsync } from "expo-image-manipulator";
 import { launchCamera } from "react-native-image-picker";
-import Close from "../../assets/RedClose.svg";
-import BackArrow from "../../assets/arrow-left.svg";
-import * as Clipboard from 'expo-clipboard';
+import Close from "../../assets/delImgOrange.svg";
+import BackArrow from "../../assets/BackArrow.svg";
+import * as Clipboard from "expo-clipboard";
+import RightArrow from "../../assets/arrow-right.svg";
 
 
 const BidPageImageUpload = () => {
@@ -43,7 +43,7 @@ const BidPageImageUpload = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  const {  messages, setMessages } = route.params;
+  const { messages, setMessages } = route.params;
   const [imgIndex, setImgIndex] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [cameraScreen, setCameraScreen] = useState(false);
@@ -63,8 +63,7 @@ const BidPageImageUpload = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
-  const user=useSelector(state=>state.storeData.userDetails);
-
+  const user = useSelector((state) => state.storeData.userDetails);
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
@@ -170,8 +169,6 @@ const BidPageImageUpload = () => {
       quality: 1,
     });
 
-
-
     console.log("pickImage", "result");
     if (!result.canceled) {
       const newImageUri = result.assets[0].uri;
@@ -199,17 +196,16 @@ const BidPageImageUpload = () => {
     setModalVisible(true);
   };
 
-
   const copyToClipboard = async () => {
     try {
       await Clipboard.setStringAsync(requestInfo?.requestId?._id);
-      console.log('Text copied to clipboard');
+      console.log("Text copied to clipboard");
       setCopied(true);
 
       // Hide the notification after 2 seconds
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy text to clipboard', error);
+      console.error("Failed to copy text to clipboard", error);
     }
   };
 
@@ -217,42 +213,41 @@ const BidPageImageUpload = () => {
     <>
       {!cameraScreen && (
         <View style={{ flex: 1, backgroundColor: "#ffe7c8" }}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="relative flex-grow bg-[#ffe7c8]">
-              <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] justify-evenly gap-[5px] items-center pt-[20px] pb-[20px]">
-              <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={{ padding:20,paddingRight:10,zIndex:30}}
-          >
-            <BackArrow  />
-          </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <View className="relative  bg-[#ffe7c8]">
+              <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] gap-[5px] items-center pt-[20px] pb-[20px]">
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                  style={{ padding:20, zIndex: 30 ,position:"absolute"}}
+                >
+                  <BackArrow />
+                </TouchableOpacity>
 
-                <View className="gap-[9px] ml-4">
-                  <View className="flex-row gap-[18px] items-center">
-                    <View className=" rounded-full bg-white ml-4 p-[4px] ">
+                <View className="gap-[9px] ml-2">
+                  <View className="flex-row  gap-[18px] items-center">
+                    <View className=" rounded-full bg-white ml-4 ">
                       {requestInfo?.customerId?.pic ? (
                         <Image
                           source={{ uri: requestInfo?.customerId?.pic }}
                           style={{ width: 40, height: 40, borderRadius: 20 }}
-                        // className="w-[40px] h-[40px] rounded-full"
+                          // className="w-[40px] h-[40px] rounded-full"
                         />
                       ) : (
                         <Profile className="" />
                       )}
                     </View>
-                    <View className="w-[70%]">
-                    <Text
-                  className="text-[14px]  text-[#2e2c43] capitalize"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  {requestInfo?.customerId?.userName?.substring(0,20)}
-                  {
-                    requestInfo?.customerId?.userName?.length>20 && <Text>...
+                    <View className="">
+                      <Text
+                        className="text-[14px]  text-[#2e2c43] capitalize"
+                        style={{ fontFamily: "Poppins-Regular" }}
+                      >
+                        {requestInfo?.customerId?.userName?.substring(0, 20)}
+                        {requestInfo?.customerId?.userName?.length > 20 && (
+                          <Text>...</Text>
+                        )}
                       </Text>
-                  }
-                </Text>
 
                       <Text
                         className="text-[12px] text-[#79B649]"
@@ -263,7 +258,7 @@ const BidPageImageUpload = () => {
                     </View>
                   </View>
                 </View>
-                {images.length === 0 && (
+                {images?.length === 0 && (
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("bidOfferedPrice", {
@@ -272,10 +267,13 @@ const BidPageImageUpload = () => {
                         setMessages,
                       })
                     }
-                    className=""
+                   style={{ right:25 ,zIndex: 30 ,position:"absolute"}}
+
+                    
+                    
                   >
                     <Text
-                      className="text-[14px] text-[#FB8C00] px-2 "
+                      className="text-[16px] text-[#FB8C00] px-[20px] "
                       style={{ fontFamily: "Poppins-SemiBold" }}
                     >
                       Skip
@@ -287,23 +285,37 @@ const BidPageImageUpload = () => {
                                 <ThreeDots />
                             </Pressable> */}
               </View>
-              <View className="px-[40px] pb-[20px] flex bg-[#FFE7C8]">
-                <View className="flex-row gap-[10px] items-center">
+              <View className="px-[50px] pb-[20px] flex bg-[#ffe7c8]">
+                <View className="gap-[0px] relative ">
                   <Text
-                    className="text-[16px] "
+                    className="text-[14px] text-[#2e2c43]"
                     style={{ fontFamily: "Poppins-Bold" }}
                   >
-                    Request Id
+                    Request Id:
                   </Text>
-                  <Text style={{ fontFamily: "Poppins-Regular" }}>
-                    {requestInfo?.requestId?._id}
-                  </Text>
-                  <TouchableOpacity onPress={() => { copyToClipboard() }} style={{ padding: 4 }}>
-                    <Copy />
-                  </TouchableOpacity>
-                  {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-50 absolute -top-10 right-0">Copied!</Text>}
+                  <View className="flex flex-row gap-2 items-center">
+                    <Text style={{ fontFamily: "Poppins-Regular" }}>
+                      {requestInfo?.requestId?._id}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        copyToClipboard();
+                      }}
+                      style={{ padding: 4 }}
+                    >
+                      <Copy />
+                    </TouchableOpacity>
+                    {copied && (
+                      <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">
+                        Copied!
+                      </Text>
+                    )}
+                  </View>
                 </View>
-                <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
+                <Text
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  className="text-[#2e2c43] mt-[10px]"
+                >
                   {requestInfo?.requestId?.requestDescription
                     ?.split(" ")
                     .slice(0, 12)
@@ -317,7 +329,7 @@ const BidPageImageUpload = () => {
 
               <View className="flex gap-[16px] px-[50px] pt-[10px] pb-[10px]">
                 <View className="flex-row justify-between">
-                  <Text className="" style={{ fontFamily: "Poppins-Bold" }}>
+                  <Text className="text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>
                     Send an offer
                   </Text>
                   <Text
@@ -327,13 +339,15 @@ const BidPageImageUpload = () => {
                     Step 2/3
                   </Text>
                 </View>
-                <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
-                  Provide product images for better reference to customers to
-                  showcase product quality and confirm availability.
+                <Text
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  className="text-[#2e2c43]"
+                >
+                  Provide product images for better referencing to customers for product quality and availability.
                 </Text>
               </View>
             </View>
-            <View className="pb-[100px]">
+            <View className="flex-grow">
               {images.length === 0 && (
                 <View className="z-0">
                   <View>
@@ -386,7 +400,7 @@ const BidPageImageUpload = () => {
                                 onPress={() => deleteImage(index)}
                                 style={styles.deleteIcon}
                               >
-                                <Close />
+                                <Close width={24} height={24}/>
                               </Pressable>
                             </View>
                           </Pressable>
@@ -397,7 +411,10 @@ const BidPageImageUpload = () => {
                         visible={!!selectedImage}
                         onRequestClose={handleClose}
                       >
-                        <Pressable style={styles.modalContainer} onPress={handleClose}>
+                        <Pressable
+                          style={styles.modalContainer}
+                          onPress={handleClose}
+                        >
                           <Animated.Image
                             source={{ uri: selectedImage }}
                             style={[
@@ -407,7 +424,6 @@ const BidPageImageUpload = () => {
                               },
                             ]}
                           />
-
                         </Pressable>
                       </Modal>
                     </View>
@@ -418,7 +434,7 @@ const BidPageImageUpload = () => {
                   >
                     <View
                       style={{
-                        marginLeft: 36,
+                        marginLeft: 50,
                         marginTop: 30,
                         position: "relative",
                       }}
@@ -451,57 +467,36 @@ const BidPageImageUpload = () => {
                         color: "white",
                       }}
                     >
-                      NEXT
+                      Next
                     </Text>
                   </TouchableOpacity>
                 )
               ) : (
-                <View className="w-full absolute bottom-0 bg-white items-center left-0 right-0 px-[10px]">
-                  <TouchableOpacity
-                    onPress={() => {
-                      pickImage();
-                      setAddMore(false);
-                    }}
-                  >
-                    <View className="w-full flex flex-row justify-between px-[40px] py-[15px]">
-                      <Text
-                        className="text-[14px]"
-                        style={{ fontFamily: "Poppins-Regular" }}
-                      >
-                        Upload Image
-                      </Text>
-                      <FontAwesome6
-                        name="arrow-right"
-                        size={15}
-                        color="black"
-                      />
-                    </View>
-                  </TouchableOpacity>
-                  <View className="h-[1px] w-full bg-gray-300 "></View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      takePicture();
-                      setAddMore(false);
-                    }}
-                  >
-                    <View className="w-full flex flex-row justify-between px-[40px] py-[15px]">
-                      <Text
-                        className="text-[14px]"
-                        style={{ fontFamily: "Poppins-Regular" }}
-                      >
-                        Click Image
-                      </Text>
-                      <FontAwesome6
-                        name="arrow-right"
-                        size={15}
-                        color="black"
-                      />
-                    </View>
-                  </TouchableOpacity>
-                </View>
+                <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
+          <TouchableOpacity onPress={() => { setAddMore(false) }}>
+            <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
+            </View>
+          </TouchableOpacity>
+          <View className="bg-white absolute bottom-0 left-0 right-0 ">
+
+            <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
+                <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
+                <RightArrow />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
+              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
+                <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+                <RightArrow />
+              </View>
+            </TouchableOpacity>
+
+          </View>
+        </View>
               )}
             </View>
-          </ScrollView>
+          </View>
 
           <ModalCancel
             modalVisible={modalVisible}
@@ -526,6 +521,7 @@ const BidPageImageUpload = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal:20
   },
   imageContainer: {
     flexDirection: "row",

@@ -85,7 +85,7 @@ const [loading,setLoading] = useState(false);
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} className="bg-white">
       <View style={{ flex: 1 }}>
         <View className="w-full z-40 mt-[20px]  flex flex-row justify-between items-center  px-[32px]">
         <TouchableOpacity
@@ -166,7 +166,7 @@ const [loading,setLoading] = useState(false);
                   <ActivityIndicator size="small" color="#FB8C00" />
                 ) : (
               <Text className="text-white text-center text-[16px]" style={{ fontFamily: "Poppins-Black" }}>
-                CONTINUE
+                Continue
               </Text>
                 )}
             </View>

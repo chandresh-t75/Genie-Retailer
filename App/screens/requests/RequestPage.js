@@ -48,13 +48,14 @@ import RequestCancelModal from "../../components/RequestCancelModal";
 import { socket } from "../utils/socket.io/socket";
 import Attachment from "../../components/Attachment";
 import {
+  setNewRequests,
   setOngoingRequests,
   setRequestInfo,
   setRetailerHistory,
 } from "../../redux/reducers/requestDataSlice";
 import { NotificationBidRejected } from "../../notification/notificationMessages";
 import MessageLoaderSkeleton from "../utils/MessageLoaderSkeleton";
-import BackArrow from "../../assets/arrow-left.svg";
+import BackArrow from "../../assets/BackArrow.svg";
 import * as Clipboard from "expo-clipboard";
 import navigationService from "../../navigation/navigationService";
 import ConfirmPaymentModal from "../../components/ConfirmPaymentModal";
@@ -116,6 +117,9 @@ const RequestPage = () => {
   );
   const currentRequest = useSelector(
     (state) => state.requestData.currentRequest
+  );
+  const newRequests = useSelector(
+    (state) => state.requestData.newRequests || []
   );
   const user = useSelector((state) => state.storeData.userDetails);
 
@@ -189,37 +193,104 @@ const RequestPage = () => {
                 dispatch(setOngoingRequests(data));
 
                 console.log("mark as read", res?.data, res?.data?.unreadCount);
-              }
-              if (
-                result.requestType !== "closed" &&
-                result?.latestMessage?.bidType === "update"
-              ) {
-                console.log("update");
-                await axios
-                  .patch(
-                    "http://173.212.193.109:5000/chat/update-closed-chat",
-                    {
-                      id: result?._id,
-                    }
-                  )
-                  .then((res) => {
-                    const filteredRequests = ongoingRequests.filter(
-                      (request) => request._id !== result?._id
-                    );
+                
+                if (
+                  result.requestType === "win"  &&
+                  result?.latestMessage?.bidType === "update"
+                ) {
+                  console.log("update");
+                  await axios
+                    .patch(
+                      "http://173.212.193.109:5000/chat/update-to-history",
+                      {
+                        id: result?._id,
+                        type:"completed"
+                      }
+                    )
+                    .then((res) => {
+                      const filteredRequests = ongoingRequests.filter(
+                        (request) => request._id !== result?._id
+                      );
+  
+                      let tmp = {
+                        ...result,
+                        unreadCount: 0,
+                        requestType: "completed",
+                        updatedAt: new Date().toISOString(),
+                      };
+                      dispatch(setRequestInfo(tmp));
+                      const data = [...filteredRequests];
+                      dispatch(setOngoingRequests(data));
+                      const data2 = [tmp, ...retailerHistory];
+                      dispatch(setRetailerHistory(data2));
+                    });
+                }
+                else  if (
+                  result.requestType === "closed"  &&
+                  result?.latestMessage?.bidType === "update"
+                ) {
+                  console.log("update");
+                  await axios
+                    .patch(
+                      "http://173.212.193.109:5000/chat/update-to-history",
+                      {
+                        id: result?._id,
+                        type:"closedHistory"
+                      }
+                    )
+                    .then((res) => {
+                      const filteredRequests = ongoingRequests.filter(
+                        (request) => request._id !== result?._id
+                      );
+  
+                      let tmp = {
+                        ...result,
+                        unreadCount: 0,
+                        requestType: "closedHistory",
+                        updatedAt: new Date().toISOString(),
+                      };
+                      dispatch(setRequestInfo(tmp));
+                      const data = [...filteredRequests];
+                      dispatch(setOngoingRequests(data));
+                      const data2 = [tmp, ...retailerHistory];
+                      dispatch(setRetailerHistory(data2));
+                    });
+                }
 
-                    let tmp = {
-                      ...result,
-                      unreadCount: 0,
-                      requestType: "closed",
-                      updatedAt: new Date().toISOString(),
-                    };
-                    dispatch(setRequestInfo(tmp));
-                    const data = [...filteredRequests];
-                    dispatch(setOngoingRequests(data));
-                    const data2 = [tmp, ...retailerHistory];
-                    dispatch(setRetailerHistory(data2));
-                  });
+                else  if (
+                  result.requestType === "new"  &&
+                  result?.latestMessage?.bidType === "update"
+                ) {
+                  console.log("update");
+                  await axios
+                    .patch(
+                      "http://173.212.193.109:5000/chat/update-to-history",
+                      {
+                        id: result?._id,
+                        type:"notParticipated"
+                      }
+                    )
+                    .then((res) => {
+                      const filteredRequests = newRequests.filter(
+                        (request) => request._id !== result?._id
+                      );
+  
+                      let tmp = {
+                        ...result,
+                        unreadCount: 0,
+                        requestType: "notParticipated",
+                        updatedAt: new Date().toISOString(),
+                      };
+                      dispatch(setRequestInfo(tmp));
+                      const data = [...filteredRequests];
+                      dispatch(setNewRequests(data));
+                      const data2 = [tmp, ...retailerHistory];
+                      dispatch(setRetailerHistory(data2));
+                    });
+                }
+
               }
+             
               setLoading(false);
             });
         });
@@ -358,19 +429,21 @@ const RequestPage = () => {
   useEffect(() => {
     const handleMessageReceived = async (newMessageReceived) => {
       console.log("Message received from socket:", newMessageReceived);
-      if (newMessageReceived?.bidType === "update") {
+      if (requestInfo?.requestType==="win" && newMessageReceived?.bidType === "update" ){
         await axios
-          .patch("http://173.212.193.109:5000/chat/update-closed-chat", {
+          .patch("http://173.212.193.109:5000/chat/update-to-history", {
             id: requestInfo?._id,
+            type:"completed"
           })
           .then((res) => {
+            console.log("accepted get complete d using socket")
             const filteredRequests = ongoingRequests.filter(
               (request) => request._id !== requestInfo?._id
             );
 
             let tmp = {
               ...requestInfo,
-              requestType: "closed",
+              requestType: "completed",
               updatedAt: new Date().toISOString(),
               unreadCount: 0,
             };
@@ -379,17 +452,36 @@ const RequestPage = () => {
             dispatch(setOngoingRequests(data));
             const data2 = [tmp, ...retailerHistory];
             dispatch(setRetailerHistory(data2));
-          });
-
-        // console.log("update", tmp);
-        // dispatch(setRequestInfo(tmp));
-        // const filteredRequests = ongoingRequests.filter(
-        //   (request) => request._id !== requestInfo?._id
-        // );
-        // dispatch(setOngoingRequests(filteredRequests));
-        // const newHistory = [tmp, ...retailerHistory];
-        // dispatch(setRetailerHistory(newHistory));
-      }
+          })
+        }
+       else  if ((requestInfo?.requestType==="closed" || requestInfo?.requestType==="ongoing" ) && newMessageReceived?.bidType === "update" ){
+          await axios
+            .patch("http://173.212.193.109:5000/chat/update-to-history", {
+              id: requestInfo?._id,
+              type:"closedHistory"
+            })
+            .then((res) => {
+            console.log("closed get closed  using socket")
+             
+              const filteredRequests = ongoingRequests.filter(
+                (request) => request._id !== requestInfo?._id
+              );
+              let tmp = {
+                ...requestInfo,
+                requestType: "closedHistory",
+                updatedAt: new Date().toISOString(),
+                unreadCount: 0,
+              };
+              dispatch(setRequestInfo(tmp));
+              const data = [...filteredRequests];
+              dispatch(setOngoingRequests(data));
+              const data2 = [tmp, ...retailerHistory];
+              dispatch(setRetailerHistory(data2));
+            })
+          }
+          
+          
+      
 
       setMessages((prevMessages) => {
         if (
@@ -403,7 +495,7 @@ const RequestPage = () => {
             if (newMessageReceived.bidAccepted === "accepted") {
               let tmp = {
                 ...requestInfo,
-                requestType: "completed",
+                requestType: "win",
                 updatedAt: new Date().toISOString(),
                 unreadCount: 0,
                 //  requestId:{requestActive:"completed"}
@@ -591,7 +683,7 @@ const RequestPage = () => {
       )}
       <View className="relative">
         <View onLayout={handleLayout}>
-          <View className="relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px]">
+          <View className="relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px] pb-[10px]">
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -603,7 +695,7 @@ const RequestPage = () => {
 
             <View className="gap-[9px] w-[70%]">
               <View className="flex-row gap-[18px] items-center">
-                <View className=" flex items-center justify-center rounded-full ml-2 p-[4px] bg-white ">
+                <View className=" flex items-center justify-center rounded-full ml-2  bg-white ">
                   {requestInfo?.customerId?.pic ? (
                     <Image
                       source={{ uri: requestInfo?.customerId?.pic }}
@@ -657,8 +749,8 @@ const RequestPage = () => {
                   navigation.navigate("viewrequest");
                 }}
                 style={{
-                  padding: 12,
-                  borderBottomColor: "gray",
+                  padding: 14,
+                  borderBottomColor: "rgba(0, 0, 0, 0.05)",
                   borderBottomWidth: 1,
                   marginHorizontal: 8,
                 }}
@@ -673,7 +765,7 @@ const RequestPage = () => {
                   const requestId = requestInfo?.requestId?._id;
                   navigation.navigate("customer-report", { requestId });
                 }}
-                style={{ padding: 12 }}
+                style={{ padding: 14 }}
               >
                 <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
                   Report Customer
@@ -682,14 +774,15 @@ const RequestPage = () => {
             </View>
           )}
 
-          <View className="px-[40px] pb-[20px] flex bg-[#ffe7c8]">
-            <View className="flex-row gap-[10px] relative items-center">
+          <View className="px-[50px] pb-[20px] flex bg-[#ffe7c8]">
+            <View className="gap-[0px] relative ">
               <Text
-                className="text-[16px] "
+                className="text-[14px]"
                 style={{ fontFamily: "Poppins-Bold" }}
               >
-                Request Id
+                Request Id:
               </Text>
+              <View className="flex flex-row gap-2 items-center">
               <Text style={{ fontFamily: "Poppins-Regular" }}>
                 {requestInfo?.requestId?._id}
               </Text>
@@ -706,8 +799,11 @@ const RequestPage = () => {
                   Copied!
                 </Text>
               )}
+              </View>
+              
+             
             </View>
-            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
+            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43] mt-[10px]">
               {requestInfo?.requestId?.requestDescription
                 ?.split(" ")
                 .slice(0, 12)
@@ -1072,7 +1168,8 @@ const RequestPage = () => {
           )}
 
         {requestInfo?.requestType !== "closed" &&
-          requestInfo?.requestType !== "cancelled" &&
+          requestInfo?.requestType !== "rejected" &&
+          requestInfo?.requestType !== "completed" &&
           requestInfo?.requestType !== "new" &&
           ((requestInfo?.requestId?.requestActive === "completed" &&
             requestInfo?.requestId?.requestAcceptedChat === user?._id) ||
@@ -1084,7 +1181,7 @@ const RequestPage = () => {
             messages[messages.length - 1]?.bidType === "image" ||
             messages[messages.length - 1]?.bidType === "location" || messages[messages.length - 1]?.bidType === "document") && (
             <View
-              className="flex flex-row bg-white items-center justify-center"
+              className="flex flex-row bg-white gap-2 items-center justify-center"
               style={{ padding: 10 }}
             >
               <TouchableOpacity
@@ -1098,10 +1195,10 @@ const RequestPage = () => {
                 }
                 style={{ backgroundColor: "white", flex: 1 }}
               >
-                <View className="h-[63px] flex items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl">
+                <View className="h-[63px] flex  flex-1 items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl">
                   <Text
                     className="text-[16px] text-[#fb8c00] text-center"
-                    style={{ fontFamily: "Poppins-Bold" }}
+                    style={{ fontFamily: "Poppins-Regular" }}
                   >
                     Send Message to Customer
                   </Text>
@@ -1117,11 +1214,11 @@ const RequestPage = () => {
                   justifyContent: "center",
                 }}
               >
-                <View className="h-[63px] flex-row items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl px-[4px]">
+                <View className="h-[63px] flex-row gap-1 flex-1 w-full items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl px-[4px]">
                   <Document />
                   <Text
                     className=" text-[16px] text-[#fb8c00] text-center"
-                    style={{ fontFamily: "Poppins-Bold" }}
+                    style={{ fontFamily: "Poppins-regular" }}
                   >
                     Send attachment
                   </Text>
@@ -1130,7 +1227,8 @@ const RequestPage = () => {
             </View>
           )}
         {requestInfo?.requestType !== "closed" &&
-          requestInfo?.requestType !== "cancelled" &&
+          requestInfo?.requestType !== "rejected" &&
+          requestInfo?.requestType !== "completed" &&
           requestInfo?.requestId?.requestActive === "active" &&
           messages &&
           messages.length > 0 &&

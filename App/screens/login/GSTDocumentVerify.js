@@ -36,6 +36,7 @@ import { manipulateAsync } from "expo-image-manipulator";
 import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImg.svg"
+import RightArrow from "../../assets/arrow-right.svg";
 
 
 
@@ -315,32 +316,28 @@ const  GSTDocumentVerify = () => {
           </TouchableOpacity>
         )}
         {addMore && (
-          <View className="w-full absolute bottom-0 items-center left-0 right-0 px-[10px]">
-            <TouchableOpacity
-              onPress={() => {
-                setAddMore(!addMore);
-                pickImage();
-              }}
-            >
-              <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
-                <FontAwesome name="arrow-right" size={15} color="black" />
+          <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
+          <TouchableOpacity onPress={() => { setAddMore(false) }}>
+            <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
+            </View>
+          </TouchableOpacity>
+          <View className="bg-white absolute bottom-0 left-0 right-0 ">
 
+            <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
+                <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
+                <RightArrow />
               </View>
             </TouchableOpacity>
-            <View className="h-[1px] w-full bg-gray-300"></View>
-            <TouchableOpacity
-              onPress={() => {
-                setAddMore(!addMore);
-                takePicture();
-              }}
-            >
-              <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
-                <FontAwesome name="arrow-right" size={15} color="black" />
+            <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
+              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
+                <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+                <RightArrow />
               </View>
             </TouchableOpacity>
+
           </View>
+        </View>
         )}
       </KeyboardAvoidingView>
       {loading && (

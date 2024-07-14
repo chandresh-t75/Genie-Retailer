@@ -141,7 +141,7 @@ const ServiceDeliveryScreen = () => {
               textAlign: "center",
             }}
           >
-            NEXT
+            Next
           </Text>
         </TouchableOpacity>
       </View>

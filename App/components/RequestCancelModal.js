@@ -31,14 +31,14 @@ const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
     try {
       // console.log("RequestType canecl response", requestInfo);
       const res = await axios.patch(
-        "http://173.212.193.109:5000/chat/modify-spade-retailer",
+        "http://173.212.193.109:5000/chat/product-not-available",
         {
           id: requestInfo?._id,
-          type: "cancelled",
+       
         }
       );
       if (res.status === 200) {
-        let tmp = { ...requestInfo, requestType: "cancelled" };
+        let tmp = { ...requestInfo, requestType: "rejected" };
         dispatch(setRequestInfo(tmp));
         const filteredRequests = newRequests.filter(
           (request) => request._id !== requestInfo?._id
@@ -82,7 +82,7 @@ const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
               className="text-[14px] text-center  pt-[8px] text-[#001B33]"
               style={{ fontFamily: "Poppins-Regular" }}
             >
-              You are cancelling the user request{" "}
+              You are rejecting the user request{" "}
             </Text>
           </View>
 

@@ -28,6 +28,8 @@ import { manipulateAsync } from "expo-image-manipulator";
 import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImgOrange.svg";
+import RightArrow from "../../assets/arrow-right.svg";
+
 
 const ProfileImageUpdate = () => {
   const route = useRoute();
@@ -148,7 +150,7 @@ const ProfileImageUpdate = () => {
           const imgUri = res.data[0];
           if (imgUri) {
             console.log("Image Updated Successfully");
-            setImagesLocal([...imagesLocal,imgUri]);
+            setImagesLocal([imgUri,...imagesLocal]);
             setLoading(false);
           }
         });
@@ -192,16 +194,16 @@ const ProfileImageUpdate = () => {
 //   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} className="bg-white">
       <View style={{ flex: 1 }}>
-        <View className="w-full z-40 mt-[20px]  flex flex-row justify-between items-center  px-[32px]">
+        <View className="w-full z-40 mt-[30px]  flex flex-row justify-between items-center  px-[32px]">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
             }}
             style={{
               padding: 24,
-              paddingTop: 10,
+              paddingTop: 16,
               position: "absolute",
               zIndex: 100,
             }}
@@ -212,7 +214,7 @@ const ProfileImageUpdate = () => {
             className="flex flex-1 justify-center items-center text-center text-[16px]"
             style={{ fontFamily: "Poppins-Bold" }}
           >
-            Edit Profile{"\n"}Picture
+            Edit Profile Picture
           </Text>
         </View>
 
@@ -237,6 +239,8 @@ const ProfileImageUpdate = () => {
             }
           </View>
         </View>
+        <Text  className="flex justify-center items-center text-center text-[16px] mt-[30px]"
+            style={{ fontFamily: "Poppins-Bold" }}>Select Profile Picture</Text>
 
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}  style={{ maxHeight: 240 }}>
           <View className="flex-row  gap-[10px] mt-[25px] px-[32px]">
@@ -264,7 +268,8 @@ const ProfileImageUpdate = () => {
           </View>
         </ScrollView>
 
-        <View className="flex flex-row gap-[40px] mt-[10px] px-[32px]">
+        <View className="flex flex-row gap-[40px] mt-[10px] px-[32px] justify-center">
+
           <TouchableOpacity onPress={() => setAddMore(!addMore)}>
             <View>
               <AddMoreImage />
@@ -273,32 +278,28 @@ const ProfileImageUpdate = () => {
         </View>
 
         {addMore && (
-          <View className="w-full z-50 absolute bottom-0 items-center bg-white left-0 right-0 px-[10px]">
-            <TouchableOpacity
-              onPress={() => {
-                setAddMore(!addMore);
-                pickImage();
-              }}
-            >
-              <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
-                <FontAwesome name="arrow-right" size={15} color="black" />
-
-              </View>
-            </TouchableOpacity>
-            <View className="h-[1px] w-full bg-gray-300"></View>
-            <TouchableOpacity
-              onPress={() => {
-                setAddMore(!addMore);
-                takePicture();
-              }}
-            >
-              <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
-                <FontAwesome name="arrow-right" size={15} color="black" />
-              </View>
-            </TouchableOpacity>
-          </View>
+           <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
+           <TouchableOpacity onPress={() => { setAddMore(false) }}>
+             <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
+             </View>
+           </TouchableOpacity>
+           <View className="bg-white absolute bottom-0 left-0 right-0 ">
+ 
+             <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+               <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
+                 <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
+                 <RightArrow />
+               </View>
+             </TouchableOpacity>
+             <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
+               <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
+                 <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+                 <RightArrow />
+               </View>
+             </TouchableOpacity>
+ 
+           </View>
+         </View>
         )}
 
         <View className="w-full h-[68px]  bg-[#fb8c00] justify-center absolute bottom-0 left-0 right-0">
@@ -311,7 +312,7 @@ const ProfileImageUpdate = () => {
                   className="text-white text-center text-[16px]"
                   style={{ fontFamily: "Poppins-Black" }}
                 >
-                  CONTINUE
+                  Continue
                 </Text>
               )}
             </View>

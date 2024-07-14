@@ -122,7 +122,7 @@ const WriteAboutStoreScreen = () => {
               <Text
                 style={{  color: !query ? "#888888" : "white", fontSize: 18, fontFamily:"Poppins-Black"}}
               >
-                NEXT
+                Next
               </Text>
             </View>
           

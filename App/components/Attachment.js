@@ -116,7 +116,7 @@ const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setM
             </TouchableOpacity>
             <View className="bg-white py-[20px] h-1/5 gap-5" >
                 <View className="flex-row justify-evenly items-center ">
-                    <TouchableOpacity onPress={() => { pickDocument() }}>
+                    <TouchableOpacity onPress={() => { setAttachmentScreen(false); pickDocument() }}>
                         <View className="items-center">
                             <Document />
                             <Text style={{ fontFamily: "Poppins-Regular" }}>Document</Text>

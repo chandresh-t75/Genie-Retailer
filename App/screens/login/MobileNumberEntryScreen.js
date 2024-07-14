@@ -353,7 +353,7 @@ const MobileNumberEntryScreen = () => {
                   color: mobileNumber.length !== 10 ? "#888888" : "white",
                 }}
               >
-                NEXT
+                Next
               </Text>)}
           </TouchableOpacity>
 
@@ -496,7 +496,7 @@ const MobileNumberEntryScreen = () => {
                   color: otp.length !== 6 ? "#888888" : "white",
                 }}
               >
-                NEXT
+                Next
               </Text>
             )}
           </TouchableOpacity>

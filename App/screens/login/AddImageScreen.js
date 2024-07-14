@@ -39,6 +39,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import axios from "axios";
 import BackArrow from "../../assets/BackArrow.svg";
+import RightArrow from "../../assets/arrow-right.svg";
+
 
 const AddImageScreen = () => {
   const [imagesLocal, setImagesLocal] = useState([]);
@@ -346,28 +348,35 @@ const AddImageScreen = () => {
                   >
                     <View className="w-full flex justify-center items-center">
                     <Text className="text-white  text-center text-[16px]" style={{ fontFamily: "Poppins-Black" }}>
-                      CONTINUE
+                      Continue
                     </Text>
                     </View>
                   </TouchableOpacity>
                 </View>
               )
             ) : (
-              <View className="w-full bg-white absolute bottom-0 items-center left-0 right-0 px-[10px]">
-                <TouchableOpacity onPress={()=>{ setAddMore(!addMore);pickImage(); }}>
-                  <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                    <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
-                    <FontAwesome name="arrow-right" size={15} color="black" />
+              <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
+              <TouchableOpacity onPress={() => { setAddMore(false) }}>
+                <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
+                </View>
+              </TouchableOpacity>
+              <View className="bg-white absolute bottom-0 left-0 right-0 ">
+    
+                <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+                  <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
+                    <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
+                    <RightArrow />
                   </View>
                 </TouchableOpacity>
-                <View className="h-[1px] w-full bg-gray-300"></View>
-                <TouchableOpacity onPress={() =>{ setAddMore(!addMore);takePicture()}}>
-                  <View className="w-full flex flex-row justify-between px-[40px] py-[20px]">
-                    <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
-                    <FontAwesome name="arrow-right" size={15} color="black" />
+                <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
+                  <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
+                    <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+                    <RightArrow />
                   </View>
                 </TouchableOpacity>
+    
               </View>
+            </View>
             )}
           </View>
           <ModalCancel
@@ -411,7 +420,7 @@ const styles = StyleSheet.create({
     borderColor: "gray",
   },
   image: {
-    width: 168,
+    width: 174,
     height: 232,
     borderRadius: 10,
   },

@@ -171,7 +171,7 @@ const UserNameEntryScreen = () => {
               color: (!storeName || !storeOwnerName)  ? "#888888" : "white",
             }}
           >
-            NEXT
+            Next
           </Text>
         </TouchableOpacity>
         </ScrollView>

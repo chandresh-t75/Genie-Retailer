@@ -108,12 +108,12 @@ const UserBidMessage = ({ bidDetails }) => {
           {bidDetails?.bidImages.map((image, index) => (
             <View
               key={index}
-              style={{ position: "relative", width: 190, height: 232 }}
+              style={{ position: "relative", width: 174, height: 232 }}
             >
               <Pressable onPress={() => handleImagePress(image)}>
                 <Image
                   source={{ uri: image }}
-                  style={{ height: 232, width: 190, borderRadius: 20 }}
+                  style={{ height: 232, width: 174, borderRadius: 20 }}
                 />
               </Pressable>
               <TouchableOpacity

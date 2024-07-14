@@ -5,7 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesome ,Entypo} from "@expo/vector-icons";
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
+
 
 
 
@@ -20,13 +21,13 @@ const ViewRequestScreen = () => {
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding:20,paddingRight:20,zIndex:100,position:"absolute",top:8,left:16}}
+            style={{ padding:30,paddingRight:10,zIndex:100,position:"absolute",top:8,left:10}}
           >
             <BackArrow  />
           </TouchableOpacity>
-            <View className=" flex z-40 flex-row items-center justify-center mt-[20px] mb-[24px] mx-[36px]">
+            <View className=" flex z-40 flex-row items-center justify-center mt-[30px] mb-[24px] mx-[36px]">
             
-                <Text className="flex flex-1 justify-center items-center text-center text-[16px]" style={{ fontFamily: "Poppins-Bold" }}>View Request</Text>
+                <Text className="flex flex-1 justify-center items-center text-center text-[16px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>View Request</Text>
                 {/* <Pressable onPress={() => { navigation.navigate('requestpreview'); }}>
                     <Text className="text-[14px]" ></Text>
                 </Pressable> */}
@@ -37,7 +38,7 @@ const ViewRequestScreen = () => {
                 <Text className=" text-[#2e2c43] text-[14px]" style={{ fontFamily: "Poppins-Bold" }}>Spades of master</Text>
                 <Text className=" mt-2" style={{ fontFamily: "Poppins-Regular" }}>{requestInfo?.requestId?.requestDescription}</Text>
 
-                <Text className=" text-[#2e2c43] text-[14px] mt-[36px] mb-[15px]" style={{ fontFamily: "Poppins-Bold" }}>Reference image for sellers</Text>
+                <Text className=" text-[#2e2c43] text-[14px] mt-[36px] mb-[15px]" style={{ fontFamily: "Poppins-Bold" }}>Reference images for vendors</Text>
 
                 <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row', gap: 4, paddingHorizontal: 5, }}>
                     {
@@ -49,7 +50,7 @@ const ViewRequestScreen = () => {
                     }
                 </ScrollView>
 
-                <Text className=" text-[#2e2c43] text-[14px] mt-[60px]" style={{ fontFamily: "Poppins-Bold" }}>Your expected price</Text>
+                <Text className=" text-[#2e2c43] text-[14px] mt-[60px]" style={{ fontFamily: "Poppins-Bold" }}>Expected price</Text>
                 <Text className="text-[#558b2f] " style={{ fontFamily: "Poppins-SemiBold" }}>{requestInfo?.requestId?.expectedPrice} Rs</Text>
             </View>
 

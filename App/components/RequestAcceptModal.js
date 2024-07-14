@@ -71,10 +71,10 @@ const RequestAcceptModal = ({
       if (requestInfo?.requestType === "new") {
         try {
           await axios.patch(
-            "http://173.212.193.109:5000/chat/modify-spade-retailer",
+            "http://173.212.193.109:5000/chat/product-available",
             {
               id: requestInfo?._id,
-              type: "ongoing",
+             
             }
           ).then(async (res) => {
 
@@ -136,7 +136,7 @@ const RequestAcceptModal = ({
               socket.emit("new message", accept.data?.message);
               let tmp = {
                 ...requestInfo,
-                requestType: "completed", updatedAt: new Date().toISOString()
+                requestType: "win", updatedAt: new Date().toISOString()
               };
               dispatch(setRequestInfo(tmp));
               const updatedMessages = messages.map((message) => {

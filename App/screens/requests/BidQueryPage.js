@@ -26,7 +26,7 @@ import { socket } from "../utils/socket.io/socket";
 import { useDispatch, useSelector } from "react-redux";
 import { setMessages, setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { sendCustomNotificationChat } from "../../notification/notificationMessages";
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
 import * as Clipboard from 'expo-clipboard';
 
 
@@ -195,14 +195,14 @@ const BidQueryPage = () => {
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding:20,paddingRight:10,zIndex:30}}
+            style={{ padding:20,zIndex:30}}
           >
             <BackArrow  />
           </TouchableOpacity>
 
-            <View className="gap-[9px]">
-              <View className="flex-row gap-[18px] items-center">
-                <View className="flex items-center justify-center rounded-full ml-4 bg-white p-[4px]">
+            <View className="gap-[9px] w-[100%]">
+              <View className="flex-row  gap-[18px] items-center">
+                <View className="flex   items-center justify-center rounded-full  bg-white">
                   {requestInfo?.customerId?.pic ? (
                     <Image
                       source={{ uri: requestInfo?.customerId?.pic }}
@@ -213,7 +213,7 @@ const BidQueryPage = () => {
                     <Profile className="" />
                   )}
                 </View>
-                <View className="w-[70%]">
+                <View className="">
                 <Text
                   className="text-[14px]  text-[#2e2c43] capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
@@ -235,37 +235,50 @@ const BidQueryPage = () => {
                                 <ThreeDots />
                             </Pressable> */}
           </View>
-          <View className="px-[40px] pb-[20px] flex bg-[#FFE7C8] ">
-          <View className="flex-row gap-[10px] items-center">
-            <Text
-              className="text-[16px] "
-              style={{ fontFamily: "Poppins-Bold" }}
-            >
-              Request Id
+          <View className="px-[50px] pb-[20px] flex bg-[#ffe7c8]">
+            <View className="gap-[0px] relative ">
+              <Text
+                className="text-[14px] text-[#2e2c43]"
+                style={{ fontFamily: "Poppins-Bold" }}
+              >
+                Request Id:
+              </Text>
+              <View className="flex flex-row gap-2 items-center">
+              <Text style={{ fontFamily: "Poppins-Regular" }}>
+                {requestInfo?.requestId?._id}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  copyToClipboard();
+                }}
+                style={{ padding: 4 }}
+              >
+                <Copy />
+              </TouchableOpacity>
+              {copied && (
+                <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">
+                  Copied!
+                </Text>
+              )}
+              </View>
+              
+             
+            </View>
+            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43] mt-[10px]">
+              {requestInfo?.requestId?.requestDescription
+                ?.split(" ")
+                .slice(0, 12)
+                .join(" ")}
+              ....
             </Text>
-            <Text style={{ fontFamily: "Poppins-Regular" }}>
-              {requestInfo?.requestId?._id}
-            </Text>
-            <TouchableOpacity onPress={() => {copyToClipboard()}} style={{padding:4}}>
-                                    <Copy />
-                                </TouchableOpacity>
-                                {copied && <Text className="bg-[#ebebeb] p-2 rounded-lg z-40 absolute -top-10  right-0">Copied!</Text>}
-          </View>
-          <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">
-            {requestInfo?.requestId?.requestDescription
-              ?.split(" ")
-              .slice(0, 12)
-              .join(" ")}
-            ....
-          </Text>
-          {/* {
+            {/* {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}
-        </View>
+          </View>
           <KeyboardAvoidingView>
-            <View className="flex gap-[21px] px-[40px] pt-[10px] pb-[100px]">
+            <View className="flex gap-[21px] px-[50px] pt-[10px] pb-[100px]">
               <View className="flex-row justify-between">
-                <Text className="" style={{ fontFamily: "Poppins-Bold" }}>Send a Query</Text>
+                <Text className="text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>Send Message</Text>
                 {/* <Text>Step 1/3</Text> */}
               </View>
               {/* <Text style={{ fontFamily: "Poppins-Regular" }}>Type your response here to the customer</Text> */}

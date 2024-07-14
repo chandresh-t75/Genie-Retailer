@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Image, Pressable, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity ,ActivityIndicator} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 

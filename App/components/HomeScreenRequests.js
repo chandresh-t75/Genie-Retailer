@@ -40,7 +40,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
                     </View>
                     <View className="flex-col flex-1">
                     <Text className="text-[16px] text-[#2e2c43] " style={{ fontFamily: "Poppins-Bold" }}>You are live now</Text>
-                    <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>Wait for your first request</Text>
+                    <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>Wait for your first customer request</Text>
                     </View>
                     
                  </View> 

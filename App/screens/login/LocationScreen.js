@@ -112,7 +112,7 @@ const LocationScreen = () => {
     } 
   };
 
-  const handleRefreshLocation = async() => {
+  const handleRefreshLocation = async() =>{
     setLoading(true);
     try{
     for (let i = 0; i < 3; i++) {
@@ -240,6 +240,14 @@ const LocationScreen = () => {
                     style={styles.input}
                   />
                 </View>
+
+                <View className="flex items-start mt-[10px] pb-[10px]">
+                <Pressable onPress={handleRefreshLocation} className="w-max">
+                  <Text className="text-[#E76063] text-[14px] " style={{ fontFamily: "Poppins-Regular" }}>
+                    Refresh
+                  </Text>
+                </Pressable>
+              </View>
              
               <Text className="text-[14px] text-[#2e2c43] mt-[10px]" style={{ fontFamily: "Poppins-Regular" }}>
                 Type your store address
@@ -257,13 +265,7 @@ const LocationScreen = () => {
                   
                 </View>
                 
-              <View className="flex items-start mt-[20px] pb-[20px]">
-                <Pressable onPress={handleRefreshLocation} className="w-max">
-                  <Text className="text-[#E76063] text-[14px] " style={{ fontFamily: "Poppins-ExtraBold" }}>
-                    Refresh
-                  </Text>
-                </Pressable>
-              </View>
+            
             </View>
           </View>
           
@@ -296,7 +298,7 @@ const LocationScreen = () => {
                 color: !location ? "#888888" : "white",
               }}
             >
-              CONTINUE
+              Continue
             </Text>
           </TouchableOpacity>
         

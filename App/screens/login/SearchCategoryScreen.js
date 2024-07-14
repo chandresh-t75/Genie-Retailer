@@ -18,43 +18,43 @@ import { useDispatch } from "react-redux";
 import { setStoreCategory } from "../../redux/reducers/storeDataSlice";
 
 const searchData = [
-  { id: 1, title: 'Miscellaneous', subTitle: '' },
-  { id: 2, title: 'Automotive parts/Services', subTitle: '2 wheeler Fuel based' },
-  { id: 3, title: 'Automotive parts/Services', subTitle: '2-wheeler EV' },
-  { id: 4, title: 'Automotive parts/Services', subTitle: '4 wheeler Fuel based' },
-  { id: 5, title: 'Automotive parts/Services', subTitle: '4-wheeler EV' },
-  { id: 6, title: 'Automotive parts/service', subTitle: '3-wheeler, commercial vehicles & EV' },
-  { id: 7, title: 'Carpenter service', subTitle: 'Repair' },
-  { id: 8, title: 'Clock repair & services', subTitle: '' },
-  { id: 9, title: 'Consumer Electronics Services & Accessories', subTitle: 'Mobile, Laptop, digital products etc' },
-  { id: 10, title: 'Consumer Electronics Services & accessories', subTitle: 'Home appliances and equipment etc' },
-  { id: 11, title: 'Consumer Electronics & Accessories', subTitle: 'Mobile, Laptop, digital products etc' },
-  { id: 12, title: 'Consumer Electronics & accessories', subTitle: 'Home appliances and equipment etc' },
-  { id: 13, title: 'Drycleaning & Laundry', subTitle: 'Clothes and accessories' },
-  { id: 14, title: 'Electrical hardware & accessories', subTitle: 'Inverter, batteries, Solar etc' },
-  { id: 15, title: 'Electrical hardware & accessories', subTitle: 'Wiring, equipment, lights etc' },
-  { id: 16, title: 'Electrical equipment services', subTitle: 'Ac, Fridge, Cooler repair etc' },
-  { id: 17, title: 'Electrical services', subTitle: 'Electrician' },
-  { id: 18, title: 'Fashion/clothings', subTitle: 'Top, bottom, dresses' },
-  { id: 19, title: 'Fashion accessories', subTitle: 'Shoes, bags etc' },
-  { id: 20, title: 'Fashion accessories', subTitle: 'Eyewear etc' },
+  
+  { id: 1, title: 'Automotive parts/Services', subTitle: '2 wheeler Fuel based' },
+  { id: 2, title: 'Automotive parts/Services', subTitle: '2-wheeler EV' },
+  { id: 3, title: 'Automotive parts/Services', subTitle: '4 wheeler Fuel based' },
+  { id: 4, title: 'Automotive parts/Services', subTitle: '4-wheeler EV' },
+  { id: 5, title: 'Automotive parts/service', subTitle: '3-wheeler, commercial vehicles & EV' },
+  { id: 6, title: 'Carpenter service', subTitle: 'Repair' },
+  { id: 7, title: 'Clock repair & services', subTitle: '' },
+  { id: 8, title: 'Consumer Electronics Services & Accessories', subTitle: 'Mobile, Laptop, digital products etc' },
+  { id: 9, title: 'Consumer Electronics Services & accessories', subTitle: 'Home appliances and equipment etc' },
+  { id: 10, title: 'Consumer Electronics & Accessories', subTitle: 'Mobile, Laptop, digital products etc' },
+  { id: 11, title: 'Consumer Electronics & accessories', subTitle: 'Home appliances and equipment etc' },
+  { id: 12, title: 'Drycleaning & Laundry', subTitle: 'Clothes and accessories' },
+  { id: 13, title: 'Electrical hardware & accessories', subTitle: 'Inverter, batteries, Solar etc' },
+  { id: 14, title: 'Electrical hardware & accessories', subTitle: 'Wiring, equipment, lights etc' },
+  { id: 15, title: 'Electrical equipment services', subTitle: 'Ac, Fridge, Cooler repair etc' },
+  { id: 16, title: 'Electrical services', subTitle: 'Electrician' },
+  { id: 17, title: 'Fashion/clothings', subTitle: 'Top, bottom, dresses' },
+  { id: 18, title: 'Fashion accessories', subTitle: 'Shoes, bags etc' },
+  { id: 19, title: 'Fashion accessories', subTitle: 'Eyewear etc' },
+  { id: 20, title: 'Fashion accessories', subTitle: 'Jewelry, Gold & Diamond' },
   { id: 21, title: 'Fashion accessories', subTitle: 'Jewelry, Gold & Diamond' },
-  { id: 22, title: 'Fashion accessories', subTitle: 'Jewelry, Gold & Diamond' },
-  { id: 23, title: 'Grocery & Kirana', subTitle: '' },
-  { id: 24, title: 'Gardening Services', subTitle: '' },
-  { id: 25, title: 'Plants & Gardening Accessories', subTitle: '' },
-  { id: 26, title: 'Hardware', subTitle: 'Cement, Hand tools, Powertools etc' },
-  { id: 27, title: 'Home furnishing', subTitle: 'furniture etc' },
-  { id: 28, title: 'Home furnishing', subTitle: 'Blanket, Pillow, Curtains etc' },
-  { id: 29, title: 'Kitchen Utensils and Kitchenware', subTitle: '' },
-  { id: 30, title: 'Luxury watches', subTitle: '' },
-  { id: 31, title: 'Medical store & Healthcare', subTitle: '' },
-  { id: 32, title: 'Pet care & food', subTitle: '' },
-  { id: 33, title: 'Paintings & Art', subTitle: '' },
-  { id: 34, title: 'Sports Nutrition', subTitle: 'Whey Pro etc' },
-  { id: 35, title: 'Sports accessories & Services', subTitle: 'Cricket, Football, Basketball etc' },
-  { id: 36, title: 'Toys and kids games', subTitle: '' },
-  { id: 37, title: 'Tailor', subTitle: 'Makes or alters clothing' },
+  { id: 22, title: 'Grocery & Kirana', subTitle: '' },
+  { id: 23, title: 'Gardening Services', subTitle: '' },
+  { id: 24, title: 'Plants & Gardening Accessories', subTitle: '' },
+  { id: 25, title: 'Hardware', subTitle: 'Cement, Hand tools, Powertools etc' },
+  { id: 26, title: 'Home furnishing', subTitle: 'furniture etc' },
+  { id: 27, title: 'Home furnishing', subTitle: 'Blanket, Pillow, Curtains etc' },
+  { id: 28, title: 'Kitchen Utensils & Kitchenware', subTitle: '' },
+  { id: 29, title: 'Luxury watches', subTitle: '' },
+  { id: 30, title: 'Medical store & Healthcare', subTitle: '' },
+  { id: 31, title: 'Pet care & food', subTitle: '' },
+  { id: 32, title: 'Paintings & Art', subTitle: '' },
+  { id: 33, title: 'Sports Nutrition', subTitle: 'Whey Pro etc' },
+  { id: 34, title: 'Sports accessories & Services', subTitle: 'Cricket, Football, Basketball etc' },
+  { id: 35, title: 'Toys and kids games', subTitle: '' },
+  { id: 36, title: 'Tailor', subTitle: 'Makes or alters clothing'},
 ];
 
 
@@ -90,7 +90,7 @@ const SearchCategoryScreen = () => {
         : selectedOption.title;
       dispatch(setStoreCategory(category.trim()));
       console.log(category);
-      // navigation.navigate("serviceDelivery");
+      navigation.navigate("serviceDelivery");
     } catch (error) {
       console.log("error", error);
     }
@@ -197,7 +197,7 @@ const SearchCategoryScreen = () => {
                 fontFamily: "Poppins-Black",
               }}
             >
-              NEXT
+              Next
             </Text>
           </View>
         </TouchableOpacity>

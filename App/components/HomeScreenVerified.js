@@ -179,10 +179,10 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       if (history.data) {
         dispatch(setRetailerHistory(history.data));
       }
-      // console.log("history",history.data);
+      console.log("history",history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
-      //console.error('Error fetching ongoing requests:', error);
+      console.error('Error fetching history requests:', error);
     }
   };
 
@@ -270,7 +270,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           retailerHistory?.length > 0) && (
           <View className="flex items-center">
             <View>
-              <View className="flex-row justify-around px-[10px]    mb-[20px]">
+              <View className="flex-row justify-center gap-[40px] px-[10px]    mb-[20px]">
                 <TouchableOpacity onPress={() => setTab("New")}>
                   <View className="flex-row  gap-[5px]   p-[4px]">
                     <Text
