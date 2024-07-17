@@ -466,24 +466,9 @@ const ProfileScreen = () => {
               >
                 Store Category
               </Text>
-              <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-                <TextInput
-                  value={user.storeCategory}
-                  editable={false}
-                  placeholder={storeCategory}
-                  placeholderTextColor={"#dbcdbb"}
-                  className="w-[250px] text-[14px] text-[#2E2C43] capitalize"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                  multiline={true}
-                  scrollEnabled={true}
-                />
-                {/* <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("update-category");
-              }}
-            >
-              <EditIcon className="px-[10px]" />
-            </TouchableOpacity> */}
+              <View className="flex flex-row items-center justify-between w-[324px]  px-[20px] bg-[#F9F9F9] rounded-[16px]">
+
+                <Text className="w-[250px] text-[14px] py-[10px] text-[#2E2C43]  capitalize" style={{ fontFamily: "Poppins-Regular" }}>{storeCategory}</Text>
               </View>
             </View>
 
@@ -580,7 +565,7 @@ const EditableField = ({
     </View>
 
     <KeyboardAvoidingView className="flex ">
-      <View className={`flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]`} style={{backgroundColor: editable ? '#ffe7c8' : '#F9F9F9',}}>
+      <View className={`flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]`} style={{ backgroundColor: editable ? '#ffe7c8' : '#F9F9F9', }}>
         <TextInput
           value={value}
           onChangeText={onChangeText}

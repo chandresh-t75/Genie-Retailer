@@ -122,7 +122,7 @@ const RequestPage = () => {
     (state) => state.requestData.newRequests || []
   );
   const user = useSelector((state) => state.storeData.userDetails);
-
+  const [online, setOnline] = useState(false);
   // console.log("params", currentRequest);
 
   //    const navigationState = useNavigationState(state => state);
@@ -149,7 +149,7 @@ const RequestPage = () => {
         })
         .then(async (resu) => {
           const result = resu?.data;
-          console.log("new requestInfo fetched successfully", result);
+          // console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
           await axios
             .get("http://173.212.193.109:5000/chat/get-spade-messages", {
@@ -167,8 +167,7 @@ const RequestPage = () => {
               console.log("socket join chat setup successfully");
 
               if (
-                result?.unreadCount > 0 &&
-                result?.latestMessage?.sender?.type === "UserRequest"
+                result?.unreadCount > 0 && result?.latestMessage?.sender?.type === "UserRequest"
               ) {
                 const res = await axios.patch(
                   "http://173.212.193.109:5000/chat/mark-as-read",
@@ -182,7 +181,7 @@ const RequestPage = () => {
                   unreadCount: 0,
                   updatedAt: new Date().toISOString(),
                 };
-                console.log("mar as read ", tmp);
+                console.log("mar as read ");
 
                 dispatch(setRequestInfo(tmp));
                 const filteredRequests = ongoingRequests.filter(
@@ -192,105 +191,108 @@ const RequestPage = () => {
                 const data = [tmp, ...filteredRequests];
                 dispatch(setOngoingRequests(data));
 
-                console.log("mark as read", res?.data, res?.data?.unreadCount);
-                
-                if (
-                  result.requestType === "win"  &&
-                  result?.latestMessage?.bidType === "update"
-                ) {
-                  console.log("update");
-                  await axios
-                    .patch(
-                      "http://173.212.193.109:5000/chat/update-to-history",
-                      {
-                        id: result?._id,
-                        type:"completed"
-                      }
-                    )
-                    .then((res) => {
-                      const filteredRequests = ongoingRequests.filter(
-                        (request) => request._id !== result?._id
-                      );
-  
-                      let tmp = {
-                        ...result,
-                        unreadCount: 0,
-                        requestType: "completed",
-                        updatedAt: new Date().toISOString(),
-                      };
-                      dispatch(setRequestInfo(tmp));
-                      const data = [...filteredRequests];
-                      dispatch(setOngoingRequests(data));
-                      const data2 = [tmp, ...retailerHistory];
-                      dispatch(setRetailerHistory(data2));
-                    });
-                }
-                else  if (
-                  result.requestType === "closed"  &&
-                  result?.latestMessage?.bidType === "update"
-                ) {
-                  console.log("update");
-                  await axios
-                    .patch(
-                      "http://173.212.193.109:5000/chat/update-to-history",
-                      {
-                        id: result?._id,
-                        type:"closedHistory"
-                      }
-                    )
-                    .then((res) => {
-                      const filteredRequests = ongoingRequests.filter(
-                        (request) => request._id !== result?._id
-                      );
-  
-                      let tmp = {
-                        ...result,
-                        unreadCount: 0,
-                        requestType: "closedHistory",
-                        updatedAt: new Date().toISOString(),
-                      };
-                      dispatch(setRequestInfo(tmp));
-                      const data = [...filteredRequests];
-                      dispatch(setOngoingRequests(data));
-                      const data2 = [tmp, ...retailerHistory];
-                      dispatch(setRetailerHistory(data2));
-                    });
-                }
-
-                else  if (
-                  result.requestType === "new"  &&
-                  result?.latestMessage?.bidType === "update"
-                ) {
-                  console.log("update");
-                  await axios
-                    .patch(
-                      "http://173.212.193.109:5000/chat/update-to-history",
-                      {
-                        id: result?._id,
-                        type:"notParticipated"
-                      }
-                    )
-                    .then((res) => {
-                      const filteredRequests = newRequests.filter(
-                        (request) => request._id !== result?._id
-                      );
-  
-                      let tmp = {
-                        ...result,
-                        unreadCount: 0,
-                        requestType: "notParticipated",
-                        updatedAt: new Date().toISOString(),
-                      };
-                      dispatch(setRequestInfo(tmp));
-                      const data = [...filteredRequests];
-                      dispatch(setNewRequests(data));
-                      const data2 = [tmp, ...retailerHistory];
-                      dispatch(setRetailerHistory(data2));
-                    });
-                }
+                console.log("mark as read", res?.data?.unreadCount);
 
               }
-             
+              if (
+                result.requestType === "win" &&
+                result?.bidCompleted === true
+              ) {
+                console.log("update");
+                await axios
+                  .patch(
+                    "http://173.212.193.109:5000/chat/update-to-history",
+                    {
+                      id: result?._id,
+                      type: "completed"
+                    }
+                  )
+                  .then((res) => {
+                    const filteredRequests = ongoingRequests.filter(
+                      (request) => request._id !== result?._id
+                    );
+
+                    let tmp = {
+                      ...result,
+                      unreadCount: 0,
+                      requestType: "completed",
+                      updatedAt: new Date().toISOString(),
+                    };
+                    dispatch(setRequestInfo(tmp));
+                    const data = [...filteredRequests];
+                    dispatch(setOngoingRequests(data));
+                    const data2 = [tmp, ...retailerHistory];
+                    dispatch(setRetailerHistory(data2));
+                  });
+              }
+              else if (
+                result.requestType === "closed" &&
+                result?.bidCompleted === true
+
+              ) {
+                console.log("update");
+                await axios
+                  .patch(
+                    "http://173.212.193.109:5000/chat/update-to-history",
+                    {
+                      id: result?._id,
+                      type: "closedHistory"
+                    }
+                  )
+                  .then((res) => {
+                    const filteredRequests = ongoingRequests.filter(
+                      (request) => request._id !== result?._id
+                    );
+
+                    let tmp = {
+                      ...result,
+                      unreadCount: 0,
+                      requestType: "closedHistory",
+                      updatedAt: new Date().toISOString(),
+                    };
+                    dispatch(setRequestInfo(tmp));
+                    const data = [...filteredRequests];
+                    dispatch(setOngoingRequests(data));
+                    const data2 = [tmp, ...retailerHistory];
+                    dispatch(setRetailerHistory(data2));
+                  });
+              }
+
+              else if (
+                result.requestType === "new" &&
+                result?.bidCompleted === true
+
+              ) {
+                console.log("update");
+                await axios
+                  .patch(
+                    "http://173.212.193.109:5000/chat/update-to-history",
+                    {
+                      id: result?._id,
+                      type: "notParticipated"
+                    }
+                  )
+                  .then((res) => {
+                    const filteredRequests = newRequests.filter(
+                      (request) => request._id !== result?._id
+                    );
+
+                    let tmp = {
+                      ...result,
+                      unreadCount: 0,
+                      requestType: "notParticipated",
+                      updatedAt: new Date().toISOString(),
+                    };
+                    dispatch(setRequestInfo(tmp));
+                    const data = [...filteredRequests];
+                    dispatch(setNewRequests(data));
+                    const data2 = [tmp, ...retailerHistory];
+                    dispatch(setRetailerHistory(data2));
+                  });
+              }
+
+
+
               setLoading(false);
             });
         });
@@ -302,9 +304,9 @@ const RequestPage = () => {
     }
   };
 
-  const SocketSetUp = async (id) => {
-    console.log("setup", id);
-    socket.emit("setup", id);
+  const SocketSetUp = async (userId, senderId) => {
+    console.log("setup", userId);
+    socket.emit("setup", { userId, senderId });
     console.log("socket setup for personal user setup successfully");
     // console.log("user connected with userId", requestInfo.users[0]._id);
 
@@ -321,7 +323,7 @@ const RequestPage = () => {
     // }
     console.log("Params data found");
     fetchUserDetails();
-    SocketSetUp(currentRequest?.userId);
+    SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
     // if (requestInfo && requestInfo._id===currentRequest.requestId) {
     //   setLoading(true);
     //   fetchRequestData();
@@ -343,8 +345,30 @@ const RequestPage = () => {
     return () => {
       if (socket) {
         // socket.disconnect();
-        socket.emit("leave room", requestInfo?.users[0]?._id);
+        const userId = currentRequest?.userId;
+        const senderId = currentRequest?.senderId;
+        socket.emit("leave room", { userId, senderId });
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleUserOnline = () => {
+      setOnline(true);
+      console.log('user online');
+    };
+
+    const handleUserOffline = () => {
+      setOnline(false);
+      console.log('user offline');
+    };
+
+    socket.on("online", handleUserOnline);
+    socket.on("offline", handleUserOffline);
+
+    return () => {
+      socket.off("online", handleUserOnline);
+      socket.off("offline", handleUserOffline);
     };
   }, []);
 
@@ -428,12 +452,12 @@ const RequestPage = () => {
   // New message recieved from socket code
   useEffect(() => {
     const handleMessageReceived = async (newMessageReceived) => {
-      console.log("Message received from socket:", newMessageReceived);
-      if (requestInfo?.requestType==="win" && newMessageReceived?.bidType === "update" ){
+      console.log("Message received from socket:", newMessageReceived._id, requestInfo?._id);
+      if (requestInfo?.requestType === "win" && newMessageReceived?.bidType === "update") {
         await axios
           .patch("http://173.212.193.109:5000/chat/update-to-history", {
             id: requestInfo?._id,
-            type:"completed"
+            type: "completed"
           })
           .then((res) => {
             console.log("accepted get complete d using socket")
@@ -448,40 +472,67 @@ const RequestPage = () => {
               unreadCount: 0,
             };
             dispatch(setRequestInfo(tmp));
+
             const data = [...filteredRequests];
             dispatch(setOngoingRequests(data));
             const data2 = [tmp, ...retailerHistory];
             dispatch(setRetailerHistory(data2));
           })
-        }
-       else  if ((requestInfo?.requestType==="closed" || requestInfo?.requestType==="ongoing" ) && newMessageReceived?.bidType === "update" ){
-          await axios
-            .patch("http://173.212.193.109:5000/chat/update-to-history", {
-              id: requestInfo?._id,
-              type:"closedHistory"
-            })
-            .then((res) => {
+      }
+      else if ((requestInfo?.requestType === "closed" || requestInfo?.requestType === "ongoing") && newMessageReceived?.bidType === "update") {
+        await axios
+          .patch("http://173.212.193.109:5000/chat/update-to-history", {
+            id: requestInfo?._id,
+            type: "closedHistory"
+          })
+          .then((res) => {
             console.log("closed get closed  using socket")
-             
-              const filteredRequests = ongoingRequests.filter(
-                (request) => request._id !== requestInfo?._id
-              );
-              let tmp = {
-                ...requestInfo,
-                requestType: "closedHistory",
-                updatedAt: new Date().toISOString(),
-                unreadCount: 0,
-              };
-              dispatch(setRequestInfo(tmp));
-              const data = [...filteredRequests];
-              dispatch(setOngoingRequests(data));
-              const data2 = [tmp, ...retailerHistory];
-              dispatch(setRetailerHistory(data2));
-            })
-          }
-          
-          
-      
+
+            const filteredRequests = ongoingRequests.filter(
+              (request) => request._id !== requestInfo?._id
+            );
+            let tmp = {
+              ...requestInfo,
+              requestType: "closedHistory",
+              updatedAt: new Date().toISOString(),
+              unreadCount: 0,
+            };
+            dispatch(setRequestInfo(tmp));
+            const data = [...filteredRequests];
+            dispatch(setOngoingRequests(data));
+            const data2 = [tmp, ...retailerHistory];
+            dispatch(setRetailerHistory(data2));
+          })
+      }
+      if (requestInfo?.requestType === "new" && newMessageReceived?.bidType === "update") {
+        await axios
+          .patch("http://173.212.193.109:5000/chat/update-to-history", {
+            id: requestInfo?._id,
+            type: "notParticipated"
+          })
+          .then((res) => {
+            console.log("not particpated get complete d using socket")
+            const filteredRequests = newRequests.filter(
+              (request) => request._id !== requestInfo?._id
+            );
+
+            let tmp = {
+              ...requestInfo,
+              requestType: "notParticipated",
+              updatedAt: new Date().toISOString(),
+              unreadCount: 0,
+            };
+            dispatch(setRequestInfo(tmp));
+
+            const data = [...filteredRequests];
+            dispatch(setNewRequests(data));
+            const data2 = [tmp, ...retailerHistory];
+            dispatch(setRetailerHistory(data2));
+          })
+      }
+
+
+
 
       setMessages((prevMessages) => {
         if (
@@ -500,7 +551,7 @@ const RequestPage = () => {
                 unreadCount: 0,
                 //  requestId:{requestActive:"completed"}
               };
-              console.log("request updated", tmp);
+              console.log("request updated");
               dispatch(setRequestInfo(tmp));
               const filteredRequests = ongoingRequests.filter(
                 (request) => request._id !== requestInfo?._id
@@ -657,14 +708,14 @@ const RequestPage = () => {
   // console.log("remainingDays: ", remainingDays);
 
   const lastMessage = messages[messages.length - 1];
-  console.log("last Mesage: ", lastMessage);
+  // console.log("last Mesage: ", lastMessage._id);
 
   const [viewHeight, setViewHeight] = useState(0);
 
   const handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
     setViewHeight(height);
-    console.log("heightof section", height)
+    // console.log("heightof section", height)
   };
 
   return (
@@ -721,12 +772,18 @@ const RequestPage = () => {
                       <Text>...</Text>
                     )}
                   </Text>
-                  <Text
+                  {online && <Text
                     className="text-[12px] text-[#79B649]"
                     style={{ fontFamily: "Poppins-Regular" }}
                   >
                     Online
-                  </Text>
+                  </Text>}
+                  {!online && <Text
+                    className="text-[12px] text-[#7c7c7c]"
+                    style={{ fontFamily: "Poppins-Regular" }}
+                  >
+                    Offline
+                  </Text>}
                 </View>
               </View>
             </View>
@@ -783,25 +840,25 @@ const RequestPage = () => {
                 Request Id:
               </Text>
               <View className="flex flex-row gap-2 items-center">
-              <Text style={{ fontFamily: "Poppins-Regular" }}>
-                {requestInfo?.requestId?._id}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  copyToClipboard();
-                }}
-                style={{ padding: 4 }}
-              >
-                <Copy />
-              </TouchableOpacity>
-              {copied && (
-                <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">
-                  Copied!
+                <Text style={{ fontFamily: "Poppins-Regular" }}>
+                  {requestInfo?.requestId?._id}
                 </Text>
-              )}
+                <TouchableOpacity
+                  onPress={() => {
+                    copyToClipboard();
+                  }}
+                  style={{ padding: 4 }}
+                >
+                  <Copy />
+                </TouchableOpacity>
+                {copied && (
+                  <Text className="bg-[#ebebeb] p-2 rounded-lg absolute -top-10 right-0">
+                    Copied!
+                  </Text>
+                )}
               </View>
-              
-             
+
+
             </View>
             <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43] mt-[10px]">
               {requestInfo?.requestId?.requestDescription
@@ -865,7 +922,7 @@ const RequestPage = () => {
                             {message?.message}
                           </Text>
                         </View>
-                        {!requestInfo?.rated && (
+                        {!requestInfo?.rated && requestInfo?.requestType === "completed" && (
                           <View className="px-[32px] py-[10px] bg-[#ffe7c8] rounded-[24px] ">
                             <View className=" mt-[19px] ">
                               <Text
@@ -1097,15 +1154,15 @@ const RequestPage = () => {
                         gap: 4,
                       }}
                       showsHorizontalScrollIndicator={false}
-                      style={{ maxHeight: 150 }}
+                      style={{ maxHeight: 250 }}
                     >
                       {messages[messages.length - 1]?.bidImages.map(
                         (image, index) => (
                           <View key={index} className="rounded-3xl">
                             <Image
                               source={{ uri: image }}
-                              width={100}
-                              height={140}
+                              width={174}
+                              height={232}
                               className="rounded-3xl border-[1px] border-slate-400 object-contain"
                             />
                           </View>
@@ -1200,7 +1257,7 @@ const RequestPage = () => {
                     className="text-[16px] text-[#fb8c00] text-center"
                     style={{ fontFamily: "Poppins-Regular" }}
                   >
-                    Send Message to Customer
+                    Send message to customer
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1218,7 +1275,7 @@ const RequestPage = () => {
                   <Document />
                   <Text
                     className=" text-[16px] text-[#fb8c00] text-center"
-                    style={{ fontFamily: "Poppins-regular" }}
+                    style={{ fontFamily: "Poppins-Regular" }}
                   >
                     Send attachment
                   </Text>
@@ -1256,15 +1313,15 @@ const RequestPage = () => {
                           gap: 4,
                         }}
                         showsHorizontalScrollIndicator={false}
-                        style={{ maxHeight: 150 }}
+                        style={{ maxHeight: 250 }}
                       >
                         {messages[messages.length - 1]?.bidImages.map(
                           (image, index) => (
                             <View key={index} className="rounded-3xl">
                               <Image
                                 source={{ uri: image }}
-                                width={100}
-                                height={140}
+                                width={174}
+                                height={232}
                                 className="rounded-3xl border-[1px] border-slate-400 object-contain"
                               />
                             </View>

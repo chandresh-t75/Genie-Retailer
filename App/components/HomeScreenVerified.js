@@ -66,14 +66,16 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
   const connectSocket = useCallback(async (id) => {
     // socket.emit("setup", currentSpadeRetailer?.users[1]._id);
-    socket.emit("setup", id);
+    const userId = id;
+    const senderId = id;
+    socket.emit("setup", { userId, senderId });
     //  console.log('Request connected with socket with id', spadeId);
     socket.on("connected", () => setSocketConnected(true));
     console.log("Home Screen socekt connect with id", id);
   });
 
   useEffect(() => {
-    connectSocket(userData._id);
+    connectSocket(userData?._id);
   }, []);
 
   useEffect(() => {
@@ -106,7 +108,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
   useEffect(() => {
     const handleNewRequest = (updatedUser) => {
-      console.log("New Request  received at socket", updatedUser._id);
+      console.log("New Request  received at socket", updatedUser?._id);
 
       // console.log("ongoing requests", filteredRequests.length)
 
@@ -179,7 +181,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       if (history.data) {
         dispatch(setRetailerHistory(history.data));
       }
-      console.log("history",history.data);
+      console.log("history", history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
       console.error('Error fetching history requests:', error);
@@ -217,9 +219,9 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   //   setupNotifications();
   // }, [newRequests]);
 
-  useEffect(() => {
-    socket.emit("setup", userData?._id);
-  }, []);
+  // useEffect(() => {
+  //   socket.emit("setup", userData?._id);
+  // }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -228,7 +230,8 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         // console.log(item)
         const req = {
           requestId: item?._id,
-          userId: item?.users[0]._id,
+          userId: item?.users[0]?._id,
+          senderId: item?.users[1]?._id
         };
         const requestId = req?.requestId;
         dispatch(setCurrentRequest(req));
@@ -245,8 +248,8 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         shadowOpacity: 0.9,
         shadowRadius: 24,
         elevation: 20,
-        borderRadius:24,
-         borderWidth: .5,
+        borderRadius: 24,
+        borderWidth: .5,
         borderColor: 'rgba(0, 0, 0, 0.05)'
       }}
     >
@@ -268,100 +271,99 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         {(newRequests?.length > 0 ||
           ongoingRequests?.length > 0 ||
           retailerHistory?.length > 0) && (
-          <View className="flex items-center">
-            <View>
-              <View className="flex-row justify-center gap-[40px] px-[10px]    mb-[20px]">
-                <TouchableOpacity onPress={() => setTab("New")}>
-                  <View className="flex-row  gap-[5px]   p-[4px]">
-                    <Text
-                      style={{
-                        fontFamily:
-                          tab === "New" ? "Poppins-Bold" : "Poppins-Regular",
-                        borderBottomWidth: tab === "New" ? 3 : 0,
-                        borderBottomColor: "#FB8C00",
-                      }}
-                      className=""
-                    >
-                      New Requests
-                    </Text>
-                    <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full ">
+            <View className="flex items-center">
+              <View>
+                <View className="flex-row justify-center gap-[40px] px-[10px]    mb-[20px]">
+                  <TouchableOpacity onPress={() => setTab("New")}>
+                    <View className="flex-row  gap-[5px]   p-[4px]">
                       <Text
-                        className="text-white  "
-                        style={{ fontFamily: "Poppins-Regular" }}
+                        style={{
+                          fontFamily:
+                            tab === "New" ? "Poppins-Bold" : "Poppins-Regular",
+                          borderBottomWidth: tab === "New" ? 3 : 0,
+                          borderBottomColor: "#FB8C00",
+                        }}
+                        className=""
                       >
-                        {newRequests ? newRequests.length : 0}
+                        New Requests
                       </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setTab("Ongoing")}>
-                  <View className="flex-row gap-[5px]  p-[4px]">
-                    <Text
-                      style={{
-                        fontFamily:
-                          tab === "Ongoing"
-                            ? "Poppins-Bold"
-                            : "Poppins-Regular",
-
-                        borderBottomWidth: tab === "Ongoing" ? 3 : 0,
-                        borderBottomColor: "#FB8C00",
-                      }}
-                    >
-                      Ongoing Requests
-                    </Text>
-                    <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
-                      <Text
-                        className="text-white  "
-                        style={{ fontFamily: "Poppins-Regular" }}
-                      >
-                        {ongoingRequests ? ongoingRequests.length : 0}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              </View>
-              {tab === "New" && (
-                <>
-                  {/* customer remaining card */}
-                  <View
-                    style={{
-                      backgroundColor: '#fff', // Ensure the background is white
-                      margin: 10, // Add some margin if necessary for better shadow visibility
-                      shadowColor: '#bdbdbd',
-                      shadowOffset: { width: 8, height: 6 },
-                      shadowOpacity: 0.9,
-                      shadowRadius: 24,
-                      elevation: 20,
-                      borderRadius:24
-                    }}
-                  >
-                    <View className="max-w-[340px] flex flex-row p-[20px] gap-[20px] items-center">
-                      <CustomerRemain width={92} height={76} />
-                      <View className="w-10/12 flex-col gap-[5px]">
-                        <View className="flex-row gap-[10px]">
-                          <Text
-                            className="text-[14px]"
-                            style={{ fontFamily: "Poppins-Regular" }}
-                          >
-                            Customer Remaining
-                          </Text>
-                          <TouchableOpacity
-                            onPress={() => setModalVisible(true)}
-                          >
-                            <QueIcon />
-                          </TouchableOpacity>
-                        </View>
+                      <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full ">
                         <Text
-                          className={`text-[24px]  ${
-                            userData?.freeSpades <= 50
+                          className="text-white  "
+                          style={{ fontFamily: "Poppins-Regular" }}
+                        >
+                          {newRequests ? newRequests.length : 0}
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setTab("Ongoing")}>
+                    <View className="flex-row gap-[5px]  p-[4px]">
+                      <Text
+                        style={{
+                          fontFamily:
+                            tab === "Ongoing"
+                              ? "Poppins-Bold"
+                              : "Poppins-Regular",
+
+                          borderBottomWidth: tab === "Ongoing" ? 3 : 0,
+                          borderBottomColor: "#FB8C00",
+                        }}
+                      >
+                        Ongoing Requests
+                      </Text>
+                      <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
+                        <Text
+                          className="text-white  "
+                          style={{ fontFamily: "Poppins-Regular" }}
+                        >
+                          {ongoingRequests ? ongoingRequests.length : 0}
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                {tab === "New" && (
+                  <>
+                    {/* customer remaining card */}
+                    <View
+                      style={{
+                        backgroundColor: '#fff', // Ensure the background is white
+                        margin: 10, // Add some margin if necessary for better shadow visibility
+                        shadowColor: '#bdbdbd',
+                        shadowOffset: { width: 8, height: 6 },
+                        shadowOpacity: 0.9,
+                        shadowRadius: 24,
+                        elevation: 20,
+                        borderRadius: 24
+                      }}
+                    >
+                      <View className="max-w-[340px] flex flex-row p-[20px] gap-[20px] items-center">
+                        <CustomerRemain width={92} height={76} />
+                        <View className="w-10/12 flex-col gap-[5px]">
+                          <View className="flex-row gap-[10px]">
+                            <Text
+                              className="text-[14px]"
+                              style={{ fontFamily: "Poppins-Regular" }}
+                            >
+                              Customer Remaining
+                            </Text>
+                            <TouchableOpacity
+                              onPress={() => setModalVisible(true)}
+                            >
+                              <QueIcon />
+                            </TouchableOpacity>
+                          </View>
+                          <Text
+                            className={`text-[24px]  ${userData?.freeSpades <= 50
                               ? "text-[#E76063]"
                               : "text-[#FB8C00]"
-                          }`}
-                          style={{ fontFamily: "Poppins-Black" }}
-                        >
-                          {userData?.freeSpades} / 1000
-                        </Text>
-                        {/* <TouchableOpacity>
+                              }`}
+                            style={{ fontFamily: "Poppins-Black" }}
+                          >
+                            {userData?.freeSpades} / 1000
+                          </Text>
+                          {/* <TouchableOpacity>
                             <View className="flex flex-row items-center gap-[10px]">
                             <Text className="text-[14px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Regular" }}>
                                 Add more
@@ -371,39 +373,39 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                             </View>
 
                           </TouchableOpacity> */}
+                        </View>
                       </View>
                     </View>
-                  </View>
-                  {/* gst verification card */}
-                  {!userData.documentVerified && (
-                    <View
-                    style={{
-                      backgroundColor: '#fff', // Ensure the background is white
-                      margin: 10, // Add some margin if necessary for better shadow visibility
-                      shadowColor: '#bdbdbd',
-                      shadowOffset: { width: 8, height: 6 },
-                      shadowOpacity: 0.9,
-                      shadowRadius: 24,
-                      elevation: 20,
-                      borderRadius:24
-                    }}
-                      className="max-w-[340px]"
-                    >
-                      <View className="w-full flex flex-row p-[20px] gap-[20px] items-center">
-                        <GSTVerify width={80} height={60} />
-                        <View className="w-10/12 px-[10px] flex-col gap-[5px]">
-                          <View className="w-full flex-row gap-[10px]">
-                            <Text
-                              className="text-[14px]"
-                              style={{ fontFamily: "Poppins-Regular" }}
-                            >
-                              Attach your GST/Labor{"\n"}certificate
-                            </Text>
-                            <TouchableOpacity>
-                              <QueIcon />
-                            </TouchableOpacity>
-                          </View>
-                          {/* <View className="flex flex-row items-center gap-[10px]">
+                    {/* gst verification card */}
+                    {!userData.documentVerified && (
+                      <View
+                        style={{
+                          backgroundColor: '#fff', // Ensure the background is white
+                          margin: 10, // Add some margin if necessary for better shadow visibility
+                          shadowColor: '#bdbdbd',
+                          shadowOffset: { width: 8, height: 6 },
+                          shadowOpacity: 0.9,
+                          shadowRadius: 24,
+                          elevation: 20,
+                          borderRadius: 24
+                        }}
+                        className="max-w-[340px]"
+                      >
+                        <View className="w-full flex flex-row p-[20px] gap-[20px] items-center">
+                          <GSTVerify width={80} height={60} />
+                          <View className="w-10/12 px-[10px] flex-col gap-[5px]">
+                            <View className="w-full flex-row gap-[10px]">
+                              <Text
+                                className="text-[14px]"
+                                style={{ fontFamily: "Poppins-Regular" }}
+                              >
+                                Attach your GST/Labor{"\n"}certificate
+                              </Text>
+                              <TouchableOpacity>
+                                <QueIcon />
+                              </TouchableOpacity>
+                            </View>
+                            {/* <View className="flex flex-row items-center gap-[10px]">
                                  <Time/>
     
                                 <Text className="text-[14px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>
@@ -411,39 +413,61 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                                   </Text>
     
                                 </View> */}
-                          {userData.panCard?.length == 0 && (
-                            <TouchableOpacity
-                              onPress={() => navigation.navigate("gstVerify")}
-                            >
-                              <View className="flex flex-row items-center gap-[10px]">
-                                <View className="flex flex-row items-center gap-[10px]">
-                                  <Text
-                                    className="text-[14px] text-[#FB8C00]"
-                                    style={{ fontFamily: "Poppins-Regular" }}
-                                  >
-                                    Add Now
-                                  </Text>
-                                  <RightArrow />
-                                </View>
-                              </View>
-                            </TouchableOpacity>
-                          )}
-                          {userData.panCard?.length > 0 &&
-                            !userData?.documentVerified && (
-                              <Text
-                                className="text-[14px] text-[#E76063]"
-                                style={{ fontFamily: "Poppins-Regular" }}
+                            {userData.panCard?.length == 0 && (
+                              <TouchableOpacity
+                                onPress={() => navigation.navigate("gstVerify")}
                               >
-                                Waiting for approval
-                              </Text>
+                                <View className="flex flex-row items-center gap-[10px]">
+                                  <View className="flex flex-row items-center gap-[10px]">
+                                    <Text
+                                      className="text-[14px] text-[#FB8C00]"
+                                      style={{ fontFamily: "Poppins-Regular" }}
+                                    >
+                                      Add Now
+                                    </Text>
+                                    <RightArrow />
+                                  </View>
+                                </View>
+                              </TouchableOpacity>
                             )}
+                            {userData.panCard?.length > 0 &&
+                              !userData?.documentVerified && (
+                                <Text
+                                  className="text-[14px] text-[#E76063]"
+                                  style={{ fontFamily: "Poppins-Regular" }}
+                                >
+                                  Waiting for approval
+                                </Text>
+                              )}
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  )}
+                    )}
 
+                    <FlatList
+                      data={newRequests}
+                      renderItem={renderItem}
+                      keyExtractor={(item) => {
+                        if (!item?._id) {
+                          // console.error('Item without _id:', item);
+                          return Math.random().toString();
+                        }
+                        return item?._id.toString();
+                      }}
+                      ListEmptyComponent={
+                        <Text
+                          className="text-[14px] text-center mb-[20px] mt-[20px]"
+                          style={{ fontFamily: "Poppins-Regular" }}
+                        >
+                          No New Requests
+                        </Text>
+                      }
+                    />
+                  </>
+                )}
+                {tab === "Ongoing" && (
                   <FlatList
-                    data={newRequests}
+                    data={ongoingRequests}
                     renderItem={renderItem}
                     keyExtractor={(item) => {
                       if (!item?._id) {
@@ -454,44 +478,22 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                     }}
                     ListEmptyComponent={
                       <Text
-                        className="text-[14px] text-center mb-[20px] mt-[20px]"
+                        className="text-[14px] text-center mb-[20px]"
                         style={{ fontFamily: "Poppins-Regular" }}
                       >
-                        No New Requests
+                        No Ongoing Requests
                       </Text>
                     }
                   />
-                </>
-              )}
-              {tab === "Ongoing" && (
-                <FlatList
-                  data={ongoingRequests}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => {
-                    if (!item?._id) {
-                      // console.error('Item without _id:', item);
-                      return Math.random().toString();
-                    }
-                    return item?._id.toString();
-                  }}
-                  ListEmptyComponent={
-                    <Text
-                      className="text-[14px] text-center mb-[20px]"
-                      style={{ fontFamily: "Poppins-Regular" }}
-                    >
-                      No Ongoing Requests
-                    </Text>
-                  }
-                />
-              )}
+                )}
+              </View>
             </View>
-          </View>
-        )}
+          )}
         {!(
           newRequests?.length > 0 ||
           ongoingRequests?.length > 0 ||
           retailerHistory?.length > 0
-        ) && <HomeScreenRequests modalVisible={ modalVisible} setModalVisible={ setModalVisible } />}
+        ) && <HomeScreenRequests modalVisible={modalVisible} setModalVisible={setModalVisible} />}
       </View>
     </View>
   );

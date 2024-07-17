@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import {
   Dimensions,
   Animated,
   Modal,
-  
+
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -65,7 +65,7 @@ const PanCardScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { width } = Dimensions.get("window");
-  console.log("User data sent to",uniqueToken);
+  console.log("User data sent to", uniqueToken);
 
   console.log(
     mobileNumber,
@@ -107,7 +107,7 @@ const PanCardScreen = () => {
       // Create user data object
 
       // Send user data to the server
-     
+
       const response = await axios.post(
         "http://173.212.193.109:5000/retailer/",
         {
@@ -117,7 +117,7 @@ const PanCardScreen = () => {
           storeCategory: storeCategory,
           homeDelivery: storeService,
           panCard: panCard,
-          
+
         }
       );
       // console.log("res", response);
@@ -131,16 +131,16 @@ const PanCardScreen = () => {
           `http://173.212.193.109:5000/retailer/editretailer`,
           {
             _id: response?.data?._id,
-            uniqueToken:uniqueToken,
+            uniqueToken: uniqueToken,
           }
         );
         dispatch(setUserDetails(res.data));
         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
-      
-       
+
+
 
         // Navigate to the next screen
-         navigation.navigate("completeProfile");
+        navigation.navigate("completeProfile");
       } else {
         // Handle error if user creation failed
         console.error("Error creating user:");
@@ -151,7 +151,7 @@ const PanCardScreen = () => {
       // Handle error if request fails
       console.error("Error creating user:", error);
       Alert.alert(
-        
+
         "An unexpected error occurred. Please try again later."
       );
       setLoading(false);
@@ -172,7 +172,7 @@ const PanCardScreen = () => {
       mediaType: 'photo',
       saveToPhotos: true,
     };
-  
+
     launchCamera(options, async (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -193,7 +193,7 @@ const PanCardScreen = () => {
       }
     });
   };
-  
+
   const getImageUrl = async (image) => {
     setLoading(true)
     try {
@@ -216,19 +216,19 @@ const PanCardScreen = () => {
           if (imgUri) {
             console.log("Image Updated Successfully");
             setImagesLocal(imgUri);
-        dispatch(setPanScreenImage(imgUri));
-        dispatch(setPanCard(imgUri));
-        setPanCardLocal(imgUri);
-        setLoading(false);
+            dispatch(setPanScreenImage(imgUri));
+            dispatch(setPanCard(imgUri));
+            setPanCardLocal(imgUri);
+            setLoading(false);
           }
         })
     } catch (error) {
-  setLoading(false);
-  console.error('Error getting imageUrl: ', error);
+      setLoading(false);
+      console.error('Error getting imageUrl: ', error);
     }
   }
 
- 
+
 
 
 
@@ -236,19 +236,19 @@ const PanCardScreen = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [3,4],
+      aspect: [3, 4],
       base64: true,
       quality: 1,
     });
 
     if (!result.canceled) {
       const newImageUri = result.assets[0].uri;
-          const compressedImage = await manipulateAsync(
-            newImageUri,
-            [{ resize: { width: 600, height: 800 } }],
-            { compress: 0.5, format: "jpeg", base64: true }
-          );
-          await getImageUrl(compressedImage.uri);
+      const compressedImage = await manipulateAsync(
+        newImageUri,
+        [{ resize: { width: 600, height: 800 } }],
+        { compress: 0.5, format: "jpeg", base64: true }
+      );
+      await getImageUrl(compressedImage.uri);
     }
   };
 
@@ -259,90 +259,90 @@ const PanCardScreen = () => {
     return <Text>No access to camera</Text>;
   }
 
-  const deleteImage =() => {
-        
-     setImagesLocal("");
-     dispatch(setPanCard(""));
-        setPanCardLocal("");
+  const deleteImage = () => {
+
+    setImagesLocal("");
+    dispatch(setPanCard(""));
+    setPanCardLocal("");
   };
-  
+
 
 
   return (
     <>
-   {!cameraScreen && (<View style={{ flex: 1,backgroundColor:"white" }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior="height"
-      
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, backgroundColor: "white" }}
+      {!cameraScreen && (<View style={{ flex: 1, backgroundColor: "white" }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior="height"
+
         >
-          <View
-            style={{
-              justifyContent: "center",
-             
-            }}
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, backgroundColor: "white" }}
           >
             <View
               style={{
-                position: "absolute",
-                width: "100%",
-                top: 48,
-                zIndex: 40,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: 32,
-              }}
-            >
-              <TouchableOpacity 
-                onPress={() => navigation.goBack()}
-                style={{ padding: 6 }}
-              >
-                <BackArrow width={16} height={12} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleNext}>
-                <Text
-                  style={{ fontSize: 16, padding: 2 ,fontFamily: 'Poppins-Bold'}}
-                  className="text-white " 
-                >
-                  Skip
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View className="flex flex-col justify-center items-center px-[32px] gap-[20px]">
-              <StoreName width={width} className="object-cover" />
-              <Text className="text-[14.5px]  text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>
-                Step 6/6
-              </Text>
-            </View>
-            <View style={{
-                marginTop: 20,
-                paddingHorizontal:32
-              }}
-            >
-              <Text
-                style={{ fontSize: 16, color: "#2e2c43", fontFamily: "Poppins-SemiBold" } }
-              >
-                Please submit your documents
-              </Text>
-              <Text style={{ fontSize: 14, color: "#2e2c43" ,fontFamily:"Poppins-Regular"}}>
-                GST Certificate/Labor Certificate
-              </Text>
-              <View className="flex flex-row gap-[40px] mt-[10px]">
-              <TouchableOpacity onPress={() => setAddMore(!addMore)}>
-                  <View>
-                    <AddMoreImage />
-                  </View>
-                </TouchableOpacity>
+                justifyContent: "center",
 
-                {
-                  imagesLocal.length>0 && (
-                    <View  className="rounded-[16px] pb-[100px]">
-                
-                            <Pressable
-                          
+              }}
+            >
+              <View
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  top: 20,
+                  zIndex: 40,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 32,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={{ padding: 6 }}
+                >
+                  <BackArrow width={16} height={12} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleNext}>
+                  <Text
+                    style={{ fontSize: 16, padding: 2, fontFamily: 'Poppins-Bold' }}
+                    className="text-white "
+                  >
+                    Skip
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View className="flex flex-col justify-center items-center px-[32px] gap-[20px]">
+                <StoreName className="object-cover" />
+                <Text className="text-[14.5px]  text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>
+                  Step 6/6
+                </Text>
+              </View>
+              <View style={{
+                marginTop: 20,
+                paddingHorizontal: 32
+              }}
+              >
+                <Text
+                  style={{ fontSize: 16, color: "#2e2c43", fontFamily: "Poppins-SemiBold" }}
+                >
+                  Please submit your documents
+                </Text>
+                <Text style={{ fontSize: 14, color: "#2e2c43", fontFamily: "Poppins-Regular" }}>
+                  GST Certificate/Labor Certificate
+                </Text>
+                <View className="flex flex-row gap-[40px] mt-[10px]">
+                  <TouchableOpacity onPress={() => setAddMore(!addMore)}>
+                    <View>
+                      <AddMoreImage />
+                    </View>
+                  </TouchableOpacity>
+
+                  {
+                    imagesLocal.length > 0 && (
+                      <View className="rounded-[16px] pb-[100px]">
+
+                        <Pressable
+
                           onPress={() => handleImagePress(imagesLocal)}
                         >
                           <View style={styles.imageWrapper}>
@@ -358,90 +358,90 @@ const PanCardScreen = () => {
                             </Pressable>
                           </View>
                         </Pressable>
+                      </View>
+                    )
+                  }
+                  <Modal
+                    transparent
+                    visible={!!selectedImage}
+                    onRequestClose={handleClose}
+                  >
+                    <Pressable style={styles.modalContainer} onPress={handleClose}>
+                      <Animated.Image
+                        source={{ uri: selectedImage }}
+                        style={[
+                          styles.modalImage,
+                          {
+                            transform: [{ scale: scaleAnimation }],
+                          },
+                        ]}
+                      />
+
+                    </Pressable>
+                  </Modal>
                 </View>
-                  )
-                }
-                 <Modal
-                      transparent
-                      visible={!!selectedImage}
-                      onRequestClose={handleClose}
-                    >
-                      <Pressable style={styles.modalContainer}  onPress={handleClose}>
-                        <Animated.Image
-                          source={{ uri: selectedImage }}
-                          style={[
-                            styles.modalImage,
-                            {
-                              transform: [{ scale: scaleAnimation }],
-                            },
-                          ]}
-                        />
-                        
-                      </Pressable>
-                    </Modal>
+
+
               </View>
-             
-               
-              </View>
-              
-          </View>
-        </ScrollView>
-        {!addMore && (
-          <TouchableOpacity
-            onPress={handleNext}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 68,
-              backgroundColor: "#fb8c00",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-             {loading ? (
+
+            </View>
+          </ScrollView>
+          {!addMore && (
+            <TouchableOpacity
+              onPress={handleNext}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 68,
+                backgroundColor: "#fb8c00",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {loading ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-            <Text style={{ color: "white", fontSize: 18, fontFamily:"Poppins-Black" }}>
-              NEXT
-            </Text>
-            )}
-          </TouchableOpacity>
-        )}
-        {addMore && (
-          <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
-          <TouchableOpacity onPress={() => { setAddMore(false) }}>
-            <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
+                <Text style={{ color: "white", fontSize: 18, fontFamily: "Poppins-Black" }}>
+                  NEXT
+                </Text>
+              )}
+            </TouchableOpacity>
+          )}
+          {addMore && (
+            <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
+              <TouchableOpacity onPress={() => { setAddMore(false) }}>
+                <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
+                </View>
+              </TouchableOpacity>
+              <View className="bg-white absolute bottom-0 left-0 right-0 ">
+
+                <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+                  <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
+                    <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
+                    <RightArrow />
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
+                  <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
+                    <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+                    <RightArrow />
+                  </View>
+                </TouchableOpacity>
+
+              </View>
             </View>
-          </TouchableOpacity>
-          <View className="bg-white absolute bottom-0 left-0 right-0 ">
-
-            <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
-              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
-                <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
-                <RightArrow />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
-              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
-                <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
-                <RightArrow />
-              </View>
-            </TouchableOpacity>
-
+          )}
+        </KeyboardAvoidingView>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#fb8c00" />
           </View>
-        </View>
         )}
-      </KeyboardAvoidingView>
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#fb8c00" />
-        </View>
-       )}
-    </View>)
-   }
-   </>
+      </View>)
+      }
+    </>
   );
 };
 
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    
+
   },
   deleteIcon: {
     position: "absolute",

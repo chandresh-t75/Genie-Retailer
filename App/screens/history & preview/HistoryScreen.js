@@ -63,8 +63,8 @@ const HistoryScreen = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView contentContainerStyle={{zIndex:100}}>
-        <View className="flex flex-row z-40 justify-center items-center px-[32px] " style={{ }}>
+      <ScrollView contentContainerStyle={{ zIndex: 100 }}>
+        <View className="flex flex-row z-40 justify-center items-center px-[32px] " style={{}}>
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -91,22 +91,22 @@ const HistoryScreen = () => {
         <View className="flex-1 justify-center">
           <View className="flex flex-row justify-between px-[40px] items-end">
             {
-              tab==="All"  &&  <Text className="text-[16px] text-center"
-              style={{ fontFamily: "Poppins-Bold" }} >{retailerHistory?.length} Requests</Text>
+              tab === "All" && <Text className="text-[16px] text-center"
+                style={{ fontFamily: "Poppins-Bold" }} >{retailerHistory?.length} Requests</Text>
             }
-             {
-              tab==="Closed"  &&  <Text className="text-[16px] text-center"
-              style={{ fontFamily: "Poppins-Bold" }} >{closedRequests?.length} Requests</Text>
+            {
+              tab === "Closed" && <Text className="text-[16px] text-center"
+                style={{ fontFamily: "Poppins-Bold" }} >{closedRequests?.length} Requests</Text>
             }
-             {
-              tab==="Completed"  &&  <Text className="text-[16px] text-center"
-              style={{ fontFamily: "Poppins-Bold" }} >{completedRequests?.length} Requests</Text>
+            {
+              tab === "Completed" && <Text className="text-[16px] text-center"
+                style={{ fontFamily: "Poppins-Bold" }} >{completedRequests?.length} Requests</Text>
             }
-             {
-              tab==="Rejected"  &&  <Text className="text-[16px] text-center"
-              style={{ fontFamily: "Poppins-Bold" }} >{rejectedRequests?.length} Requests</Text>
+            {
+              tab === "Rejected" && <Text className="text-[16px] text-center"
+                style={{ fontFamily: "Poppins-Bold" }} >{rejectedRequests?.length} Requests</Text>
             }
-           
+
             <TouchableOpacity
               onPress={() => setDropdownVisible(!dropdownVisible)}
               style={styles.dropdown}
@@ -115,37 +115,37 @@ const HistoryScreen = () => {
               {!dropdownVisible && <DropDown width={16} height={20} />}
               {dropdownVisible && <DropDownUp width={16} height={20} />}
             </TouchableOpacity>
-           
+
           </View>
           {dropdownVisible && (
-              <View style={styles.dropdownOptions}>
-                <TouchableOpacity
-                  onPress={() => handleSelect("All")}
-                  style={styles.option}
-                >
-                  <Text style={styles.optionText}>All</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleSelect("Completed")}
-                  style={styles.option}
-                >
-                  <Text style={styles.optionText}>Completed</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleSelect("Closed")}
-                  style={styles.option}
-                >
-                  <Text style={styles.optionText}>Closed</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleSelect("Rejected")}
-                  style={styles.option}
-                >
-                  <Text style={styles.optionText}>Rejected</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          <View className="flex flex-col mt-[20px] mb-[50px] items-center justify-center">
+            <View style={styles.dropdownOptions}>
+              <TouchableOpacity
+                onPress={() => handleSelect("All")}
+                style={styles.option}
+              >
+                <Text style={styles.optionText}>All</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSelect("Completed")}
+                style={styles.option}
+              >
+                <Text style={styles.optionText}>Completed</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSelect("Closed")}
+                style={styles.option}
+              >
+                <Text style={styles.optionText}>Closed</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSelect("Rejected")}
+                style={styles.option}
+              >
+                <Text style={styles.optionText}>Rejected</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <View className="flex flex-col mt-[20px] mb-[160px] items-center justify-center">
             {tab === "All" &&
               (retailerHistory && retailerHistory.length > 0 ? (
                 retailerHistory.map((product) => (
@@ -318,19 +318,19 @@ export default HistoryScreen;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent:"flex-end",
-    alignItems:"flex-end",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
     padding: 10,
     marginBottom: 20,
     marginRight: 20,
-    position:"relative",
+    position: "relative",
 
-    
 
-    
+
+
   },
   dropdown: {
-    
+
     padding: 12,
     borderWidth: 2,
     borderColor: "#fb8c00",
@@ -338,9 +338,9 @@ const styles = StyleSheet.create({
     width: 160,
     alignItems: "center",
     flexDirection: "row",
-    justifyContent:"space-around",
+    justifyContent: "space-around",
     gap: 20,
-    position:"relative",
+    position: "relative",
 
   },
   dropdownText: {
@@ -352,10 +352,10 @@ const styles = StyleSheet.create({
   dropdownOptions: {
     // marginTop: 10,
     // borderWidth: 1,
-    top:60,
-    right:40,
-    zIndex:100,
-    position:"absolute",
+    top: 60,
+    right: 40,
+    zIndex: 100,
+    position: "absolute",
     borderRadius: 16,
     width: 160,
     backgroundColor: "white",
