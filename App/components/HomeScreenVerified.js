@@ -75,7 +75,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   });
 
   useEffect(() => {
-    connectSocket(userData._id);
+    connectSocket(userData?._id);
   }, []);
 
   useEffect(() => {
@@ -108,7 +108,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
   useEffect(() => {
     const handleNewRequest = (updatedUser) => {
-      console.log("New Request  received at socket", updatedUser._id);
+      console.log("New Request  received at socket", updatedUser?._id);
 
       // console.log("ongoing requests", filteredRequests.length)
 
@@ -230,8 +230,8 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         // console.log(item)
         const req = {
           requestId: item?._id,
-          userId: item?.users[0]._id,
-          senderId: item?.users[1]._id
+          userId: item?.users[0]?._id,
+          senderId: item?.users[1]?._id
         };
         const requestId = req?.requestId;
         dispatch(setCurrentRequest(req));
@@ -356,8 +356,8 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                           </View>
                           <Text
                             className={`text-[24px]  ${userData?.freeSpades <= 50
-                                ? "text-[#E76063]"
-                                : "text-[#FB8C00]"
+                              ? "text-[#E76063]"
+                              : "text-[#FB8C00]"
                               }`}
                             style={{ fontFamily: "Poppins-Black" }}
                           >

@@ -15,7 +15,6 @@ import { useNavigation } from "@react-navigation/native";
 import StoreName from "../../assets/delivery.svg";
 import BackArrow from "../../assets/BackArrow.svg";
 
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { setStoreService } from "../../redux/reducers/storeDataSlice";
 import { Octicons } from "@expo/vector-icons";
@@ -40,23 +39,25 @@ const ServiceDeliveryScreen = () => {
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: "white" }}>
         <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
-          <View className="w-full bg-white flex-col justify-center">
+          <View className="w-full flex-col justify-center">
             {/* <View className="w-full absolute top-10 left-10 z-40 mt-[10px] flex flex-row justify-between items-center px-[32px]"> */}
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={{
-                  position:"absolute",
-                  top: 20,
-                  left: 30,
-                  padding: 15,
-                  zIndex: 40,
-                }}
-              >
-                <BackArrow width={16} height={12} />
-              </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={{
+                position: "absolute",
+                top: 20,
+                left: 30,
+                padding: 15,
+                zIndex: 40,
+                // backgroundColor: 'black'
+              }}
+            >
+              <BackArrow width={16} height={12} />
+            </TouchableOpacity>
             {/* </View> */}
+            <StoreName width={width} className="object-cover " />
             <View className="flex flex-col justify-center items-center px-[32px] gap-[20px] ">
-              <StoreName width={width} className="object-cover" />
+
               <Text
                 className="text-[14.5px]  text-[#FB8C00]"
                 style={{ fontFamily: "Poppins-Bold" }}
@@ -79,9 +80,8 @@ const ServiceDeliveryScreen = () => {
                     onPress={() => setChecked(true)}
                   >
                     <View
-                      className={`border-[#FB8C00] h-[20px] w-[20px] flex justify-center items-center border-[1px] rounded-full ${
-                        checked === true ? "bg-[#FB8C00]" : ""
-                      }`}
+                      className={`border-[#FB8C00] h-[20px] w-[20px] flex justify-center items-center border-[1px] rounded-full ${checked === true ? "bg-[#FB8C00]" : ""
+                        }`}
                     >
                       {checked === true && (
                         <Entypo name="circle" size={16} color="white" />
@@ -99,9 +99,8 @@ const ServiceDeliveryScreen = () => {
                     onPress={() => setChecked(false)}
                   >
                     <View
-                      className={`border-[#FB8C00] h-[20px] w-[20px] flex justify-center items-center border-[1px] rounded-full ${
-                        checked === false ? "bg-[#FB8C00]" : ""
-                      }`}
+                      className={`border-[#FB8C00] h-[20px] w-[20px] flex justify-center items-center border-[1px] rounded-full ${checked === false ? "bg-[#FB8C00]" : ""
+                        }`}
                     >
                       {checked === false && (
                         <Entypo name="circle" size={16} color="white" />

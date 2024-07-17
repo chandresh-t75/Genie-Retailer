@@ -37,8 +37,8 @@ const LocationScreen = () => {
   const [storeLocation, setStoreLocationLocal] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const route=useRoute();
-  const {data}=route.params
+  const route = useRoute();
+  const { data } = route.params
 
   const [location, setLocation] = useState("");
   const [address, setAddress] = useState("");
@@ -68,7 +68,7 @@ const LocationScreen = () => {
       // console.log("location", data);
       if (!data.error) {
         // return data.display_name;
-        setAddress(data?.display_name.split(" ").slice(0,5).join(" "));
+        setAddress(data?.display_name.split(" ").slice(0, 5).join(" "));
       } else {
         return null;
       }
@@ -79,7 +79,7 @@ const LocationScreen = () => {
   };
 
   const fetchLocation = async () => {
-    
+
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -88,10 +88,10 @@ const LocationScreen = () => {
       }
 
       let location = await Location.getCurrentPositionAsync({
-        
+
         accuracy: Location.Accuracy.Lowest,
-      timeInterval: 10000, // 10 seconds
-      distanceInterval: 1,
+        timeInterval: 10000, // 10 seconds
+        distanceInterval: 1,
       });
       console.log(location);
       const { latitude, longitude } = location.coords;
@@ -101,41 +101,41 @@ const LocationScreen = () => {
       setStoreLocationLocal(latitude + "," + longitude);
 
       setLoc({ latitude, longitude });
-     
+
       await getLocationName(latitude, longitude);
 
-     
+
 
       // }
     } catch (error) {
       console.error("Error fetching location:", error);
-    } 
+    }
   };
 
-  const handleRefreshLocation = async() =>{
+  const handleRefreshLocation = async () => {
     setLoading(true);
-    try{
-    for (let i = 0; i < 3; i++) {
-      try {
-        console.log("Refreshing location",i)
-        await fetchLocation();
-  
-       
-      } catch (error) {
-        console.error(`Attempt ${i + 1} failed:`, error);
-        if (i === retries - 1) {
-          throw error;
+    try {
+      for (let i = 0; i < 3; i++) {
+        try {
+          console.log("Refreshing location", i)
+          await fetchLocation();
+
+
+        } catch (error) {
+          console.error(`Attempt ${i + 1} failed:`, error);
+          if (i === retries - 1) {
+            throw error;
+          }
         }
       }
+
+    } catch (error) {
+      console.error(`location failed:`, error);
+
+    } finally {
+      setLoading(false);
     }
-    
-  }catch(error){
-    console.error(`location failed:`, error);
-        
-  }finally {
-    setLoading(false);
-  }
-    
+
   };
   const handleLocation = (storeLocation) => {
     // Update the mobile number state
@@ -149,7 +149,7 @@ const LocationScreen = () => {
     // Log the mobile number value
     console.log(location);
   };
-  
+
   const handleLocationFetching = async () => {
     setLoading(true);
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
@@ -168,25 +168,25 @@ const LocationScreen = () => {
           location: location,
           lattitude: latitude,
           longitude: longitude,
-          serviceProvider:data==="service"?"true":"false",
-          coords:{
-            type:"Point",
-            coordinates:[longitude, latitude]
+          serviceProvider: data === "service" ? "true" : "false",
+          coords: {
+            type: "Point",
+            coordinates: [longitude, latitude]
           }
         }
       );
 
-      console.log("Location updated successfully:", response.data); 
-       dispatch(setUserDetails(response.data));
+      console.log("Location updated successfully:", response.data);
+      dispatch(setUserDetails(response.data));
       // Update user data in AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(response.data));
 
       // Navigate to home only after successfully updating the location
-      console.log("data",data);
-      if(data==="service"){
+      console.log("data", data);
+      if (data === "service") {
         dispatch(setServiceProvider("true"));
       }
-      else if(data==="notservice"){
+      else if (data === "notservice") {
         dispatch(setServiceProvider("false"));
       }
       navigation.navigate("completeProfile");
@@ -199,35 +199,35 @@ const LocationScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-     
-     
-      <ScrollView contentContainerStyle={{flexGrow:1}}>
-      <KeyboardAvoidingView behavior="position" >
-      <View style={{ flex: 1, backgroundColor: "white",position:"relative" }} >
-          <View className="w-full absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={{ padding:20,paddingRight:10,zIndex:30}}
-          >
-            <BackArrow  />
-          </TouchableOpacity>
-          </View>
-          <View className="flex flex-col justify-center items-center px-[32px] mt-[20px] ">
-            <LocationImg height={322} width={width} />
-          </View>
-       
-         
-          <View className="mt-[40px] mb-[45px] flex flex-col gap-[33px] px-[32px]">
-            <View>
-              <Text className="text-[18px] text-[#001B33] " style={{ fontFamily: "Poppins-Black" }}>
-                Please confirm your {"\n"}store location
-              </Text>
-              <Text className="text-[14px] text-[#2e2c43] mt-[36px]" style={{ fontFamily: "Poppins-Regular" }}>
-                Fetched Location
-              </Text>
-              
+
+
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <KeyboardAvoidingView behavior="position" >
+          <View style={{ flex: 1, backgroundColor: "white", position: "relative", paddingBottom: 80 }} >
+            <View className="w-full absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}
+                style={{ padding: 20, paddingRight: 10, zIndex: 30 }}
+              >
+                <BackArrow />
+              </TouchableOpacity>
+            </View>
+            <View className="flex flex-col justify-center items-center px-[32px] mt-[20px] ">
+              <LocationImg height={322} width={width} />
+            </View>
+
+
+            <View className="mt-[40px] mb-[45px] flex flex-col gap-[33px] px-[32px]">
+              <View>
+                <Text className="text-[18px] text-[#001B33] " style={{ fontFamily: "Poppins-Black" }}>
+                  Please confirm your {"\n"}store location
+                </Text>
+                <Text className="text-[14px] text-[#2e2c43] mt-[36px]" style={{ fontFamily: "Poppins-Regular" }}>
+                  Fetched Location
+                </Text>
+
                 <View style={styles.container}>
                   <TextInput
                     placeholder="189/2, Out Side Datia Gate ,Jhansi, 28402"
@@ -242,17 +242,17 @@ const LocationScreen = () => {
                 </View>
 
                 <View className="flex items-start mt-[10px] pb-[10px]">
-                <Pressable onPress={handleRefreshLocation} className="w-max">
-                  <Text className="text-[#E76063] text-[14px] " style={{ fontFamily: "Poppins-Regular" }}>
-                    Refresh
-                  </Text>
-                </Pressable>
-              </View>
-             
-              <Text className="text-[14px] text-[#2e2c43] mt-[10px]" style={{ fontFamily: "Poppins-Regular" }}>
-                Type your store address
-              </Text>
-             
+                  <Pressable onPress={handleRefreshLocation} className="w-max">
+                    <Text className="text-[#E76063] text-[14px] " style={{ fontFamily: "Poppins-Regular" }}>
+                      Refresh
+                    </Text>
+                  </Pressable>
+                </View>
+
+                <Text className="text-[14px] text-[#2e2c43] mt-[10px]" style={{ fontFamily: "Poppins-Regular" }}>
+                  Type your store address
+                </Text>
+
                 <View className="flex  items-center">
                   <TextInput
                     placeholder="189/2,  Out Side Datia Gate ,Jhansi, 28402"
@@ -262,61 +262,61 @@ const LocationScreen = () => {
                     className="w-[330px] overflow-x-scroll  text-[14px]  px-[20px] py-[15px] bg-[#F9F9F9]  text-black rounded-[16px]"
                     style={{ fontFamily: "Poppins-Regular" }}
                   />
-                  
-                </View>
-                
-            
-            </View>
-          </View>
-          
-          </View>
-          </KeyboardAvoidingView>
 
-          </ScrollView>
-          
-          
-          <TouchableOpacity
-            disabled={!location}
-            onPress={handleLocationFetching}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 68,
-              width: "100%",
-              backgroundColor:
-                !location ? "#e6e6e6" : "#FB8C00",
-              justifyContent: "center", // Center content vertically
-              alignItems: "center", // Center content horizontally
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 18,
-                fontFamily:"Poppins-Black",
-                color: !location ? "#888888" : "white",
-              }}
-            >
-              Continue
-            </Text>
-          </TouchableOpacity>
-        
-        <View className="absolute flex justify-center items-center">
-          <ModalScreen
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}
-            setModalConfirmVisible={setModalConfirmVisible}
-          />
-          <ModalScreenConfirm
-            modalConfirmVisible={modalConfirmVisible}
-            setModalConfirmVisible={setModalConfirmVisible}
-          />
-        </View>
-     
+                </View>
+
+
+              </View>
+            </View>
+
+          </View>
+        </KeyboardAvoidingView>
+
+      </ScrollView>
+
+
+      <TouchableOpacity
+        disabled={!location}
+        onPress={handleLocationFetching}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 68,
+          width: "100%",
+          backgroundColor:
+            !location ? "#e6e6e6" : "#FB8C00",
+          justifyContent: "center", // Center content vertically
+          alignItems: "center", // Center content horizontally
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontFamily: "Poppins-Black",
+            color: !location ? "#888888" : "white",
+          }}
+        >
+          Continue
+        </Text>
+      </TouchableOpacity>
+
+      <View className="absolute flex justify-center items-center">
+        <ModalScreen
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          setModalConfirmVisible={setModalConfirmVisible}
+        />
+        <ModalScreenConfirm
+          modalConfirmVisible={modalConfirmVisible}
+          setModalConfirmVisible={setModalConfirmVisible}
+        />
+      </View>
+
       {(modalVisible || modalConfirmVisible) && (
-                    <View style={styles.overlay} />
-                )}
+        <View style={styles.overlay} />
+      )}
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#fb8c00" />
@@ -344,10 +344,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     backgroundColor: '#F9F9F9',
-    fontFamily:"Poppins-Regular",
+    fontFamily: "Poppins-Regular",
     color: 'black',
     borderRadius: 16,
-    height:"max-content", // Adj
+    height: "max-content", // Adj
   },
   overlay: {
     flex: 1,

@@ -74,15 +74,15 @@ const RequestAcceptModal = ({
             "http://173.212.193.109:5000/chat/product-available",
             {
               id: requestInfo?._id,
-             
+
             }
           ).then(async (res) => {
 
             updateUserDetails();
 
-            console.log("RequestType new response", res.data,res.data.users[0], res.data.users[1]);
-            let tmp = { ...requestInfo, requestType: "ongoing", updatedAt: new Date().toISOString(),users:[res.data.users[0], res.data.users[1]]};
-            console.log("new requestInfo",tmp)
+            console.log("RequestType new response", res.data, res.data.users[0], res.data.users[1]);
+            let tmp = { ...requestInfo, requestType: "ongoing", updatedAt: new Date().toISOString(), users: [res.data.users[0], res.data.users[1]] };
+            console.log("new requestInfo", tmp)
 
             dispatch(setRequestInfo(tmp));
             const filteredRequests = newRequests.filter(
@@ -151,17 +151,17 @@ const RequestAcceptModal = ({
               const token = await axios.get(
                 `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
               );
-              if (token.data.length > 0){
+              if (token.data.length > 0) {
                 const notification = {
                   token: token.data,
-                title: user?.storeName,
-                requestInfo: {
-                  requestId: requestInfo?._id,
-                  userId: requestInfo?.users[1]._id
-                },
-                tag: user?._id,
-                price: lastMessage?.bidPrice,
-                image: requestInfo?.requestId?.requestImages[0],
+                  title: user?.storeName,
+                  requestInfo: {
+                    requestId: requestInfo?._id,
+                    userId: requestInfo?.users[1]._id
+                  },
+                  tag: user?._id,
+                  price: lastMessage?.bidPrice,
+                  image: requestInfo?.requestId?.requestImages[0],
                 };
                 NotificationBidAccepted(notification);
               }
@@ -180,8 +180,8 @@ const RequestAcceptModal = ({
               setModalVisible(false);
               setTimeout(() => {
                 BidAcceptedOtherRetailer(notification)
-              },500)
-              
+              }, 500)
+
             } catch (error) {
               console.error("Error updating chat details:", error);
             }
@@ -208,7 +208,7 @@ const RequestAcceptModal = ({
     await axios.patch(
       `http://173.212.193.109:5000/retailer/editretailer`,
       {
-        _id:userDetails?._id,
+        _id: userDetails?._id,
         freeSpades: userDetails.freeSpades - 1,
       })
       .then(async (res) => {
@@ -237,18 +237,23 @@ const RequestAcceptModal = ({
       className=" flex justify-center items-center  rounded-lg h-full "
     >
       <View className="flex-1  justify-center items-center">
-        <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl" style={{paddingVertical:50}}>
+        <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl" style={{ paddingVertical: 50 }}>
           <ModalImg />
           <View className="mt-[20px]">
             <Text className="text-[15px]  text-center text-[#001B33]" style={{ fontFamily: "Poppins-Bold" }}>
               Are you sure?{" "}
             </Text>
-            { type=="Request" && 
+            {type == "Request" &&
               <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>
-              You are accepting the customer request
-            </Text>
+                You are accepting the customer request
+              </Text>
             }
-            
+            {type == "Offer" &&
+              <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>
+                You are accepting the customer offer
+              </Text>
+            }
+
           </View>
 
           <View className="w-full flex flex-row justify-between">

@@ -33,10 +33,10 @@ const UserNameEntryScreen = () => {
   const dispatch = useDispatch();
   // const navigationState = useNavigationState(state => state);
   // const isUserNameScreen= true;
-  const [modalVisible,setModalVisible]=useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const navigationState = useNavigationState(state => state);
   const isUserNameScreen = navigationState.routes[navigationState.index].name === 'registerUsername';
-  console.log("isUserNameScreen",isUserNameScreen)
+  console.log("isUserNameScreen", isUserNameScreen)
   const [focusedInput, setFocusedInput] = useState(null);
   const { width } = Dimensions.get("window");
 
@@ -78,77 +78,75 @@ const UserNameEntryScreen = () => {
     try {
       // const authData = JSON.parse(await AsyncStorage.getItem("authData"));
       // console.log(authData);
-      
+
       dispatch(setStoreName(storeName));
       dispatch(setStoreOwnerName(storeOwnerName));
-       navigation.navigate("searchCategory");
+      navigation.navigate("searchCategory");
     } catch (error) {
       console.log("error", error);
     }
   };
 
   return (
-    
-      <View style={{ flex: 1,backgroundColor:"white"}}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <KeyboardAvoidingView
-              behavior="position"
+          behavior="position"
         >
-       
-          
-            <View className="flex-col justify-center">
-              <View className="w-full absolute z-40 top-[20px] flex flex-row justify-end items-center px-[32px]">
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalVisible(!modalVisible);
-                  }}
-                  className="flex flex-row p-4 items-center gap-2"
-                >
-                  <QuestionIcon />
-                </TouchableOpacity>
-              </View>
-              <View className="flex flex-col justify-center items-center gap-[0px]">
-                <StoreName  width={width} className="object-cover" />
-                <Text className="text-[14.5px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>Step 3/6</Text>
-              </View>
-              
-              <View className="mt-[10px] flex flex-col gap-[15px] px-[32px] ">
-                <View>
-                  <Text className="text-[16px] text-[#2e2c43] " style={{ fontFamily: "Poppins-ExtraBold" }}>Please enter your</Text>
-                  <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>Store Name</Text>
-                  <View className="flex items-center">
-                    <TextInput
-                      onChangeText={handleStoreName}
-                      placeholder="Ex: Kishor Kumar"
-                      className="w-[310px] h-[54px] bg-gray-200 stroke-[#2e2c43] rounded-3xl px-10 mt-[5px]"
-                      style={{ fontFamily: "Poppins-Regular" }}
-                      
-                    />
-                  </View>
-                </View>
-              
-                <View>
-                  <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>Store Owner Name</Text>
-                  <View className="flex items-center">
-                    <TextInput
-                      onChangeText={handleStoreOwnerName}
-                      placeholder="Ex: Kishor Kumar"
-                      className="w-[310px] h-[54px] bg-gray-200 stroke-[#2e2c43] rounded-3xl px-10 mt-[5px]"
-                      style={{ fontFamily: "Poppins-Regular" }}
-                     
-                    />
-                  </View>
-                </View>
-               
-              </View>
-            
-             
+
+
+          <View className="flex-col justify-center pb-[100px]">
+            <View className="w-full absolute z-40 top-[20px] flex flex-row justify-end items-center px-[32px]">
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                }}
+                className="flex flex-row p-4 items-center gap-2"
+              >
+                <QuestionIcon />
+              </TouchableOpacity>
             </View>
-          
-           
-            </KeyboardAvoidingView>
-        
-        
+            <View className="flex flex-col justify-center items-center gap-[0px]">
+              <StoreName width={width} className="object-cover" />
+              <Text className="text-[14.5px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>Step 3/6</Text>
+            </View>
+
+            <View className="mt-[10px] flex flex-col gap-[15px] px-[32px] ">
+              <View>
+                <Text className="text-[16px] text-[#2e2c43] " style={{ fontFamily: "Poppins-ExtraBold" }}>Please enter your</Text>
+                <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>Store Name</Text>
+                <View className="flex items-center">
+                  <TextInput
+                    onChangeText={handleStoreName}
+                    placeholder="Ex: Kishor Kumar"
+                    className="w-[310px] h-[54px] bg-gray-200 stroke-[#2e2c43] rounded-3xl px-10 mt-[5px]"
+                    style={{ fontFamily: "Poppins-Regular" }}
+
+                  />
+                </View>
+              </View>
+
+              <View>
+                <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>Store Owner Name</Text>
+                <View className="flex items-center">
+                  <TextInput
+                    onChangeText={handleStoreOwnerName}
+                    placeholder="Ex: Kishor Kumar"
+                    className="w-[310px] h-[54px] bg-gray-200 stroke-[#2e2c43] rounded-3xl px-10 mt-[5px]"
+                    style={{ fontFamily: "Poppins-Regular" }}
+
+                  />
+                </View>
+              </View>
+
+            </View>
+
+
+          </View>
+
+
+        </KeyboardAvoidingView>
         <TouchableOpacity
           disabled={!storeName || !storeOwnerName}
           onPress={storeDetails}
@@ -167,34 +165,36 @@ const UserNameEntryScreen = () => {
           <Text
             style={{
               fontSize: 18,
-              fontFamily:"Poppins-Black",
-              color: (!storeName || !storeOwnerName)  ? "#888888" : "white",
+              fontFamily: "Poppins-Black",
+              color: (!storeName || !storeOwnerName) ? "#888888" : "white",
             }}
           >
             Next
           </Text>
         </TouchableOpacity>
-        </ScrollView>
-        
-  
-        {modalVisible && (
-          <>
-            <StoreModal
-              modalConfirmVisible={modalVisible}
-              setModalConfirmVisible={setModalVisible}
-            />
-            <View style={styles.overlay} />
-          </>
-        )}
-      </View>
+
+
+      </ScrollView>
+
+
+      {modalVisible && (
+        <>
+          <StoreModal
+            modalConfirmVisible={modalVisible}
+            setModalConfirmVisible={setModalVisible}
+          />
+          <View style={styles.overlay} />
+        </>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   overlay: {
-      flex:1,
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent greyish background
+    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent greyish background
   },
 
 })

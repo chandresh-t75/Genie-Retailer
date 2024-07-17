@@ -63,7 +63,7 @@ const ProfileImageUpdate = () => {
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
     const userId = userData._id;
 
-    
+
 
     try {
       // Update location on server
@@ -150,7 +150,7 @@ const ProfileImageUpdate = () => {
           const imgUri = res.data[0];
           if (imgUri) {
             console.log("Image Updated Successfully");
-            setImagesLocal([imgUri,...imagesLocal]);
+            setImagesLocal([imgUri, ...imagesLocal]);
             setLoading(false);
           }
         });
@@ -160,7 +160,7 @@ const ProfileImageUpdate = () => {
     }
   };
 
-  
+
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -189,14 +189,14 @@ const ProfileImageUpdate = () => {
     return <Text>No access to camera</Text>;
   }
 
-//   const deleteImage = () => {
-//     setImagesLocal("");
-//   };
+  //   const deleteImage = () => {
+  //     setImagesLocal("");
+  //   };
 
   return (
     <View style={{ flex: 1 }} className="bg-white">
-      <View style={{ flex: 1 }}>
-        <View className="w-full z-40 mt-[30px]  flex flex-row justify-between items-center  px-[32px]">
+      <ScrollView >
+        <View className="w-full z-40 mt-[30px]  flex flex-row justify-between items-center px-[32px]">
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -239,36 +239,38 @@ const ProfileImageUpdate = () => {
             }
           </View>
         </View>
-        <Text  className="flex justify-center items-center text-center text-[16px] mt-[30px]"
-            style={{ fontFamily: "Poppins-Bold" }}>Select Profile Picture</Text>
-
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}  style={{ maxHeight: 240 }}>
-          <View className="flex-row  gap-[10px] mt-[25px] px-[32px]">
-            {imagesLocal.map((image, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleImageClick(index)}
-              >
-                <View
-                  className={`rounded-3xl ${
-                    selectedImageIndex === index
+        <Text className="flex justify-center items-center text-center text-[16px] mt-[30px]"
+          style={{ fontFamily: "Poppins-Bold" }}>Select Profile Picture</Text>
+        {
+          imagesLocal && imagesLocal?.length > 0 &&
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ maxHeight: 240 }}>
+            <View className="flex-row  gap-[10px] mt-[25px] px-[32px]">
+              {imagesLocal.map((image, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleImageClick(index)}
+                >
+                  <View
+                    className={`rounded-3xl ${selectedImageIndex === index
                       ? "border-4 border-[#fb8c00]"
                       : "border-[1px] border-slate-400"
-                  }`}
-                >
-                  <Image
-                    source={{ uri: image }}
-                    width={140}
-                    height={200}
-                    className="rounded-3xl object-contain"
-                  />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+                      }`}
+                  >
+                    <Image
+                      source={{ uri: image }}
+                      width={140}
+                      height={200}
+                      className="rounded-3xl object-contain"
+                    />
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        }
 
-        <View className="flex flex-row gap-[40px] mt-[10px] px-[32px] justify-center">
+
+        <View className="flex flex-row gap-[40px] mt-[10px] px-[32px] pb-[100px] justify-center">
 
           <TouchableOpacity onPress={() => setAddMore(!addMore)}>
             <View>
@@ -277,53 +279,55 @@ const ProfileImageUpdate = () => {
           </TouchableOpacity>
         </View>
 
-        {addMore && (
-           <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
-           <TouchableOpacity onPress={() => { setAddMore(false) }}>
-             <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
-             </View>
-           </TouchableOpacity>
-           <View className="bg-white absolute bottom-0 left-0 right-0 ">
- 
-             <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
-               <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
-                 <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
-                 <RightArrow />
-               </View>
-             </TouchableOpacity>
-             <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
-               <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
-                 <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
-                 <RightArrow />
-               </View>
-             </TouchableOpacity>
- 
-           </View>
-         </View>
-        )}
 
-        <View className="w-full h-[68px]  bg-[#fb8c00] justify-center absolute bottom-0 left-0 right-0">
-          <TouchableOpacity onPress={handleImage}>
-            <View className="w-full flex items-center justify-center">
-              {loading ? (
-                <ActivityIndicator size="small" color="#FB8C00" />
-              ) : (
-                <Text
-                  className="text-white text-center text-[16px]"
-                  style={{ fontFamily: "Poppins-Black" }}
-                >
-                  Continue
-                </Text>
-              )}
+
+
+      </ScrollView>
+      {addMore && (
+        <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
+          <TouchableOpacity onPress={() => { setAddMore(false) }}>
+            <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
             </View>
           </TouchableOpacity>
+          <View className="bg-white absolute bottom-0 left-0 right-0 ">
+
+            <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
+                <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
+                <RightArrow />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
+              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
+                <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+                <RightArrow />
+              </View>
+            </TouchableOpacity>
+
+          </View>
         </View>
+      )}
+      <View className="w-full h-[68px]  bg-[#fb8c00] justify-center absolute bottom-0 left-0 right-0">
+        <TouchableOpacity onPress={handleImage}>
+          <View className="w-full flex items-center justify-center">
+            {loading ? (
+              <ActivityIndicator size="small" color="#FB8C00" />
+            ) : (
+              <Text
+                className="text-white text-center text-[16px]"
+                style={{ fontFamily: "Poppins-Black" }}
+              >
+                Continue
+              </Text>
+            )}
+          </View>
+        </TouchableOpacity>
       </View>
       {loading && (
         <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#fb8c00"/>
+          <ActivityIndicator size="large" color="#fb8c00" />
         </View>
-       )}
+      )}
     </View>
   );
 };
@@ -356,7 +360,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    
+
   },
 });
 
