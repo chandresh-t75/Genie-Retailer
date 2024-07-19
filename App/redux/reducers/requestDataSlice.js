@@ -28,6 +28,7 @@ const requestDataSlice = createSlice({
         state.messages = action.payload;
       },
       setRequestInfo: (state, action) => {
+        // console.log('Reducer updating requestInfo:', action.payload);
         state.requestInfo = action.payload;
       },
       setRetailerHistory: (state, action) => {

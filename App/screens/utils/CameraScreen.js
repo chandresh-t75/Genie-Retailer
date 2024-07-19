@@ -27,6 +27,7 @@ import { launchCamera } from "react-native-image-picker";
 import { sendCustomNotificationAttachment } from "../../notification/notificationMessages";
 import { setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { socket } from "../utils/socket.io/socket";
+import { baseUrl } from "./constants";
 
 
 // import { setMessages } from '../../redux/reducers/requestDataSlice';
@@ -50,6 +51,8 @@ const CameraScreen = () => {
     (state) => state.requestData.ongoingRequests || []
   );
   const user = useSelector(state => state.storeData.userDetails);
+  const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
 
 
@@ -70,12 +73,14 @@ const CameraScreen = () => {
     formData.append('bidType', "false");
     formData.append('chat', requestInfo?._id);
     formData.append('bidPrice', 0);
+    const config = {
+      headers:{
+        'Content-Type':'multipart/form-data',
+        'Authorization':`Bearer ${accessToken}`,
+      }
+     }
     await axios
-      .post("http://173.212.193.109:5000/chat/send-message", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      .post(`${baseUrl}/chat/send-message`, formData,config)
       .then(async (res) => {
         // console.log(res.data);
         let mess = [...messages];
@@ -107,8 +112,14 @@ const CameraScreen = () => {
         const requestId = req?.requestId
         navigation.navigate(`requestPage${requestId}`);
         setIsLoading(false)
+        const config = {
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${accessToken}`,
+          }
+         }
         const token = await axios.get(
-          `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
+          `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
         );
         if (token.data.length > 0) {
           const notification = {

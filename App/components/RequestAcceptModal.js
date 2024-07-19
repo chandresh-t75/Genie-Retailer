@@ -26,6 +26,7 @@ import {
 } from "../notification/notificationMessages";
 import { setUserDetails } from "../redux/reducers/storeDataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { baseUrl } from "../screens/utils/constants";
 
 const RequestAcceptModal = ({
   user,
@@ -49,6 +50,7 @@ const RequestAcceptModal = ({
   );
 
   const userDetails = useSelector(state => state.storeData.userDetails);
+  const accessToken = useSelector(state => state.storeData.accessToken);
   // console.log("userDetails", userDetails,
   //   "request",requestInfo);
 
@@ -67,21 +69,28 @@ const RequestAcceptModal = ({
       }
 
       // console.log("Updating card", requestInfo);
-
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       if (requestInfo?.requestType === "new") {
         try {
           await axios.patch(
-            "http://173.212.193.109:5000/chat/product-available",
+            `${baseUrl}/chat/product-available`,
             {
               id: requestInfo?._id,
 
-            }
+            },config
           ).then(async (res) => {
 
             updateUserDetails();
-
+            const requests = newRequests.filter(
+              (request) => request._id ===requestInfo._id
+            );
             console.log("RequestType new response", res.data, res.data.users[0], res.data.users[1]);
-            let tmp = { ...requestInfo, requestType: "ongoing", updatedAt: new Date().toISOString(), users: [res.data.users[0], res.data.users[1]] };
+            let tmp = { ...requests[0],requestType: "ongoing", updatedAt: new Date().toISOString(), users:[res.data.users[0], res.data.users[1]] };
             console.log("new requestInfo", tmp)
 
             dispatch(setRequestInfo(tmp));
@@ -91,12 +100,12 @@ const RequestAcceptModal = ({
             dispatch(setNewRequests(filteredRequests));
             const updatedOngoing = [tmp, ...ongoingRequests];
             dispatch(setOngoingRequests(updatedOngoing));
-
+            
             setAcceptLocal(true);
             setModalVisible(false);
             setLoading(false);
             const token = await axios.get(
-              `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId?._id}`
+              `${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,config
             );
             console.log("notify token: " + token.data);
             if (token.data.length > 0) {
@@ -111,9 +120,10 @@ const RequestAcceptModal = ({
                 image: requestInfo?.requestId?.requestImages[0],
                 redirect_to: "bargain",
               };
-              //  console.log("new notification",notification);
               NotificationRequestAccepted(notification);
             }
+                console.log("after accepting request",requestInfo);
+            
           })
         } catch (error) {
           setLoading(false);
@@ -123,11 +133,11 @@ const RequestAcceptModal = ({
       } else {
         try {
           const accept = await axios.patch(
-            `http://173.212.193.109:5000/chat/accept-bid`,
+            `${baseUrl}/chat/accept-bid`,
             {
               messageId: lastMessage?._id,
               userRequestId: requestInfo?.requestId?._id,
-            }
+            },config
           );
           console.log("Accept response", accept.data?.message);
 
@@ -149,7 +159,7 @@ const RequestAcceptModal = ({
               setMessages(updatedMessages);
               setLoading(false);
               const token = await axios.get(
-                `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
+                `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
               );
               if (token.data.length > 0) {
                 const notification = {
@@ -204,13 +214,19 @@ const RequestAcceptModal = ({
   // Decreasing the count of available spades of retailer //////////////////////////////////////////////////////
   const updateUserDetails = async () => {
 
-
+    const config = {
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${accessToken}`,
+      },
+    
+     }
     await axios.patch(
-      `http://173.212.193.109:5000/retailer/editretailer`,
+      `${baseUrl}/retailer/editretailer`,
       {
         _id: userDetails?._id,
         freeSpades: userDetails.freeSpades - 1,
-      })
+      },config)
       .then(async (res) => {
         console.log("userData updated Successfully after payment ");
         dispatch(setUserDetails(res.data));

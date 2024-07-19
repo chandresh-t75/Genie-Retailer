@@ -67,6 +67,7 @@ import LocationMessage from "../../components/LocationMessage";
 import SendDocument from "../../components/SendDocument";
 import UserDocumentMessage from "../../components/userDocumentMessage";
 import RetailerDocumentMessage from "../../components/RetailerDocumentMessage";
+import { baseUrl } from "../utils/constants";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -122,7 +123,11 @@ const RequestPage = () => {
     (state) => state.requestData.newRequests || []
   );
   const user = useSelector((state) => state.storeData.userDetails);
+  const accessToken = useSelector((state) => state.storeData.accessToken);
+
   const [online, setOnline] = useState(false);
+  const [viewHeight, setViewHeight] = useState(0);
+
   // console.log("params", currentRequest);
 
   //    const navigationState = useNavigationState(state => state);
@@ -140,40 +145,61 @@ const RequestPage = () => {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       // setUser(userData);
       console.log("User data found successfully", currentRequest);
-
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          id: currentRequest?.requestId,
+        },
+      };
       await axios
-        .get(`http://173.212.193.109:5000/chat/get-particular-chat`, {
-          params: {
-            id: currentRequest?.requestId,
-          },
-        })
+        .get(`${baseUrl}/chat/get-particular-chat`, config)
         .then(async (resu) => {
           const result = resu?.data;
-          // console.log("new requestInfo fetched successfully", result);
+          console.log("new requestInfo fetched successfully", result._id);
           dispatch(setRequestInfo(result));
-          await axios
-            .get("http://173.212.193.109:5000/chat/get-spade-messages", {
-              params: {
-                id: result?._id,
-              },
-            })
-            .then(async (response) => {
-              setMessages(response?.data);
+          const configg = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+              id: result?._id,
+            },
+          };
 
-              // console.log("Messages found successfully",response.data);
+          await axios
+            .get(`${baseUrl}/chat/get-spade-messages`, configg)
+            .then(async (response) => {
+              console.log("fetching messages", response.data);
+              setMessages(response.data);
+              console.log("Messages found successfully", response.data);
               // console.log("user joined chat with chatId", response.data[0].chat._id);
               socket.emit("join chat", response?.data[0]?.chat?._id);
 
               console.log("socket join chat setup successfully");
+              const lastMessage = response?.data[response?.data.length - 1];
+              console.log("last Mesage: ", lastMessage);
 
               if (
-                result?.unreadCount > 0 && result?.latestMessage?.sender?.type === "UserRequest"
+                result?.unreadCount > 0 &&
+                result?.latestMessage?.sender?.type === "UserRequest"
               ) {
+                const configh = {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                };
+
                 const res = await axios.patch(
-                  "http://173.212.193.109:5000/chat/mark-as-read",
+                  `${baseUrl}/chat/mark-as-read`,
                   {
                     id: result?._id,
-                  }
+                  },
+                  configh
                 );
 
                 let tmp = {
@@ -192,20 +218,27 @@ const RequestPage = () => {
                 dispatch(setOngoingRequests(data));
 
                 console.log("mark as read", res?.data?.unreadCount);
-
               }
               if (
                 result.requestType === "win" &&
-                result?.bidCompleted === true
+                lastMessage &&
+                lastMessage?.bidType === "update"
               ) {
                 console.log("update");
+                const configc = {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                };
                 await axios
                   .patch(
-                    "http://173.212.193.109:5000/chat/update-to-history",
+                    `${baseUrl}/chat/update-to-history`,
                     {
                       id: result?._id,
-                      type: "completed"
-                    }
+                      type: "completed",
+                    },
+                    configc
                   )
                   .then((res) => {
                     const filteredRequests = ongoingRequests.filter(
@@ -224,20 +257,26 @@ const RequestPage = () => {
                     const data2 = [tmp, ...retailerHistory];
                     dispatch(setRetailerHistory(data2));
                   });
-              }
-              else if (
+              } else if (
                 result.requestType === "closed" &&
-                result?.bidCompleted === true
-
+                lastMessage &&
+                lastMessage?.bidType === "update"
               ) {
                 console.log("update");
+                const configcl = {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                };
                 await axios
                   .patch(
-                    "http://173.212.193.109:5000/chat/update-to-history",
+                    `${baseUrl}/chat/update-to-history`,
                     {
                       id: result?._id,
-                      type: "closedHistory"
-                    }
+                      type: "closedHistory",
+                    },
+                    configcl
                   )
                   .then((res) => {
                     const filteredRequests = ongoingRequests.filter(
@@ -256,21 +295,26 @@ const RequestPage = () => {
                     const data2 = [tmp, ...retailerHistory];
                     dispatch(setRetailerHistory(data2));
                   });
-              }
-
-              else if (
+              } else if (
                 result.requestType === "new" &&
-                result?.bidCompleted === true
-
+                lastMessage &&
+                lastMessage?.bidType === "update"
               ) {
                 console.log("update");
+                const confign = {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                };
                 await axios
                   .patch(
-                    "http://173.212.193.109:5000/chat/update-to-history",
+                    `${baseUrl}/chat/update-to-history`,
                     {
                       id: result?._id,
-                      type: "notParticipated"
-                    }
+                      type: "notParticipated",
+                    },
+                    confign
                   )
                   .then((res) => {
                     const filteredRequests = newRequests.filter(
@@ -290,8 +334,6 @@ const RequestPage = () => {
                     dispatch(setRetailerHistory(data2));
                   });
               }
-
-
 
               setLoading(false);
             });
@@ -339,7 +381,7 @@ const RequestPage = () => {
     // setTimeout(()=>{
     console.log("reqInfo from params", socketConnected);
 
-    console.log("reqInfo from params", requestInfo);
+    // console.log("reqInfo from params", requestInfo);
     // },2000);
 
     return () => {
@@ -355,12 +397,12 @@ const RequestPage = () => {
   useEffect(() => {
     const handleUserOnline = () => {
       setOnline(true);
-      console.log('user online');
+      console.log("user online");
     };
 
     const handleUserOffline = () => {
       setOnline(false);
-      console.log('user offline');
+      console.log("user offline");
     };
 
     socket.on("online", handleUserOnline);
@@ -381,59 +423,70 @@ const RequestPage = () => {
         return;
       }
       try {
-        const response = await axios.patch(
-          "http://173.212.193.109:5000/chat/reject-bid",
-          {
-            messageId: lastMessage?._id,
-          }
-        );
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+        const response = await axios
+          .patch(
+            `${baseUrl}/chat/reject-bid`,
+            {
+              messageId: lastMessage?._id,
+            },
+            config
+          )
+          .then(async (response) => {
+            socket.emit("new message", response.data);
+            const updatedMessages = messages.map((message) => {
+              if (message?._id === lastMessage?._id) {
+                return { ...message, bidAccepted: "rejected" };
+              }
+              return message;
+            });
+
+            // dispatch(setMessages(updatedMessages));
+            setMessages(updatedMessages);
+            const filteredRequests = ongoingRequests.filter(
+              (request) => request._id !== requestInfo._id
+            );
+            const requests = ongoingRequests.filter(
+              (request) => request._id === requestInfo._id
+            );
+            const updatedRequest = {
+              ...requests[0],
+              updatedAt: new Date().toISOString(),
+            };
+            //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
+
+            // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
+            const data = [updatedRequest, ...filteredRequests];
+            dispatch(setOngoingRequests(data));
+            setisLoading(false);
+
+            const token = await axios.get(
+              `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,
+              config
+            );
+            if (token.data.length > 0) {
+              const notification = {
+                token: token.data,
+                title: user?.storeName,
+                body: lastMessage.message,
+                requestInfo: {
+                  requestId: requestInfo?._id,
+                  userId: requestInfo?.users[1]._id,
+                },
+                tag: user?._id,
+                image: lastMessage?.bidImages[0],
+                redirect_to: "bargain",
+              };
+              NotificationBidRejected(notification);
+            }
+          });
 
         // console.log("res", response);
-
-        socket.emit("new message", response.data);
-        const updatedMessages = messages.map((message) => {
-          if (message?._id === lastMessage?._id) {
-            return { ...message, bidAccepted: "rejected" };
-          }
-          return message;
-        });
-
-        // dispatch(setMessages(updatedMessages));
-        setMessages(updatedMessages);
-        const filteredRequests = ongoingRequests.filter(
-          (request) => request._id !== requestInfo._id
-        );
-        const requests = ongoingRequests.filter(
-          (request) => request._id === requestInfo._id
-        );
-        const updatedRequest = {
-          ...requests[0],
-          updatedAt: new Date().toISOString(),
-        };
-        //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
-
-        // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
-        const data = [updatedRequest, ...filteredRequests];
-        dispatch(setOngoingRequests(data));
-        setisLoading(false);
-        const token = await axios.get(
-          `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
-        );
-        if (token.data.length > 0) {
-          const notification = {
-            token: token.data,
-            title: user?.storeName,
-            body: lastMessage.message,
-            requestInfo: {
-              requestId: requestInfo?._id,
-              userId: requestInfo?.users[1]._id,
-            },
-            tag: user?._id,
-            image: lastMessage?.bidImages[0],
-            redirect_to: "bargain",
-          };
-          NotificationBidRejected(notification);
-        }
       } catch (error) {
         setisLoading(false);
 
@@ -450,89 +503,155 @@ const RequestPage = () => {
   };
 
   // New message recieved from socket code
+  const updateHistoryWin = async () => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      await axios
+        .patch(
+          `${baseUrl}/chat/update-to-history`,
+          {
+            id: requestInfo?._id,
+            type: "completed",
+          },
+          config
+        )
+        .then((res) => {
+          console.log("accepted get complete d using socket");
+          const filteredRequests = ongoingRequests.filter(
+            (request) => request._id !== requestInfo?._id
+          );
+
+          let tmp = {
+            ...requestInfo,
+            requestType: "completed",
+            updatedAt: new Date().toISOString(),
+            unreadCount: 0,
+          };
+          dispatch(setRequestInfo(tmp));
+
+          const data = [...filteredRequests];
+          dispatch(setOngoingRequests(data));
+          const data2 = [tmp, ...retailerHistory];
+          dispatch(setRetailerHistory(data2));
+        });
+    } catch (error) {
+      console.log("error updating history win", error);
+    }
+  };
+
+  const updateHistoryClosed = async () => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      await axios
+        .patch(
+          `${baseUrl}/chat/update-to-history`,
+          {
+            id: requestInfo?._id,
+            type: "closedHistory",
+          },
+          config
+        )
+        .then((res) => {
+          console.log(
+            "closed get closed  using socket",
+            requestInfo?.requestType
+          );
+
+          const filteredRequests = ongoingRequests.filter(
+            (request) => request._id !== requestInfo?._id
+          );
+          let tmp = {
+            ...requestInfo,
+            requestType: "closedHistory",
+            updatedAt: new Date().toISOString(),
+            unreadCount: 0,
+          };
+          dispatch(setRequestInfo(tmp));
+          const data = [...filteredRequests];
+          dispatch(setOngoingRequests(data));
+          const data2 = [tmp, ...retailerHistory];
+          dispatch(setRetailerHistory(data2));
+        });
+    } catch (error) {
+      console.log("errror update to history closed ", error);
+    }
+  };
+
+  const updateHistoryNew = async () => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      await axios
+        .patch(
+          `${baseUrl}/chat/update-to-history`,
+          {
+            id: requestInfo?._id,
+            type: "notParticipated",
+          },
+          config
+        )
+        .then((res) => {
+          console.log("not particpated get complete d using socket");
+          const filteredRequests = newRequests.filter(
+            (request) => request._id !== requestInfo?._id
+          );
+
+          let tmp = {
+            ...requestInfo,
+            requestType: "notParticipated",
+            updatedAt: new Date().toISOString(),
+            unreadCount: 0,
+          };
+          dispatch(setRequestInfo(tmp));
+
+          const data = [...filteredRequests];
+          dispatch(setNewRequests(data));
+          const data2 = [tmp, ...retailerHistory];
+          dispatch(setRetailerHistory(data2));
+        });
+    } catch (error) {
+      console.log("error updating history new", error);
+    }
+  };
   useEffect(() => {
     const handleMessageReceived = async (newMessageReceived) => {
-      console.log("Message received from socket:", newMessageReceived._id, requestInfo?._id);
-      if (requestInfo?.requestType === "win" && newMessageReceived?.bidType === "update") {
-        await axios
-          .patch("http://173.212.193.109:5000/chat/update-to-history", {
-            id: requestInfo?._id,
-            type: "completed"
-          })
-          .then((res) => {
-            console.log("accepted get complete d using socket")
-            const filteredRequests = ongoingRequests.filter(
-              (request) => request._id !== requestInfo?._id
-            );
+      console.log(
+        "Message received from socket:",
+        newMessageReceived,
+        requestInfo?.requestType
+      );
 
-            let tmp = {
-              ...requestInfo,
-              requestType: "completed",
-              updatedAt: new Date().toISOString(),
-              unreadCount: 0,
-            };
-            dispatch(setRequestInfo(tmp));
-
-            const data = [...filteredRequests];
-            dispatch(setOngoingRequests(data));
-            const data2 = [tmp, ...retailerHistory];
-            dispatch(setRetailerHistory(data2));
-          })
+      if (
+        requestInfo?.requestType === "win" &&
+        newMessageReceived?.bidType === "update"
+      ) {
+        updateHistoryWin();
+      } else if (
+        (requestInfo?.requestType === "closed" ||
+          requestInfo?.requestType === "ongoing") &&
+        newMessageReceived?.bidType === "update"
+      ) {
+        updateHistoryClosed();
+      } else if (
+        requestInfo?.requestType === "new" &&
+        newMessageReceived?.bidType === "update"
+      ) {
+        updateHistoryNew();
       }
-      else if ((requestInfo?.requestType === "closed" || requestInfo?.requestType === "ongoing") && newMessageReceived?.bidType === "update") {
-        await axios
-          .patch("http://173.212.193.109:5000/chat/update-to-history", {
-            id: requestInfo?._id,
-            type: "closedHistory"
-          })
-          .then((res) => {
-            console.log("closed get closed  using socket")
-
-            const filteredRequests = ongoingRequests.filter(
-              (request) => request._id !== requestInfo?._id
-            );
-            let tmp = {
-              ...requestInfo,
-              requestType: "closedHistory",
-              updatedAt: new Date().toISOString(),
-              unreadCount: 0,
-            };
-            dispatch(setRequestInfo(tmp));
-            const data = [...filteredRequests];
-            dispatch(setOngoingRequests(data));
-            const data2 = [tmp, ...retailerHistory];
-            dispatch(setRetailerHistory(data2));
-          })
-      }
-      if (requestInfo?.requestType === "new" && newMessageReceived?.bidType === "update") {
-        await axios
-          .patch("http://173.212.193.109:5000/chat/update-to-history", {
-            id: requestInfo?._id,
-            type: "notParticipated"
-          })
-          .then((res) => {
-            console.log("not particpated get complete d using socket")
-            const filteredRequests = newRequests.filter(
-              (request) => request._id !== requestInfo?._id
-            );
-
-            let tmp = {
-              ...requestInfo,
-              requestType: "notParticipated",
-              updatedAt: new Date().toISOString(),
-              unreadCount: 0,
-            };
-            dispatch(setRequestInfo(tmp));
-
-            const data = [...filteredRequests];
-            dispatch(setNewRequests(data));
-            const data2 = [tmp, ...retailerHistory];
-            dispatch(setRetailerHistory(data2));
-          })
-      }
-
-
-
 
       setMessages((prevMessages) => {
         if (
@@ -551,17 +670,18 @@ const RequestPage = () => {
                 unreadCount: 0,
                 //  requestId:{requestActive:"completed"}
               };
-              console.log("request updated");
+              console.log("request updated", tmp);
               dispatch(setRequestInfo(tmp));
               const filteredRequests = ongoingRequests.filter(
-                (request) => request._id !== requestInfo?._id
+                (request) => request._id !== tmp?._id
               );
 
               //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
 
-              // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
               const data = [tmp, ...filteredRequests];
               dispatch(setOngoingRequests(data));
+              console.log("requestAccepted", requestInfo);
+              // console.log("request ongoing",filteredRequests)
             }
 
             return prevMessages.map((message) =>
@@ -604,8 +724,6 @@ const RequestPage = () => {
       console.log("Stopped listening for 'message received' events");
     };
   }, []);
-
-  // const messages = useSelector(state => state.requestData.messages);
 
   const handlePress = (star) => {
     setRating(star);
@@ -658,15 +776,25 @@ const RequestPage = () => {
         user?.storeName,
         requestInfo?._id
       );
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
       await axios
-        .post("http://173.212.193.109:5000/rating/rating-feedback", {
-          user: { type: "User", refId: requestInfo?.customerId?._id },
-          sender: { type: "Retailer", refId: user?._id },
-          rating: rating,
-          feedback: feedback,
-          senderName: user?.storeName,
-          chatId: requestInfo?._id,
-        })
+        .post(
+          `${baseUrl}/rating/rating-feedback`,
+          {
+            user: { type: "User", refId: requestInfo?.customerId?._id },
+            sender: { type: "Retailer", refId: user?._id },
+            rating: rating,
+            feedback: feedback,
+            senderName: user?.storeName,
+            chatId: requestInfo?._id,
+          },
+          config
+        )
         .then((response) => {
           console.log("response of feedback", response.data);
           let tmp = {
@@ -707,10 +835,7 @@ const RequestPage = () => {
       : 60 - daysDifference(user?.createdAt);
   // console.log("remainingDays: ", remainingDays);
 
-  const lastMessage = messages[messages.length - 1];
-  // console.log("last Mesage: ", lastMessage._id);
-
-  const [viewHeight, setViewHeight] = useState(0);
+  console.log("requestinfo checking", requestInfo);
 
   const handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
@@ -756,7 +881,7 @@ const RequestPage = () => {
                         borderRadius: 20,
                         objectFit: "cover",
                       }}
-                    // className="w-[40px] h-[40px] rounded-full"
+                      // className="w-[40px] h-[40px] rounded-full"
                     />
                   ) : (
                     <Profile className="w-full h-full rounded-full" />
@@ -772,18 +897,22 @@ const RequestPage = () => {
                       <Text>...</Text>
                     )}
                   </Text>
-                  {online && <Text
-                    className="text-[12px] text-[#79B649]"
-                    style={{ fontFamily: "Poppins-Regular" }}
-                  >
-                    Online
-                  </Text>}
-                  {!online && <Text
-                    className="text-[12px] text-[#7c7c7c]"
-                    style={{ fontFamily: "Poppins-Regular" }}
-                  >
-                    Offline
-                  </Text>}
+                  {online && (
+                    <Text
+                      className="text-[12px] text-[#79B649]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Online
+                    </Text>
+                  )}
+                  {!online && (
+                    <Text
+                      className="text-[12px] text-[#7c7c7c]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Offline
+                    </Text>
+                  )}
                 </View>
               </View>
             </View>
@@ -812,7 +941,10 @@ const RequestPage = () => {
                   marginHorizontal: 8,
                 }}
               >
-                <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
+                <Text
+                  className="mx-5 text-[#2e2c43]"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
                   View Request
                 </Text>
               </TouchableOpacity>
@@ -824,7 +956,10 @@ const RequestPage = () => {
                 }}
                 style={{ padding: 14 }}
               >
-                <Text className="mx-5 text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
+                <Text
+                  className="mx-5 text-[#2e2c43]"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
                   Report Customer
                 </Text>
               </TouchableOpacity>
@@ -857,31 +992,52 @@ const RequestPage = () => {
                   </Text>
                 )}
               </View>
-
-
             </View>
-            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43] mt-[10px]">
+            <Text
+              style={{ fontFamily: "Poppins-Regular" }}
+              className="text-[#2e2c43] mt-[10px]"
+            >
               {requestInfo?.requestId?.requestDescription
                 ?.split(" ")
                 .slice(0, 12)
                 .join(" ")}
               ....
             </Text>
-            {/* {
-              route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
-            } */}
+           
           </View>
         </View>
 
         {/*  message are mapped here */}
 
-        {messages[messages?.length - 1]?.bidType === "true" && messages[messages?.length - 1]?.bidAccepted === "new" &&
-          messages[messages?.length - 1]?.sender?.type ===
-          "UserRequest" && <View style={{ backgroundColor: "rgba(0,0,0,0.3 )", height: 1000, width: width, position: 'absolute', zIndex: 100, top: viewHeight }}></View>}
+        {messages[messages?.length - 1]?.bidType === "true" &&
+          messages[messages?.length - 1]?.bidAccepted === "new" &&
+          messages[messages?.length - 1]?.sender?.type === "UserRequest" && (
+            <View
+              style={{
+                backgroundColor: "rgba(0,0,0,0.3 )",
+                height: 1000,
+                width: width,
+                position: "absolute",
+                zIndex: 100,
+                top: viewHeight,
+              }}
+            ></View>
+          )}
 
         {requestInfo?.requestType !== "closed" &&
           requestInfo?.requestType === "new" &&
-          available === false && <View style={{ backgroundColor: "rgba(0,0,0,0.3)", height: 1000, width: width, position: 'absolute', zIndex: 100, top: viewHeight }}></View>}
+          available === false && (
+            <View
+              style={{
+                backgroundColor: "rgba(0,0,0,0.3)",
+                height: 1000,
+                width: width,
+                position: "absolute",
+                zIndex: 100,
+                top: viewHeight,
+              }}
+            ></View>
+          )}
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
@@ -903,121 +1059,171 @@ const RequestPage = () => {
           )}
 
           {!loading && (
-            <View className="flex gap-[21px] px-[10px] pt-[40px] pb-[100px]">
-              {/* <ChatMessage
-              bidDetails={messages[0]}
-             
-            /> */}
+            <View
+              style={{
+                flex: 1,
+                gap: 21,
+                paddingHorizontal: 10,
+                paddingTop: 40,
+                paddingBottom: 100,
+              }}
+            >
+              {/* <ChatMessage bidDetails={messages[0]} /> */}
               {messages &&
-                messages?.map((message) => {
-                  // console.log("mapping", message); // You can move console.log outside of the return statement if you want to log the value
+                messages.map((message) => {
                   if (message?.bidType === "update") {
                     return (
-                      <View key={message?._id} className="flex gap-6">
-                        <View className="flex justify-center bg-[#FFE7C8] rounded-[24px] px-[32px] py-[10px] ">
+                      <View key={message?._id} style={{ flex: 1, gap: 6 }}>
+                        <View
+                          style={{
+                            flex: 1,
+                            justifyContent: "center",
+                            backgroundColor: "#FFE7C8",
+                            borderRadius: 24,
+                            paddingHorizontal: 32,
+                            paddingVertical: 10,
+                          }}
+                        >
                           <Text
-                            className="text-[16px] text-center text-[#FB8C00]"
-                            style={{ fontFamily: "Poppins-Regular" }}
+                            style={{
+                              fontSize: 16,
+                              textAlign: "center",
+                              color: "#FB8C00",
+                              fontFamily: "Poppins-Regular",
+                            }}
                           >
                             {message?.message}
                           </Text>
                         </View>
-                        {!requestInfo?.rated && requestInfo?.requestType === "completed" && (
-                          <View className="px-[32px] py-[10px] bg-[#ffe7c8] rounded-[24px] ">
-                            <View className=" mt-[19px] ">
-                              <Text
-                                className="text-[14px]"
-                                style={{ fontFamily: "Poppins-Regular" }}
-                              >
-                                Rate your experience with customer
-                              </Text>
-                              <View className="flex-row gap-[5px] mt-[10px]">
-                                {[...Array(5)].map((_, index) => {
-                                  const star = index + 1;
-                                  return (
-                                    <TouchableOpacity
-                                      key={star}
-                                      onPress={() => handlePress(star)}
-                                    >
-                                      <FontAwesome
-                                        name={
-                                          star <= rating ? "star" : "star-o"
-                                        }
-                                        size={32}
-                                        color="#fb8c00"
-                                        className="mx-[5px]"
-                                      />
-                                    </TouchableOpacity>
-                                  );
-                                })}
-                              </View>
-                            </View>
-
-                            <View className="mb-[20px]">
-                              <Text
-                                className="text-[14px]  mx-[6px] mt-[30px] mb-[15px]"
-                                style={{ fontFamily: "Poppins-Regular" }}
-                              >
-                                Feedback for customer
-                              </Text>
-
-                              <KeyboardAvoidingView className="h-[100px] bg-[#f9f9f9] rounded-xl ">
-                                <TextInput
-                                  multiline
-                                  numberOfLines={4}
-                                  onChangeText={(val) => {
-                                    setFeedback(val);
-                                  }}
-                                  value={feedback}
-                                  placeholder="Type here..."
-                                  placeholderTextColor="#dbcdbb"
-                                  className="w-full h-[100px] overflow-y-scroll px-[20px] border-[0.3px] border-[#2e2c43] rounded-xl "
-                                  style={{
-                                    padding: 20,
-                                    height: 300,
-                                    flex: 1,
-                                    textAlignVertical: "top",
-                                    fontFamily: "Poppins-Regular",
-                                  }}
-                                />
-                              </KeyboardAvoidingView>
-                            </View>
-                            <TouchableOpacity
-                              disabled={!rating && !feedback}
-                              onPress={() => {
-                                SubmitFeedback();
-                              }}
+                        {!requestInfo?.rated &&
+                          requestInfo?.requestType === "completed" && (
+                            <View
                               style={{
-                                height: 50,
-                                width: "100%",
-                                backgroundColor:
-                                  !rating && !feedback ? "#e6e6e6" : "#FB8C00",
-                                justifyContent: "center", // Center content vertically
-                                alignItems: "center", // Center content horizontally
+                                paddingHorizontal: 32,
+                                paddingVertical: 10,
+                                backgroundColor: "#ffe7c8",
+                                borderRadius: 24,
                               }}
                             >
-                              {feedbackLoading ? (
-                                <ActivityIndicator
-                                  size="small"
-                                  color="#ffffff"
-                                />
-                              ) : (
+                              <View style={{ marginTop: 19 }}>
                                 <Text
                                   style={{
-                                    fontSize: 18,
-                                    fontFamily: "Poppins-Black",
-                                    color:
-                                      !rating && !feedback
-                                        ? "#888888"
-                                        : "white",
+                                    fontSize: 14,
+                                    fontFamily: "Poppins-Regular",
                                   }}
                                 >
-                                  Submit
+                                  Rate your experience with customer
                                 </Text>
-                              )}
-                            </TouchableOpacity>
-                          </View>
-                        )}
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    gap: 5,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  {[...Array(5)].map((_, index) => {
+                                    const star = index + 1;
+                                    return (
+                                      <TouchableOpacity
+                                        key={star}
+                                        onPress={() => handlePress(star)}
+                                      >
+                                        <FontAwesome
+                                          name={
+                                            star <= rating ? "star" : "star-o"
+                                          }
+                                          size={32}
+                                          color="#fb8c00"
+                                          style={{ marginHorizontal: 5 }}
+                                        />
+                                      </TouchableOpacity>
+                                    );
+                                  })}
+                                </View>
+                              </View>
+
+                              <View style={{ marginBottom: 20 }}>
+                                <Text
+                                  style={{
+                                    fontSize: 14,
+                                    marginHorizontal: 6,
+                                    marginTop: 30,
+                                    marginBottom: 15,
+                                    fontFamily: "Poppins-Regular",
+                                  }}
+                                >
+                                  Feedback for customer
+                                </Text>
+
+                                <KeyboardAvoidingView
+                                  style={{
+                                    height: 100,
+                                    backgroundColor: "#f9f9f9",
+                                    borderRadius: 10,
+                                  }}
+                                >
+                                  <TextInput
+                                    multiline
+                                    numberOfLines={4}
+                                    onChangeText={(val) => {
+                                      setFeedback(val);
+                                    }}
+                                    value={feedback}
+                                    placeholder="Type here..."
+                                    placeholderTextColor="#dbcdbb"
+                                    style={{
+                                      width: "100%",
+                                      height: 100,
+                                  
+                                      paddingHorizontal: 20,
+                                      borderWidth: 0.3,
+                                      borderColor: "#2e2c43",
+                                      borderRadius: 10,
+                                      padding: 20,
+                                      textAlignVertical: "top",
+                                      fontFamily: "Poppins-Regular",
+                                    }}
+                                  />
+                                </KeyboardAvoidingView>
+                              </View>
+                              <TouchableOpacity
+                                disabled={!rating && !feedback}
+                                onPress={() => {
+                                  SubmitFeedback();
+                                }}
+                                style={{
+                                  height: 50,
+                                  width: "100%",
+                                  backgroundColor:
+                                    !rating && !feedback
+                                      ? "#e6e6e6"
+                                      : "#FB8C00",
+                                  justifyContent: "center", // Center content vertically
+                                  alignItems: "center", // Center content horizontally
+                                }}
+                              >
+                                {feedbackLoading ? (
+                                  <ActivityIndicator
+                                    size="small"
+                                    color="#ffffff"
+                                  />
+                                ) : (
+                                  <Text
+                                    style={{
+                                      fontSize: 18,
+                                      fontFamily: "Poppins-Black",
+                                      color:
+                                        !rating && !feedback
+                                          ? "#888888"
+                                          : "white",
+                                    }}
+                                  >
+                                    Submit
+                                  </Text>
+                                )}
+                              </TouchableOpacity>
+                            </View>
+                          )}
                       </View>
                     );
                   } else if (message?.sender?.refId !== user?._id) {
@@ -1028,7 +1234,10 @@ const RequestPage = () => {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-start"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                          }}
                         >
                           <UserBidMessage bidDetails={message} />
                         </View>
@@ -1037,7 +1246,10 @@ const RequestPage = () => {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-start"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                          }}
                         >
                           <UserMessage bidDetails={message} />
                         </View>
@@ -1046,17 +1258,22 @@ const RequestPage = () => {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-start"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                          }}
                         >
                           <LocationMessage bidDetails={message} />
                         </View>
                       );
-                    }
-                    else if (message?.bidType === "document") {
+                    } else if (message?.bidType === "document") {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-start"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                          }}
                         >
                           <UserDocumentMessage bidDetails={message} />
                         </View>
@@ -1065,7 +1282,10 @@ const RequestPage = () => {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-start"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                          }}
                         >
                           <UserAttachment bidDetails={message} />
                         </View>
@@ -1076,7 +1296,10 @@ const RequestPage = () => {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-end"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                          }}
                         >
                           <RetailerBidMessage
                             bidDetails={message}
@@ -1084,31 +1307,31 @@ const RequestPage = () => {
                           />
                         </View>
                       );
-                    }
-                    else if (message?.bidType === "document") {
+                    } else if (message?.bidType === "document") {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-end"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                          }}
                         >
-                          <RetailerDocumentMessage
-                            bidDetails={message}
-
-                          />
+                          <RetailerDocumentMessage bidDetails={message} />
                         </View>
                       );
-                    }
-                    else {
+                    } else {
                       return (
                         <View
                           key={message?._id}
-                          className="flex flex-row justify-end"
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                          }}
                         >
                           <RetailerMessage bidDetails={message} user={user} />
                         </View>
                       );
                     }
-
                   }
                 })}
             </View>
@@ -1120,10 +1343,12 @@ const RequestPage = () => {
 
       {/* Typing Area */}
       <View
-        className={`absolute bottom-0 left-0 right-0 pt-[10] ${attachmentScreen ? "-z-50" : "z-50"
-          } `}
+        className={`absolute bottom-0 left-0 right-0 pt-[10] ${
+          attachmentScreen ? "-z-50" : "z-50"
+        } `}
       >
         {requestInfo?.requestType !== "closed" &&
+        requestInfo.bidCompleted !==true &&
           requestInfo?.requestType === "new" &&
           available === false && (
             <View className="gap-[20px]  items-center bg-white pt-[20px] shadow-2xl ">
@@ -1154,7 +1379,7 @@ const RequestPage = () => {
                         gap: 4,
                       }}
                       showsHorizontalScrollIndicator={false}
-                      style={{ maxHeight: 250 }}
+                      style={{ maxHeight: 240 }}
                     >
                       {messages[messages.length - 1]?.bidImages.map(
                         (image, index) => (
@@ -1191,9 +1416,9 @@ const RequestPage = () => {
                   onPress={() => {
                     user?.freeSpades > 0
                       ? (() => {
-                        setAcceptRequestModal(true);
-                        setType("Request");
-                      })()
+                          setAcceptRequestModal(true);
+                          setType("Request");
+                        })()
                       : setConfirmPaymentModal(true);
                   }}
                   style={{ flex: 1 }}
@@ -1223,7 +1448,7 @@ const RequestPage = () => {
               </View>
             </View>
           )}
-
+     
         {requestInfo?.requestType !== "closed" &&
           requestInfo?.requestType !== "rejected" &&
           requestInfo?.requestType !== "completed" &&
@@ -1236,7 +1461,8 @@ const RequestPage = () => {
               messages[messages.length - 1]?.bidAccepted === "rejected") ||
             messages[messages.length - 1]?.bidType === "false" ||
             messages[messages.length - 1]?.bidType === "image" ||
-            messages[messages.length - 1]?.bidType === "location" || messages[messages.length - 1]?.bidType === "document") && (
+            messages[messages.length - 1]?.bidType === "location" ||
+            messages[messages.length - 1]?.bidType === "document") && (
             <View
               className="flex flex-row bg-white gap-2 items-center justify-center"
               style={{ padding: 10 }}
@@ -1313,7 +1539,7 @@ const RequestPage = () => {
                           gap: 4,
                         }}
                         showsHorizontalScrollIndicator={false}
-                        style={{ maxHeight: 250 }}
+                        style={{ maxHeight: 240 }}
                       >
                         {messages[messages.length - 1]?.bidImages.map(
                           (image, index) => (
@@ -1347,7 +1573,10 @@ const RequestPage = () => {
 
               <View className="w-full flex-row justify-between">
                 <TouchableOpacity
-                  onPress={() => { setAcceptRequestModal(true); setType("Offer") }}
+                  onPress={() => {
+                    setAcceptRequestModal(true);
+                    setType("Offer");
+                  }}
                   style={{ flex: 1 }}
                 >
                   <View className="h-[63px] flex items-center justify-center border-[1px] bg-[#FB8C00] border-[#FB8C00]">
@@ -1384,7 +1613,8 @@ const RequestPage = () => {
             messages[messages.length - 1]?.bidAccepted === "rejected") ||
             messages[messages.length - 1]?.bidType === "false" ||
             messages[messages.length - 1]?.bidType === "image" ||
-            messages[messages.length - 1]?.bidType === "location" || messages[messages.length - 1]?.bidType === "document") && (
+            messages[messages.length - 1]?.bidType === "location" ||
+            messages[messages.length - 1]?.bidType === "document") && (
             <View className="gap-[20px] bg-white pt-2">
               <TouchableOpacity
                 onPress={() =>
@@ -1427,12 +1657,9 @@ const RequestPage = () => {
       <RequestCancelModal
         modalVisible={cancelRequestModal}
         setModalVisible={setCancelRequestModal}
-      // requestInfo={requestInfo}
+        // requestInfo={requestInfo} 
       />
-      {/* <RequestCancelModal
-        modalVisible={closeRequestModal}
-        setModalVisible={setCloseRequestModal}
-      /> */}
+     
       <RequestAcceptModal
         user={user}
         modalVisible={acceptRequestModal}

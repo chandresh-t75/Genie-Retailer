@@ -24,6 +24,7 @@ import { ActivityIndicator } from "react-native";
 import { setUserDetails } from "../../../redux/reducers/storeDataSlice";
 import PaymentSuccessFulModal from "../../../components/PaymentSuccessFulModal";
 import { getFormattedDate } from "../lib";
+import { baseUrl } from "../constants";
 
 const PaymentScreen = () => {
     const navigation = useNavigation();
@@ -34,6 +35,8 @@ const PaymentScreen = () => {
     const [verifiedCouponCode, setVerifiedCouponCode] = useState(false);
     const [couponFailed, setCouponFailed] = useState(false);
     const [couponCode, setCouponCode] = useState("");
+    const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
     console.log('userDetails at razorpay', userDetails);
 
@@ -50,8 +53,10 @@ const PaymentScreen = () => {
         const password = "IADDTICFJ2oXYLX3H2pLjvcx";
         const credentials = `${username}:${password}`;
         const encodedCredentials = btoa(credentials);
+
         setLoading(true);
         try {
+
             const response = await axios.post(
                 "https://api.razorpay.com/v1/orders",
                 {
@@ -116,13 +121,19 @@ const PaymentScreen = () => {
         // setEditUser(false);
         // console.log('userNmae', userName);
         // if (userName.length < 3) return;
-
+        const config = {
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization':`Bearer ${accessToken}`,
+            }
+           }
         await axios.patch(
-            `http://173.212.193.109:5000/retailer/editretailer`,
+            `${baseUrl}/retailer/editretailer`,
             {
                 _id: userDetails?._id,
                 freeSpades: 1000,
-            })
+            },config
+        )
             .then(async (res) => {
                 console.log("userData updated Successfully after payment ");
                 dispatch(setUserDetails(res.data));
@@ -145,11 +156,18 @@ const PaymentScreen = () => {
     const handleFreeSpade = async () => {
         try {
             setLoading(true);
+            const config = {
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization':`Bearer ${accessToken}`,
+                }
+               }
             await axios
-                .patch("http://173.212.193.109:5000/user/edit-profile", {
+                .patch(`${baseUrl}/user/edit-profile`, {
                     _id: userDetails._id,
                     updateData: { freeSpades: userDetails.freeSpades - 1, lastPaymentStatus: "paid" },
-                })
+                },config
+            )
                 .then(async (res) => {
                     console.log('Payment Successfully updated');
                     dispatch(setUserDetails(res.data));
@@ -174,12 +192,17 @@ const PaymentScreen = () => {
         console.log("Adding coupon");
         if (couponCode.length === 0) return;
         console.log('couponCode: ' + couponCode);
+        const config = {
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization':`Bearer ${accessToken}`,
+            },
+            params: {
+                couponCode: couponCode
+            }
+           }
         try {
-            await axios.get('http://173.212.193.109:5000/coupon/verify-coupon', {
-                params: {
-                    couponCode: couponCode
-                }
-            })
+            await axios.get(`${baseUrl}/coupon/verify-coupon`,config)
                 .then(res => {
                     console.log('res', res.data);
                     if (res.data.message === "Coupon code is valid") {

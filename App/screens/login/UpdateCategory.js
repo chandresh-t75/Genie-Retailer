@@ -22,6 +22,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setStoreCategory, setUserDetails } from "../../redux/reducers/storeDataSlice";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { baseUrl } from "../utils/constants";
+
 
 const searchData = [
   { id: 1, name: 'Miscelleneous' },
@@ -50,6 +52,7 @@ const UpdateCategory = () => {
   const user=useSelector(state=>state.storeData.userDetails)
   const [selectedOption, setSelectedOption] = useState("");
   const [loading,setLoading] =useState(false)
+  const accessToken=useSelector(state=>state.storeData.accessToken)
 
   const handleSelectResult = (result) => {
     setSelectedOption(result === selectedOption ? "" : result);
@@ -82,14 +85,19 @@ const UpdateCategory = () => {
     try {
       console.log( "user", user);
 
-    
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
     await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
+        `${baseUrl}/retailer/editretailer`,
         {
           _id: user._id,
           storeCategory:selectedOption.name,
           
-        }
+        },config
       ).then(async(response) => {
 
       console.log("category updated successfully:", response.data); 

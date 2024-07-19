@@ -38,6 +38,7 @@ import QueIcon from "../assets/QuestionIcon.svg";
 import RightArrow from "../assets/RightArrowGold.svg";
 import Time from "../assets/TimeRed.svg";
 import RemainingCustomerModal from "./RemainingCustomerModal";
+import { baseUrl } from "../screens/utils/constants";
 
 const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const navigation = useNavigation();
@@ -63,7 +64,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const userData = useSelector((state) => state.storeData.userDetails);
   const isFirstLoad = useRef(true);
   const [socketConnected, setSocketConnected] = useState(false);
-
+  const accessToken=useSelector((state) => state.storeData.accessToken)
   const connectSocket = useCallback(async (id) => {
     // socket.emit("setup", currentSpadeRetailer?.users[1]._id);
     const userId = id;
@@ -137,8 +138,14 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     setLoading(true);
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const response = await axios.get(
-        `http://173.212.193.109:5000/chat/retailer-new-spades?id=${userData?._id}`
+        `${baseUrl}/chat/retailer-new-spades?id=${userData?._id}`,config
       );
       if (response.data) {
         console.log("hiii verified");
@@ -157,8 +164,14 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const ongoingresponse = await axios.get(
-        `http://173.212.193.109:5000/chat/retailer-ongoing-spades?id=${userData?._id}`
+        `${baseUrl}/chat/retailer-ongoing-spades?id=${userData?._id}`,config
       );
       if (ongoingresponse.data) {
         console.log("hiiiuu");
@@ -175,16 +188,22 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const fetchRetailerHistory = async () => {
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const history = await axios.get(
-        `http://173.212.193.109:5000/retailer/history?id=${userData?._id}`
+        `${baseUrl}/retailer/history?id=${userData?._id}`,config
       );
       if (history.data) {
         dispatch(setRetailerHistory(history.data));
       }
-      console.log("history", history.data);
+      // console.log("history", history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
-      console.error('Error fetching history requests:', error);
+      // console.error('Error fetching history requests:', error);
     }
   };
 

@@ -14,6 +14,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setNewRequests, setRequestInfo, setRetailerHistory } from "../redux/reducers/requestDataSlice";
 import { ActivityIndicator } from "react-native-paper";
+import { baseUrl } from "../screens/utils/constants";
 
 const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
   // const [modalVisible, setModalVisible] = useState(true);
@@ -25,17 +26,24 @@ const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
     (state) => state.requestData.newRequests || []
   );
   const retailerHistory= useSelector(state => state.requestData.retailerHistory|| [])
+  const accessToken = useSelector((state) => state.storeData.accessToken);
 
   const handleModal = async () => {
     setLoading(true);
     try {
       // console.log("RequestType canecl response", requestInfo);
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const res = await axios.patch(
-        "http://173.212.193.109:5000/chat/product-not-available",
+        `${baseUrl}/chat/product-not-available`,
         {
           id: requestInfo?._id,
        
-        }
+        },config
       );
       if (res.status === 200) {
         let tmp = { ...requestInfo, requestType: "rejected" };

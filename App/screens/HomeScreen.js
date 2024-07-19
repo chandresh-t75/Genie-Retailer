@@ -10,8 +10,9 @@ import CompleteProfile from '../components/CompleteProfile'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { setUserDetails } from '../redux/reducers/storeDataSlice'
+import { setAccessToken, setUserDetails } from '../redux/reducers/storeDataSlice'
 import RemainingCustomerModal from '../components/RemainingCustomerModal'
+import { baseUrl } from './utils/constants'
 
  
 
@@ -142,21 +143,32 @@ const navigationState = useNavigationState(state => state);
 const fetchUserData = async () => {
   // try {
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
+    const accessToken =  JSON.parse(await AsyncStorage.getItem("accessToken"));
+    // console.log(accessToken);
     if (userData) {
       dispatch(setUserDetails(userData));
-      console.log('Fetched user data successfully at HomeScreen', userData);
-      const response = await axios.get('http://173.212.193.109:5000/retailer/', {
+      dispatch(setAccessToken(accessToken));
+      // console.log('Fetched user data successfully at HomeScreen', userData);
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        },
         params: {
           storeMobileNo: userData?.storeMobileNo
         }
-      });
-      console.log("res at compltete profile", response.data);
-  
+       }
+      const response = await axios.get(`${baseUrl}/retailer/`, config);
+      console.log("res at compltete profile", response.data.retailer);
       if (response.status === 200) {
-        const data = response.data;
+        const data = response.data.retailer;
+        const accessToken =response.data.accessToken;
   
         dispatch(setUserDetails(data));
+        dispatch(setAccessToken(accessToken));
         await AsyncStorage.setItem('userData', JSON.stringify(data));
+        await AsyncStorage.setItem('accessToken', JSON.stringify(accessToken));
+
 
       }
     }

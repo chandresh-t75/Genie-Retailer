@@ -52,8 +52,16 @@ export const BidAcceptedOtherRetailer = async (mess) => {
         console.log("Raw response:", textResponse);
 
         if (!response.ok) {
-          console.error("Failed to send notification error:", textResponse);
-          throw new Error("Failed to send notification");
+          const errorResponse = JSON.parse(textResponse);
+          if (errorResponse.error && errorResponse.error.code === 404) {
+              continue;
+              console.warn("Invalid token", `${token} has been skipped`);
+          }
+          else {
+              console.error('Failed to send notification error:', textResponse);
+              throw new Error('Failed to send notification');
+          }
+     
         } else {
           const successResponse = JSON.parse(textResponse);
           console.log(

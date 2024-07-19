@@ -27,6 +27,7 @@ import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import BackArrow from "../../assets/BackArrow.svg";
+import { baseUrl } from "../utils/constants";
 
 
 
@@ -48,6 +49,7 @@ const LocationScreen = () => {
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const { width } = Dimensions.get("window");
   const uniqueToken = useSelector((state) => state.storeData.uniqueToken);
+  const accessToken = useSelector((state) => state.storeData.accessToken)
 
 
 
@@ -161,8 +163,14 @@ const LocationScreen = () => {
       // Update location in Redux store
       dispatch(setStoreLocation(location));
       // Update location on server
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const response = await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
+        `${baseUrl}/retailer/editretailer`,
         {
           _id: userId,
           location: location,
@@ -173,7 +181,7 @@ const LocationScreen = () => {
             type: "Point",
             coordinates: [longitude, latitude]
           }
-        }
+        },config
       );
 
       console.log("Location updated successfully:", response.data);

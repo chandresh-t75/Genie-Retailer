@@ -92,19 +92,19 @@ const HistoryScreen = () => {
           <View className="flex flex-row justify-between px-[40px] items-end">
             {
               tab === "All" && <Text className="text-[16px] text-center"
-                style={{ fontFamily: "Poppins-Bold" }} >{retailerHistory?.length} Requests</Text>
+                style={{ fontFamily: "Poppins-Bold" }} >{retailerHistory?.length} {retailerHistory?.length>1?"Requests":"Request"} </Text>
             }
             {
               tab === "Closed" && <Text className="text-[16px] text-center"
-                style={{ fontFamily: "Poppins-Bold" }} >{closedRequests?.length} Requests</Text>
+                style={{ fontFamily: "Poppins-Bold" }} >{closedRequests?.length} {closedRequests?.length>1?"Requests":"Request"}</Text>
             }
             {
               tab === "Completed" && <Text className="text-[16px] text-center"
-                style={{ fontFamily: "Poppins-Bold" }} >{completedRequests?.length} Requests</Text>
+                style={{ fontFamily: "Poppins-Bold" }} >{completedRequests?.length} {completedRequests?.length>1?"Requests":"Request"}</Text>
             }
             {
               tab === "Rejected" && <Text className="text-[16px] text-center"
-                style={{ fontFamily: "Poppins-Bold" }} >{rejectedRequests?.length} Requests</Text>
+                style={{ fontFamily: "Poppins-Bold" }} >{rejectedRequests?.length} {rejectedRequests?.length>1?"Requests":"Request"}</Text>
             }
 
             <TouchableOpacity

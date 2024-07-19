@@ -26,23 +26,7 @@ const MenuScreen = () => {
     // const [user,setUser]=useState();
     const[modalVisible,setModalVisible]=useState(false);
 
-    // useEffect(() => {
-    //     const fetchUserData = async () => {
-    //         try {
-    //             // Fetch user location from AsyncStorage
-    //             // const userData=JSON.parse(await AsyncStorage.getItem('userData'));
-    //             //  dispatch(setServiceProvider("unknown"))
-    //             console.log("profile",userData);
-    //             if (userData) {
-    //                     dispatch(setUserDetails(userData));
-    //                     console.log("userprofile",user);
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching user location:', error)
-    //         }
-    //     }
-    //     fetchUserData()
-    // }, [])
+  
 
     const deleteUserData = async () => {
         setModalVisible(true);

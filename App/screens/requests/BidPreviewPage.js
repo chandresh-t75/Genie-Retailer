@@ -32,6 +32,7 @@ import {
 import BackArrow from "../../assets/BackArrow.svg";
 import { setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { setBidImages, setProductWarranty } from "../../redux/reducers/bidSlice";
+import { baseUrl } from "../utils/constants";
 
 
 
@@ -57,6 +58,8 @@ const BidPreviewPage = () => {
     (state) => state.requestData.ongoingRequests || []
   );
   const user=useSelector(state=>state.storeData.userDetails);
+  const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
   // const messages = useSelector(state => state.requestData.messages);
 
@@ -102,12 +105,15 @@ const BidPreviewPage = () => {
 
       // console.log("requestinfo", requestInfo);
       // console.log("warranty", warranty);
-
-      const response = await axios.post(
-        "http://173.212.193.109:5000/chat/send-message",
-        formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+      const config = {
+        headers:{
+          'Content-Type':'multipart/form-data',
+          'Authorization':`Bearer ${accessToken}`,
         }
+       }
+      const response = await axios.post(
+        `${baseUrl}/chat/send-message`,
+        formData, config
       );
       // console.log("res of meassage", response);
       if (response.status === 201) {
@@ -142,7 +148,13 @@ const BidPreviewPage = () => {
         navigation.navigate(`requestPage${requestId}`);
 
         setLoading(false)
-        const token=await axios.get(`http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`);
+        const config = {
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${accessToken}`,
+          }
+         }
+        const token=await axios.get(`${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config);
         if(token.data.length>0){
         const notification = {
           token:token.data,
@@ -335,7 +347,8 @@ const BidPreviewPage = () => {
                 Product Warranty
               </Text>
               <Text className=" text-[24px] text-[#558B2F]" style={{ fontFamily: "Poppins-Bold" }}>
-                {warranty?`${warranty} Months`:"Na"}
+              {warranty? (warranty > 1? `${warranty} Months`: `${warranty} Month`): "Na"}
+                
               </Text>
             </View>
           </View>

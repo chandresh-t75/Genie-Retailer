@@ -45,7 +45,7 @@ const ServiceDeliveryScreen = () => {
               onPress={() => navigation.goBack()}
               style={{
                 position: "absolute",
-                top: 20,
+                top: 50,
                 left: 30,
                 padding: 15,
                 zIndex: 40,

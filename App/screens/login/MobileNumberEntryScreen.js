@@ -29,8 +29,10 @@ import {
 } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setAccessToken,
   setMobileNumber,
   setPanCard,
+  setRefreshToken,
   setUniqueToken,
   setUserDetails,
   storeClear,
@@ -42,6 +44,7 @@ import axios from "axios";
 import messaging from "@react-native-firebase/messaging";
 import BackArrow from "../../assets/BackArrow.svg";
 import SmsRetriever from 'react-native-sms-retriever';
+import { baseUrl } from "../utils/constants.js";
 
 
 
@@ -65,7 +68,7 @@ const MobileNumberEntryScreen = () => {
   const uniqueToken = useSelector((state) => state.storeData.uniqueToken);
   const navigationState = useNavigationState((state) => state);
   const isLoginScreen = navigationState.routes[navigationState.index].name === "mobileNumber";
-  console.log("mobil", isLoginScreen);
+  // console.log("mobil", isLoginScreen);
   const { width } = Dimensions.get("window");
 
 
@@ -208,31 +211,47 @@ const MobileNumberEntryScreen = () => {
       const phoneNumber = countryCode + mobileNumber;
       console.log("phone", phoneNumber);
       const response = await axios.get(
-        "http://173.212.193.109:5000/retailer/",
+        `${baseUrl}/retailer/`,
         {
           params: {
             storeMobileNo: phoneNumber,
           },
         }
       );
-      console.log("res", response);
-
-      if (response.data.storeMobileNo) {
+      console.log("res", response.data.accessToken);
+     
+      if (response.data.retailer.storeMobileNo) {
         // If mobile number is registered, navigate to home screen
+        dispatch(setUserDetails(response.data.retailer));
+        dispatch(setAccessToken(response.data.accessToken));
+        dispatch(setRefreshToken(response.data.refreshToken));
 
+        await AsyncStorage.setItem("userData", JSON.stringify(response.data.retailer));
+        await AsyncStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+        await AsyncStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
+        
+        const config = {
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${response.data.accessToken}`,
+          }
+        }
 
         const result = await axios.patch(
-          `http://173.212.193.109:5000/retailer/editretailer`,
+          `${baseUrl}/retailer/editretailer`,
           {
-            _id: response?.data?._id,
+            _id: response?.data?.retailer._id,
             uniqueToken: token,
-          }
+          },config
         );
+        console.log('Retailer updated', result.data);
+        
         dispatch(setUserDetails(result.data));
         await AsyncStorage.setItem("userData", JSON.stringify(result.data));
 
+
         setToken("");
-        if (response.data.storeApproved) {
+        if (response.data.retailer.storeApproved) {
           navigation.navigate("home", { data: "" });
         }
         else {

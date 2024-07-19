@@ -39,6 +39,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImgOrange.svg"
 import RightArrow from "../../assets/arrow-right.svg";
+import { baseUrl } from "../utils/constants";
 
 
 
@@ -55,6 +56,8 @@ const PanCardScreen = () => {
   const storeCategory = useSelector((state) => state.storeData.storeCategory);
   const user = useSelector((state) => state.storeData.userDetails);
   const uniqueToken = useSelector((state) => state.storeData.uniqueToken);
+  const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
   const [cameraScreen, setCameraScreen] = useState(false);
   const [imagesLocal, setImagesLocal] = useState("");
@@ -107,9 +110,14 @@ const PanCardScreen = () => {
       // Create user data object
 
       // Send user data to the server
-
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const response = await axios.post(
-        "http://173.212.193.109:5000/retailer/",
+        `${baseUrl}/retailer/`,
         {
           storeOwnerName: storeOwnerName,
           storeName: storeName,
@@ -118,7 +126,7 @@ const PanCardScreen = () => {
           homeDelivery: storeService,
           panCard: panCard,
 
-        }
+        },config
       );
       // console.log("res", response);
 
@@ -127,12 +135,13 @@ const PanCardScreen = () => {
       if (response.status === 201) {
         console.log("User created:", response.data);
         // dispatch(setUserDetails(response.data));
+        
         const res = await axios.patch(
-          `http://173.212.193.109:5000/retailer/editretailer`,
+          `${baseUrl}/retailer/editretailer`,
           {
             _id: response?.data?._id,
             uniqueToken: uniqueToken,
-          }
+          },config
         );
         dispatch(setUserDetails(res.data));
         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
@@ -205,7 +214,7 @@ const PanCardScreen = () => {
         name: `photo-${Date.now()}.jpg`
       })
 
-      await axios.post('http://173.212.193.109:5000/upload', formData, {
+      await axios.post(`${baseUrl}/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

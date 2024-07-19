@@ -17,6 +17,7 @@ import axios from "axios";
 import { setOngoingRequests, setRequestInfo } from "../redux/reducers/requestDataSlice";
 import { sendCustomNotificationDocument } from "../notification/notificationMessages";
 import { socket } from "../screens/utils/socket.io/socket";
+import { baseUrl } from "../screens/utils/constants";
 
 
 const SendDocument = () => {
@@ -32,6 +33,7 @@ const SendDocument = () => {
     const [isLoading, setIsLoading] = useState(false);
     const fileSize = parseFloat(result.assets[0].size) / (1e6);
     console.log('document result', result);
+    const accessToken = useSelector((state) => state.storeData.accessToken);
 
 
     const sendDocument = async () => {
@@ -58,12 +60,13 @@ const SendDocument = () => {
             formData.append('bidType', "document");
             formData.append('chat', requestInfo?._id);
             formData.append('bidPrice', result.assets[0].size);
-
-            await axios.post('http://173.212.193.109:5000/chat/send-message', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+            const config = {
+                headers:{
+                  'Content-Type':'multipart/form-data',
+                  'Authorization':`Bearer ${accessToken}`,
+                }
+               }
+            await axios.post(`${baseUrl}/chat/send-message`, formData, config)
                 .then(async (res) => {
                     let mess = [...messages];
                     mess.push(res.data);
@@ -93,9 +96,15 @@ const SendDocument = () => {
                     // console.log("notification send", notification);
                     const requestId = req?.requestId
                     navigation.navigate(`requestPage${requestId}`);
-                    setIsLoading(false)
+                    setIsLoading(false);
+                    const config = {
+                        headers:{
+                          'Content-Type':'application/json',
+                          'Authorization':`Bearer ${accessToken}`,
+                        }
+                       }
                     const token = await axios.get(
-                        `http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId._id}`
+                        `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
                     );
                     if (token.data.length > 0) {
                         const notification = {

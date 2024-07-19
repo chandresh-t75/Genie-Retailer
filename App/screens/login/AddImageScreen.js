@@ -40,6 +40,7 @@ import { launchCamera } from "react-native-image-picker";
 import axios from "axios";
 import BackArrow from "../../assets/BackArrow.svg";
 import RightArrow from "../../assets/arrow-right.svg";
+import { baseUrl } from "../utils/constants";
 
 
 const AddImageScreen = () => {
@@ -63,6 +64,7 @@ const AddImageScreen = () => {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
+  const accessToken=useSelector(state=>state.storeData.accessToken);
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
@@ -145,12 +147,14 @@ const AddImageScreen = () => {
         type: 'image/jpeg',
         name: `photo-${Date.now()}.jpg`
       })
+      const config = {
+        headers:{
+          'Content-Type':'multipart/form-data',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
 
-      await axios.post('http://173.212.193.109:5000/upload', formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      await axios.post(`${baseUrl}/upload`, formData,config)
         .then(res => {
           console.log('imageUrl updated from server', res.data[0]);
           const imgUri = res.data[0];

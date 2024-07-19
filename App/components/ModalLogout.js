@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import auth from "@react-native-firebase/auth";
 import messaging from "@react-native-firebase/messaging";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setUniqueToken,
   setUserDetails,
@@ -23,6 +23,7 @@ import {
 } from "../redux/reducers/storeDataSlice";
 import { bidClear } from "../redux/reducers/bidSlice";
 import { requestClear } from "../redux/reducers/requestDataSlice";
+import { baseUrl } from "../screens/utils/constants";
 
 
 
@@ -30,6 +31,7 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
   console.log("user at menu", user);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const accessToken = useSelector(state => state.storeData.accessToken);
   // const [modalVisible, setModalVisible] = useState(true);
   const navigation = useNavigation();
   const handleModal = async () => {
@@ -38,13 +40,18 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
       // Remove the item with key 'userData' from local storage
 
       //  await auth().signOut();
-     
+     const config = {
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${accessToken}`,
+      }
+     }
       const res = await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
+        `${baseUrl}/retailer/editretailer`,
         {
           _id: user?._id,
           uniqueToken: "",
-        }
+        }, config
       );
       await messaging().deleteToken();
       console.log("FCM token deleted.");

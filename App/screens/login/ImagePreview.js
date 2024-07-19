@@ -20,6 +20,7 @@ import { setImages, setUserDetails } from "../../redux/reducers/storeDataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import BackArrow from "../../assets/BackArrow.svg";
+import { baseUrl } from "../utils/constants";
 
 
 
@@ -36,6 +37,7 @@ const ImagePreview = () => {
   console.log("images", imagesLocal);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 const [loading,setLoading] = useState(false);
+const accessToken=useSelector(state=>state.storeData.accessToken)
 
 
   const handleImage = async () => {
@@ -48,20 +50,27 @@ const [loading,setLoading] = useState(false);
     //  setSelectedImageIndex(0);
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
     const userId = userData._id;
+   
 
 
     try {
        
 
       // Update location on server
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const response = await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
+        `${baseUrl}/retailer/editretailer`,
         {
           _id: userId,
           storeImages: newImages,
           storeDescription: storeDescription,
           
-        }
+        },config
       );
 
       // console.log('Image updated successfully:', response.data);

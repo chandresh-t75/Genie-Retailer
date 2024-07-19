@@ -22,6 +22,7 @@ import GinieIcon from "../assets/GinieBusinessIcon.svg"
 import History from "../assets/HistoryIcon.svg"
 import { setUserDetails } from "../redux/reducers/storeDataSlice";
 import axios from "axios";
+import { baseUrl } from "../screens/utils/constants";
 
 const CompleteProfile = () => {
   const navigation = useNavigation();
@@ -89,7 +90,7 @@ const fetchUserData = async () => {
   try {
    
 
-    const response = await axios.get('http://173.212.193.109:5000/retailer/', {
+    const response = await axios.get(`${baseUrl}/retailer/`, {
       params: {
         storeMobileNo: user?.storeMobileNo
       }
@@ -97,7 +98,7 @@ const fetchUserData = async () => {
     console.log("res at compltete profile", response.data);
 
     if (response.status === 200) {
-      const data = response.data;
+      const data = response.data.retailer;
 
       dispatch(setUserDetails(data));
      
@@ -113,7 +114,7 @@ const fetchUserData = async () => {
         // setCompleteProfile(true);
         console.log("profile updated successfully")
         const res = await axios.patch(
-          `http://173.212.193.109:5000/retailer/editretailer`,
+          `${baseUrl}/retailer/editretailer`,
           {
             _id:user?._id,
             profileCompleted:true
@@ -226,7 +227,7 @@ useEffect(()=>{
                     Set Store Location{" "}
                   </Text>
                   <Text className="text-[12px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>
-                  We are fetching your location to {"\n"}help customers find your shop.
+                  We are fetching your location{"\n"}to help customers find your shop.
                   </Text>
                 </View>
                 <View className="flex-row gap-[8px]">
@@ -328,7 +329,7 @@ useEffect(()=>{
                   Set Your Location{" "}
                 </Text>
                 <Text className="text-[12px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>
-                We are fetching your location to {"\n"}help customers find your service region.
+                We are fetching your location{"\n"}to help customers find your service region.
                 </Text>
               </View>
               <View className="flex-row gap-[8px]">

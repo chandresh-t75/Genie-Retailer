@@ -28,6 +28,7 @@ import { setMessages, setOngoingRequests, setRequestInfo } from "../../redux/red
 import { sendCustomNotificationChat } from "../../notification/notificationMessages";
 import BackArrow from "../../assets/BackArrow.svg";
 import * as Clipboard from 'expo-clipboard';
+import { baseUrl } from "../utils/constants";
 
 
 
@@ -46,6 +47,8 @@ const BidQueryPage = () => {
     (state) => state.requestData.ongoingRequests || []
   );
   const user=useSelector(state=>state.storeData.userDetails);
+  const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
   // const messages = useSelector(state => state.requestData.messages);
   // console.log("messages of ",messages);
@@ -77,28 +80,15 @@ const BidQueryPage = () => {
       formData.append('bidImages',[]);
      
 
-      // const response = await axios.post(
-      //   "http://173.212.193.109:5000/chat/send-message",
-      //   {
-      //     sender: {
-      //       type: "Retailer",
-      //       refId: user?._id,
-      //     },
-      //     message: query,
-      //     bidType: "false",
-      //     warranty: 0,
-      //     bidPrice: 0,
-      //     bidImages: [],
-      //     chat: requestInfo?._id,
-      //     userRequest:requestInfo?.requestId?._id
-
-      //   }
-      // );
-      const response = await axios.post(
-        "http://173.212.193.109:5000/chat/send-message",
-        formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+      const config = {
+        headers:{
+          'Content-Type':'multipart/form-data',
+          'Authorization':`Bearer ${accessToken}`,
         }
+       }
+      const response = await axios.post(
+        `${baseUrl}/chat/send-message`,
+        formData,config
       );
         //  console.log("res",response);
       if (response.status === 201) {
@@ -136,7 +126,13 @@ const BidQueryPage = () => {
         navigation.navigate(`requestPage${requestId}`);
 
         setLoading(false)
-        const token=await axios.get(`http://173.212.193.109:5000/user/unique-token?id=${requestInfo?.customerId?._id}`);
+        const config = {
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${accessToken}`,
+          }
+         }
+        const token=await axios.get(`${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,config);
         console.log("token",token.data);
         if(token.data.length > 0){
         const notification = {

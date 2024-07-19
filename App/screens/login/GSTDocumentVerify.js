@@ -37,6 +37,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImg.svg"
 import RightArrow from "../../assets/arrow-right.svg";
+import { baseUrl } from "../utils/constants";
 
 
 
@@ -57,6 +58,7 @@ const  GSTDocumentVerify = () => {
 
   const { width } = Dimensions.get("window");
   const user=useSelector(state=>state.storeData.userDetails)
+  const accessToken = useSelector(state => state.storeData.accessToken);
 
  
 
@@ -72,12 +74,18 @@ const  GSTDocumentVerify = () => {
      
     
         // dispatch(setUserDetails(response.data));
+        const config = {
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${accessToken}`,
+          }
+         }
         await axios.patch(
-          `http://173.212.193.109:5000/retailer/editretailer`,
+          `${baseUrl}/retailer/editretailer`,
           {
             _id:user?._id,
             panCard:panCard
-          }
+          },config
         ).then(async(res)=>{
         dispatch(setUserDetails(res.data));
         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
@@ -144,12 +152,13 @@ const  GSTDocumentVerify = () => {
         type: 'image/jpeg',
         name: `photo-${Date.now()}.jpg`
       })
-
-      await axios.post('http://173.212.193.109:5000/upload', formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      const config = {
+        headers:{
+          'Content-Type':'multipart/form-data',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
+      await axios.post(`${baseUrl}/upload`, formData,config)
         .then(res => {
           console.log('imageUrl updated from server', res.data[0]);
           const imgUri = res.data[0];

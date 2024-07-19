@@ -4,7 +4,7 @@ import { View, Text, Animated, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMobileNumber, setUniqueToken, setUserDetails } from '../redux/reducers/storeDataSlice';
+import { setAccessToken, setMobileNumber, setRefreshToken, setUniqueToken, setUserDetails } from '../redux/reducers/storeDataSlice';
 import Splash from "../assets/SplashImg.svg"
 import { notificationListeners } from '../notification/notificationServices';
 import { setIsHome } from '../redux/reducers/requestDataSlice';
@@ -41,12 +41,21 @@ const SplashScreen = () => {
 
         // Check if user data exists in local storage
         const userData = JSON.parse(await AsyncStorage.getItem("userData"));
-        
-        // const authData = JSON.parse(await AsyncStorage.getItem("authData"));
+        const accessToken = JSON.parse(await AsyncStorage.getItem("accessToken"));
+            const refreshToken= JSON.parse(await AsyncStorage.getItem("refreshToken"));
+            console.log("splash",accessToken,refreshToken)
+            // await AsyncStorage.removeItem('userData')
+            // await AsyncStorage.removeItem('accessToken');
+            // await AsyncStorage.removeItem('refreshToken');
+        // const authData = JSON.parse(\await AsyncStorage.getItem("authData"));
         setTimeout(() => {
           if (userData!==null) {
-            // await AsyncStorage.removeItem('userData')
+            
+
+            
             dispatch(setUserDetails(userData))
+            dispatch(setAccessToken(accessToken))
+            dispatch(setRefreshToken(refreshToken))
             if(userData.storeApproved){
               navigation.navigate("home", { data: "" });
               }

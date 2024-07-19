@@ -96,7 +96,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
                     </View>
                   </View>
                   {/* gst verification card */}
-                  {!userData.documentVerified && (
+                  {!userData?.documentVerified && (
                     <View
                     style={{
                      backgroundColor: '#fff', // Ensure the background is white
@@ -132,7 +132,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
                                   </Text>
     
                                 </View> */}
-                          {userData.panCard?.length == 0 && (
+                          {userData?.panCard?.length == 0 && (
                             <TouchableOpacity
                               onPress={() => navigation.navigate("gstVerify")}
                             >
@@ -144,7 +144,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
                                   >
                                     Add Now
                                   </Text>
-                                  <RightArrow />
+                                  <RightArrow/>
                                 </View>
                               </View>
                             </TouchableOpacity>

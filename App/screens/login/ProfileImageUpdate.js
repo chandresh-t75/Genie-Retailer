@@ -29,6 +29,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImgOrange.svg";
 import RightArrow from "../../assets/arrow-right.svg";
+import { baseUrl } from "../utils/constants";
 
 
 const ProfileImageUpdate = () => {
@@ -47,6 +48,8 @@ const ProfileImageUpdate = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [addMore, setAddMore] = useState(false);
+  const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
 
   const handleImage = async () => {
@@ -67,12 +70,18 @@ const ProfileImageUpdate = () => {
 
     try {
       // Update location on server
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const response = await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
+        `${baseUrl}/retailer/editretailer`,
         {
           _id: userId,
           storeImages: newImages,
-        }
+        },config
       );
 
       // console.log('Image updated successfully:', response.data);
@@ -138,13 +147,14 @@ const ProfileImageUpdate = () => {
         type: "image/jpeg",
         name: `photo-${Date.now()}.jpg`,
       });
-
+      const config = {
+        headers:{
+          'Content-Type':'multipart/form-data',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       await axios
-        .post("http://173.212.193.109:5000/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
+        .post(`${baseUrl}/upload`, formData,config)
         .then((res) => {
           console.log("imageUrl updated from server", res.data[0]);
           const imgUri = res.data[0];

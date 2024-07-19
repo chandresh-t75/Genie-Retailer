@@ -232,7 +232,7 @@ const UserBidMessage = ({ bidDetails }) => {
           </Modal>
         </ScrollView>
       )}
-      <View className="gap-[4px]">
+      <View className="gap-[4px] items-center justify-center">
         <View className="flex-row gap-[5px]">
           <Text style={{ fontFamily: "Poppins-Medium" }} className="text-[#263238]">Expected Price: </Text>
           <Text className=" text-[#79B649]" style={{ fontFamily: "Poppins-SemiBold" }}>
@@ -247,13 +247,13 @@ const UserBidMessage = ({ bidDetails }) => {
         </View> */}
 
         {bidDetails?.bidAccepted === "rejected" && (
-          <View className="flex-row items-center gap-1">
+          <View className="flex-row items-center  gap-2 px-[10px]">
             <Entypo name="circle-with-cross" size={20} color="#E76063" />
             <Text className="text-[14px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>Offer Rejected by You</Text>
           </View>
         )}
         {bidDetails?.bidAccepted === "accepted" && (
-          <View className="flex-row items-center gap-1">
+          <View className="flex-row items-center  gap-2 px-[10px]">
             <Tick width={18} height={18} />
             <Text className="text-[14px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>Offer Accepted by You</Text>
           </View>

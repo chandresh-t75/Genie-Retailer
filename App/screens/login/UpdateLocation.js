@@ -28,6 +28,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import BackArrow from "../../assets/arrow-left.svg"
 import ModalUpdateLocationConfirm from "../../components/ModalUpdateLocationConfirm";
+import { baseUrl } from "../utils/constants";
 
 
 
@@ -48,6 +49,8 @@ const UpdateLocation = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const { width } = Dimensions.get("window");
+  const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
 
 
@@ -162,8 +165,14 @@ const UpdateLocation = () => {
       // Update location in Redux store
       dispatch(setStoreLocation(location));
       // Update location on server
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const response = await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
+        `${baseUrl}/retailer/editretailer`,
         {
           _id: user?._id,
           location: location,
@@ -173,7 +182,7 @@ const UpdateLocation = () => {
             type: "Point",
             coordinates: [longitude, latitude]
           }
-        }
+        },config
       );
 
       console.log("Location updated successfully:", response.data);

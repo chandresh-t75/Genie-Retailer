@@ -26,6 +26,7 @@ import { manipulateAsync } from "expo-image-manipulator";
 import DelImg from "../../assets/delImgOrange.svg";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
 import BackArrow from "../../assets/BackArrow.svg";
+import { baseUrl } from "../utils/constants";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -49,6 +50,8 @@ const ProfileScreen = () => {
   const [panCard, setPanCard] = useState(user?.panCard || "");
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
+  const accessToken = useSelector((state) => state.storeData.accessToken)
+
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
@@ -82,12 +85,18 @@ const ProfileScreen = () => {
     };
     setIsLoading(true);
     try {
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       const response = await axios.patch(
-        `http://173.212.193.109:5000/retailer/editretailer`,
+        `${baseUrl}/retailer/editretailer`,
         {
           _id: user?._id,
           [field]: fieldMapping[field],
-        }
+        },config
       );
 
       if (response.status === 200) {
@@ -153,12 +162,15 @@ const ProfileScreen = () => {
         name: `photo-${Date.now()}.jpg`,
       });
 
+      const config = {
+        headers:{
+          'Content-Type':'multipart/form-data',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
+
       await axios
-        .post("http://173.212.193.109:5000/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
+        .post(`${baseUrl}/upload`, formData, config)
         .then(async (res) => {
           console.log("imageUrl updated from server", res.data[0]);
           const imgUri = res.data[0];
@@ -176,12 +188,18 @@ const ProfileScreen = () => {
           }
           dispatch(setUserDetails(updatedUser));
           await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
+          const config = {
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization':`Bearer ${accessToken}`,
+            }
+           }
           const response = await axios.patch(
-            `http://173.212.193.109:5000/retailer/editretailer`,
+            `${baseUrl}/retailer/editretailer`,
             {
               _id: user?._id,
               storeImages: updatedUser.storeImages,
-            }
+            },config
           );
           setLoading(false);
         });
@@ -191,58 +209,7 @@ const ProfileScreen = () => {
     }
   };
 
-  // const getImageUrl = async ({ image, type }) => {
-  //   setLoading(true);
-  //   const CLOUDINARY_URL =
-  //     "https://api.cloudinary.com/v1_1/kumarvivek/image/upload";
-  //   const base64Img = `data:image/jpg;base64,${image.base64}`;
-  //   const data = {
-  //     file: base64Img,
-  //     upload_preset: "CulturTap",
-  //     quality: 50,
-  //   };
-
-  //   try {
-  //     const response = await fetch(CLOUDINARY_URL, {
-  //       body: JSON.stringify(data),
-  //       headers: {
-  //         "content-type": "application/json",
-  //       },
-  //       method: "POST",
-  //     });
-
-  //     const result = await response.json();
-  //     if (result.secure_url) {
-  //       console.log("user image", result.secure_url);
-  //       let updatedUser;
-  //       if (type === "main") {
-  //         updatedUser = {
-  //           ...user,
-  //           storeImages: [result.secure_url, ...user.storeImages.slice(1)],
-  //         };
-  //       } else {
-  //         updatedUser = {
-  //           ...user,
-  //           storeImages: [...user.storeImages, result.secure_url],
-  //         };
-  //       }
-  //       dispatch(setUserDetails(updatedUser));
-  //       await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
-  //       const response = await axios.patch(
-  //         `http://173.212.193.109:5000/retailer/editretailer`,
-  //         {
-  //           _id: user?._id,
-  //           storeImages: updatedUser.storeImages,
-  //         }
-  //       );
-  //       setLoading(false);
-  //     }
-  //   } catch (err) {
-  //     setLoading(false);
-  //     console.log(err);
-  //   }
-  // };
-
+ 
   const deleteImage = async (index) => {
     if (index >= 0 && index < user.storeImages.length) {
       const updatedStoreImages = [
@@ -255,11 +222,19 @@ const ProfileScreen = () => {
       };
       dispatch(setUserDetails(updatedUser));
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
+
+      const config = {
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
       await axios
-        .patch(`http://173.212.193.109:5000/retailer/editretailer`, {
+        .patch(`${baseUrl}/retailer/editretailer`, {
           _id: user?._id,
           storeImages: updatedUser.storeImages,
-        })
+        },config
+      )
         .then(async (res) => {
           dispatch(setUserDetails(res.data));
           await AsyncStorage.setItem("userData", JSON.stringify(res.data));
@@ -373,7 +348,7 @@ const ProfileScreen = () => {
             </TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="pl-[32px] flex flex-row gap-[11px] mb-[60px]">
+            <View className="px-[32px] flex flex-row gap-[11px] mb-[60px]">
               {user?.storeImages?.map((image, index) => (
                 <Pressable key={index} onPress={() => handleImagePress(image)}>
                   <View key={index} className="rounded-[16px]">
@@ -412,19 +387,19 @@ const ProfileScreen = () => {
             </Modal>
           </ScrollView>
           <View className="px-[32px] flex flex-col gap-[26px] mb-[20px] items-center">
-            <View className="px-[20px] mb-[10px]">
+            <View className="px-[32px] mb-[10px]">
               <Text
                 style={{ fontFamily: "Poppins-Regular" }}
                 className="mb-[10px] text-[#2E2C43] "
               >
                 Store Address
               </Text>
-              <View className="flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+              <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
                 <TextInput
                   value={user?.location}
                   placeholder={user?.location}
                   placeholderTextColor={"#dbcdbb"}
-                  className="w-[250px] text-[14px]  text-[#2E2C43] capitalize"
+                  className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
                   multiline={true}
                   scrollEnabled={true}
@@ -434,6 +409,8 @@ const ProfileScreen = () => {
                   onPress={() => {
                     navigation.navigate("update-location");
                   }}
+                  style={{paddingHorizontal:10}}
+
                 >
                   <EditIcon className="px-[10px]" />
                 </TouchableOpacity>
@@ -466,9 +443,38 @@ const ProfileScreen = () => {
               >
                 Store Category
               </Text>
-              <View className="flex flex-row items-center justify-between w-[324px]  px-[20px] bg-[#F9F9F9] rounded-[16px]">
+              <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
 
-                <Text className="w-[250px] text-[14px] py-[10px] text-[#2E2C43]  capitalize" style={{ fontFamily: "Poppins-Regular" }}>{storeCategory}</Text>
+                <Text className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize" style={{ fontFamily: "Poppins-Regular" }}>{storeCategory}</Text>
+              </View>
+            </View>
+
+            <View className="px-[32px] mb-[10px]">
+              <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="mb-[10px] text-[#2E2C43] "
+              >
+                Home Delivery
+              </Text>
+              <View className="flex flex-row items-center justify-between w-[300px] py-[10px]  px-[20px] bg-[#F9F9F9] rounded-[16px]">
+              <TextInput
+                  value={user?.homeDelivery===true?"Yes":"No"}
+                  placeholder={user?.homeDelivery===true?"Yes":"No"}
+                  placeholderTextColor={"#dbcdbb"}
+                  className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  multiline={true}
+                  scrollEnabled={true}
+                  editable={false}
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("update-service-delivery");
+                  }}
+                  style={{paddingHorizontal:10}}
+                >
+                  <EditIcon className="px-[10px]"/>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -565,34 +571,38 @@ const EditableField = ({
     </View>
 
     <KeyboardAvoidingView className="flex ">
-      <View className={`flex flex-row items-center justify-between w-[324px] h-[54px] px-[20px] bg-[#F9F9F9] rounded-[16px]`} style={{ backgroundColor: editable ? '#ffe7c8' : '#F9F9F9', }}>
+      <View className={`flex flex-row items-center justify-between w-[300px]  px-[20px] bg-[#F9F9F9] rounded-[16px]`} style={{ backgroundColor: editable ? '#ffe7c8' : '#F9F9F9', }}>
         <TextInput
           value={value}
           onChangeText={onChangeText}
           editable={editable}
           placeholder={label}
           placeholderTextColor={"#dbcdbb"}
-          className="w-[250px] text-[14px]  text-[#2E2C43] capitalize"
+          className="w-[230px] text-[14px] py-[10px] text-[#2E2C43] capitalize"
           style={{ fontFamily: "Poppins-Regular" }}
         />
         {label != "Mobile Number" && (
-          <TouchableOpacity onPress={editable ? onSavePress : onEditPress}>
+          <TouchableOpacity onPress={editable ? onSavePress : onEditPress} 
+          
+          >
             {editable ? (
               isLoading ? (
-                <View className="text-[14px] bg-[#FB8C00] p-2 px-4 rounded-xl">
+                <View className="text-[14px] bg-[#FB8C00] py-[8px] px-[12px] rounded-xl">
                   <ActivityIndicator size="small" color="#ffffff" />
                 </View>
               ) : (
                 <Text
-                  className="text-[14px] bg-[#FB8C00] text-white p-2 rounded-xl"
+                  className="text-[14px] bg-[#FB8C00] text-white py-[8px] px-[6px] rounded-xl"
                   style={{ fontFamily: "Poppins-SemiBold" }}
                 >
                   Save
                 </Text>
               )
             ) : (
-              <EditIcon className="px-[10px]" />
+              <EditIcon className="" />
             )}
+                  
+
           </TouchableOpacity>
         )}
       </View>
