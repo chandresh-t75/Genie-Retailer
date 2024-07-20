@@ -9,7 +9,7 @@
       "@react-native-firebase/auth"
     ],
    
-    "icon": "./App/assets/icon.png",
+    "icon": "./App/assets/icon2.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./App/assets/ginie.png",
@@ -34,7 +34,7 @@
       ],
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./App/assets/adaptive-icon.png",
+        "foregroundImage": "./App/assets/icon2.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.culturtapgenieretailer.GenieApp"
