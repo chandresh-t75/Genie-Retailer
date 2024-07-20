@@ -83,7 +83,7 @@ const HistoryScreen = () => {
           </TouchableOpacity>
         </View>
         <Text
-          className="text-[16px] text-center mt-[40px] mb-[20px] "
+          className="text-[16px] text-center mt-[40px] mb-[20px] text-[#2e2c43]"
           style={{ fontFamily: "Poppins-Bold" }}
         >
           Your History
@@ -91,19 +91,19 @@ const HistoryScreen = () => {
         <View className="flex-1 justify-center">
           <View className="flex flex-row justify-between px-[40px] items-end">
             {
-              tab === "All" && <Text className="text-[16px] text-center"
+              tab === "All" && <Text className="text-[16px] text-center text-[#2e2c43]"
                 style={{ fontFamily: "Poppins-Bold" }} >{retailerHistory?.length} {retailerHistory?.length>1?"Requests":"Request"} </Text>
             }
             {
-              tab === "Closed" && <Text className="text-[16px] text-center"
+              tab === "Closed" && <Text className="text-[16px] text-center text-[#2e2c43]"
                 style={{ fontFamily: "Poppins-Bold" }} >{closedRequests?.length} {closedRequests?.length>1?"Requests":"Request"}</Text>
             }
             {
-              tab === "Completed" && <Text className="text-[16px] text-center"
+              tab === "Completed" && <Text className="text-[16px] text-center text-[#2e2c43]"
                 style={{ fontFamily: "Poppins-Bold" }} >{completedRequests?.length} {completedRequests?.length>1?"Requests":"Request"}</Text>
             }
             {
-              tab === "Rejected" && <Text className="text-[16px] text-center"
+              tab === "Rejected" && <Text className="text-[16px] text-center text-[#2e2c43]"
                 style={{ fontFamily: "Poppins-Bold" }} >{rejectedRequests?.length} {rejectedRequests?.length>1?"Requests":"Request"}</Text>
             }
 
@@ -180,7 +180,7 @@ const HistoryScreen = () => {
                 ))
               ) : (
                 <Text
-                  className="text-[14px] text-center mb-[20px]"
+                  className="text-[14px] text-center mb-[20px] text-[#2e2c43]"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
                   No History
@@ -220,7 +220,7 @@ const HistoryScreen = () => {
                 ))
               ) : (
                 <Text
-                  className="text-[14px] text-center mb-[20px]"
+                  className="text-[14px] text-center mb-[20px] text-[#2e2c43]"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
                   No Completed Requests
@@ -260,7 +260,7 @@ const HistoryScreen = () => {
                 ))
               ) : (
                 <Text
-                  className="text-[14px] text-center mb-[20px]"
+                  className="text-[14px] text-center mb-[20px] text-[#2e2c43]"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
                   No Rejected Requests
@@ -301,7 +301,7 @@ const HistoryScreen = () => {
                 ))
               ) : (
                 <Text
-                  className="text-[14px] text-center mb-[20px]"
+                  className="text-[14px] text-center mb-[20px] text-[#2e2c43]"
                   style={{ fontFamily: "Poppins-Regular" }}
                 >
                   No Closed Requests

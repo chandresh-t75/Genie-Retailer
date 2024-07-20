@@ -347,11 +347,13 @@ const ProfileScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="px-[32px] flex flex-row gap-[11px] mb-[60px]">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{
+        alignSelf: "flex-start",
+      }}>
+            <View className="px-[32px] flex flex-row gap-[11px] mb-[60px] w-max">
               {user?.storeImages?.map((image, index) => (
                 <Pressable key={index} onPress={() => handleImagePress(image)}>
-                  <View key={index} className="rounded-[16px]">
+                  <View key={index} className="rounded-[16px] w-[119px] h-[164px]">
                     <Image
                       source={{ uri: image }}
                       width={119}

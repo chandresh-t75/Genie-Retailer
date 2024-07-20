@@ -309,6 +309,9 @@ const BidPreviewPage = () => {
                       flexDirection: "row",
                       gap: 8,
                   }}
+                  style={{
+                    alignSelf: "flex-start",
+                  }}
                 >
                  
                     {bidImages &&

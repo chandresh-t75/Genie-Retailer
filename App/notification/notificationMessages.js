@@ -209,6 +209,7 @@ export const sendCustomNotificationBid = async (mess) => {
         data: {
           redirect_to: mess.redirect_to,
           requestInfo: JSON.stringify(mess.requestInfo),
+          type:"Offer"
         },
       },
     };

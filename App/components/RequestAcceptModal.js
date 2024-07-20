@@ -84,7 +84,7 @@ const RequestAcceptModal = ({
 
             },config
           ).then(async (res) => {
-
+            socket.emit('new retailer',res.data);
             updateUserDetails();
             const requests = newRequests.filter(
               (request) => request._id ===requestInfo._id
@@ -169,6 +169,7 @@ const RequestAcceptModal = ({
                     requestId: requestInfo?._id,
                     userId: requestInfo?.users[1]._id
                   },
+                 
                   tag: user?._id,
                   price: lastMessage?.bidPrice,
                   image: requestInfo?.requestId?.requestImages[0],

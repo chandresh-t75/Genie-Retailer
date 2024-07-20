@@ -258,7 +258,7 @@ const PaymentScreen = () => {
                             >
                                 Bill To:
                             </Text>
-                            <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>Aishwary Shrivastav</Text>
+                            <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>{userDetails?.storeOwnerName}</Text>
 
                         </View>
 

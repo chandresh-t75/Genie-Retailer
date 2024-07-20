@@ -173,9 +173,9 @@ const RequestPage = () => {
           await axios
             .get(`${baseUrl}/chat/get-spade-messages`, configg)
             .then(async (response) => {
-              console.log("fetching messages", response.data);
+              // console.log("fetching messages", response.data);
               setMessages(response.data);
-              console.log("Messages found successfully", response.data);
+              // console.log("Messages found successfully", response.data);
               // console.log("user joined chat with chatId", response.data[0].chat._id);
               socket.emit("join chat", response?.data[0]?.chat?._id);
 
@@ -835,7 +835,7 @@ const RequestPage = () => {
       : 60 - daysDifference(user?.createdAt);
   // console.log("remainingDays: ", remainingDays);
 
-  console.log("requestinfo checking", requestInfo);
+  // console.log("requestinfo checking", requestInfo);
 
   const handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;

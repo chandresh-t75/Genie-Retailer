@@ -420,9 +420,9 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                               >
                                 Attach your GST/Labor{"\n"}certificate
                               </Text>
-                              <TouchableOpacity>
+                              {/* <TouchableOpacity>
                                 <QueIcon />
-                              </TouchableOpacity>
+                              </TouchableOpacity> */}
                             </View>
                             {/* <View className="flex flex-row items-center gap-[10px]">
                                  <Time/>
