@@ -1,16 +1,19 @@
 import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import StoreLocation from '../../assets/StoreLocation.svg';
 import Document from '../assets/Documents.svg';
 import NewBid from '../assets/NewBid.svg';
-import Camera from '../assets/Camera.svg';
+import CameraIcon from '../assets/Camera.svg';
 import Gallery from '../assets/Gallerys.svg';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { useSelector } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
-// import { socket } from '../../utils/scoket.io/socket';
+import { launchCamera } from 'react-native-image-picker';
+import { manipulateAsync } from "expo-image-manipulator";
+import { Camera } from "expo-camera";
+
 
 const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setMessages,setErrorModal}) => {
     const requestInfo = useSelector(state => state.requestData.requestInfo);
@@ -20,60 +23,6 @@ const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setM
     const { height } = Dimensions.get("window");
     // console.log("height: " + height);
 
-
-    const getImageUrl = async (image) => {
-
-
-        let CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/kumarvivek/image/upload';
-
-        let base64Img = `data:image/jpg;base64,${image.base64}`;
-
-        let data = {
-            "file": base64Img,
-            "upload_preset": "CulturTap",
-        }
-
-        // console.log('base64', data);
-        fetch(CLOUDINARY_URL, {
-            body: JSON.stringify(data),
-            headers: {
-                'content-type': 'application/json'
-            },
-            method: 'POST',
-        }).then(async r => {
-            let data = await r.json()
-
-            // setPhoto(data.url);
-            const imgUri = data.secure_url;
-            if (imgUri) {
-
-                setImageUri(imgUri);
-                // sendAttachment;
-            }
-            console.log('dataImg', data.secure_url);
-            // return data.secure_url;
-        }).catch(err => console.log(err));
-
-    };
-
-    // const pickImage = async () => {
-    //     console.log("object", "hii");
-    //     const result = await ImagePicker.launchImageLibraryAsync({
-    //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //         allowsEditing: true,
-    //         aspect: [4, 3],
-    //         base64: true,
-    //         quality: 1,
-    //     });
-
-    //     console.log('pickImage', "result");
-    //     if (!result.canceled) {
-    //         // setImage(result.assets[0].uri);
-    //         // console.log(object)
-    //         await getImageUrl(result.assets[0]);
-
-    //     }
-    // };
 
     const pickDocument = async () => {
         const MAX_FILE_SIZE_MB = 2; // Maximum file size in MB
@@ -110,6 +59,91 @@ const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setM
 
     }
 
+    const [hasCameraPermission, setHasCameraPermission] = useState(null);
+
+  const [camera, setCamera] = useState(null);
+
+  const getCameraPermission= async()=>{
+    const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(status === "granted");
+    
+  }
+  useEffect(() => {
+    getCameraPermission();
+      
+  }, []);
+
+  
+
+  const takePicture = async () => {
+    const options = {
+      mediaType: "photo",
+      saveToPhotos: true,
+    };
+
+    launchCamera(options, async (response) => {
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+       
+      } else if (response.error) {
+        console.log("ImagePicker Error: ", response.error);
+      
+      } else {
+        try {
+          const newImageUri = response.assets[0].uri;
+          const compressedImage = await manipulateAsync(
+            newImageUri,
+            [{ resize: { width: 600, height: 800 } }],
+            { compress: 0.5, format: "jpeg", base64: true }
+          );
+          // await getImageUrl(compressedImage);
+          setImageUri(compressedImage.uri);
+          if(compressedImage)
+            navigation.navigate('camera', { imageUri:compressedImage.uri, user, messages, setMessages })
+        } catch (error) {
+          console.error("Error processing image: ", error);
+        }
+      }
+    });
+  };
+
+  const pickImage = async () => {
+    console.log("object", "hii");
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [3, 4],
+      base64: true,
+      quality: 1,
+    });
+
+    console.log("pickImage", "result");
+    
+    if (!result.canceled) {
+      // getImageUrl(result.assets[0]);
+      const newImageUri = result.assets[0].uri;
+      const compressedImage = await manipulateAsync(
+        newImageUri,
+        [{ resize: { width: 600, height: 800 } }],
+        { compress: 0.5, format: "jpeg", base64: true }
+      );
+      // await getImageUrl(compressedImage);
+      setImageUri(compressedImage.uri);
+      if(compressedImage)
+        navigation.navigate('camera', { imageUri:compressedImage.uri, user, messages, setMessages })
+    }
+  };
+
+ 
+  if (hasCameraPermission === null) {
+    return <View />;
+  }
+  if (hasCameraPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+//   navigation.navigate('camera', { data: { openCamera: true }, user, messages, setMessages })
+// navigation.navigate('camera', { data: { openCamera: false }, user, messages, setMessages })
 
     return (
         <SafeAreaView style={styles.attachments} className="flex flex-col  absolute top-0 bottom-0 left-0 right-0  z-50 h-screen" >
@@ -126,13 +160,13 @@ const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setM
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => { setAttachmentScreen(false); navigation.navigate('camera', { data: { openCamera: true }, user, messages, setMessages }) }}>
+                    <TouchableOpacity onPress={() => {takePicture(); setAttachmentScreen(false);  }}>
                         <View className="items-center">
-                            <Camera />
+                            <CameraIcon />
                             <Text style={{ fontFamily: "Poppins-Regular" }}>Camera</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { setAttachmentScreen(false); navigation.navigate('camera', { data: { openCamera: false }, user, messages, setMessages }) }}>
+                    <TouchableOpacity onPress={() => {pickImage(); setAttachmentScreen(false);  }}>
                         <View className="items-center">
                             <Gallery />
                             <Text style={{ fontFamily: "Poppins-Regular" }}>Gallery</Text>

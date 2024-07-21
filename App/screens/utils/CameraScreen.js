@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+
 import { Camera } from "expo-camera";
 import {
   SafeAreaView,
@@ -21,7 +21,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import Send from "../../assets/SendMessage.svg";
 import axios from "axios";
-import { manipulateAsync } from "expo-image-manipulator";
+
 import { AntDesign, Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import { sendCustomNotificationAttachment } from "../../notification/notificationMessages";
@@ -34,17 +34,15 @@ import axiosInstance from "./axiosInstance";
 // import { setMessages } from '../../redux/reducers/requestDataSlice';
 
 const CameraScreen = () => {
-  const [imageUri, setImageUri] = useState("");
+  // const [imageUri, setImageUri] = useState("");
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const route = useRoute();
-  const openCamera = route.params.data.openCamera;
 
   const [camScreen, setCamScreen] = useState(true);
   const dispatch = useDispatch();
-  const { messages, setMessages } = route.params;
+  const { imageUri,messages, setMessages } = route.params;
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
-  console.log("store", openCamera);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -146,145 +144,8 @@ const CameraScreen = () => {
       });
   };
 
-  // const getImageUrl = async (image) => {
-  //   setLoading(true);
-  //   setCamScreen(false);
-  //   let CLOUDINARY_URL =
-  //     "https://api.cloudinary.com/v1_1/kumarvivek/image/upload";
-
-  //   let base64Img = `data:image/jpg;base64,${image.base64}`;
-
-  //   let data = {
-  //     file: base64Img,
-  //     upload_preset: "CulturTap",
-  //   };
-
-  //   // console.log('base64', data);
-  //   fetch(CLOUDINARY_URL, {
-  //     body: JSON.stringify(data),
-  //     headers: {
-  //       "content-type": "application/json",
-  //     },
-  //     method: "POST",
-  //   })
-  //     .then(async (r) => {
-  //       let data = await r.json();
-
-  //       // setPhoto(data.url);
-  //       const imgUri = data.secure_url;
-  //       if (imgUri) {
-  //         setImageUri(imgUri);
-  //         setLoading(false);
-  //       }
-  //       console.log("dataImg", data.secure_url);
-  //       // return data.secure_url;
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       setLoading(false);
-  //     });
-  // };
-
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-
-  const [camera, setCamera] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(status === "granted");
-    })();
-  }, [camScreen]);
-
-  // const takePicture = async () => {
-  //     if (camera) {
-  //         const photo = await camera.takePictureAsync({
-  //             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //             allowsEditing: true,
-  //             aspect: [4, 3],
-  //             base64: true,
-  //             quality: 0.5,
-  //         });
-
-  //         console.log('photo click ph', "photo");
-  //         const compressedImage = await manipulateAsync(
-  //             photo.uri,
-  //             [{ resize: { width: 800, height: 800 } }],
-  //             { compress: 0.5, format: "jpeg", base64: true }
-  //           );
-
-  //         await getImageUrl(compressedImage);
-
-  //     }
-  // };
-
-  const takePicture = async () => {
-    const options = {
-      mediaType: "photo",
-      saveToPhotos: true,
-    };
-
-    launchCamera(options, async (response) => {
-      if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.error) {
-        console.log("ImagePicker Error: ", response.error);
-      } else {
-        try {
-          const newImageUri = response.assets[0].uri;
-          const compressedImage = await manipulateAsync(
-            newImageUri,
-            [{ resize: { width: 600, height: 800 } }],
-            { compress: 0.5, format: "jpeg", base64: true }
-          );
-          // await getImageUrl(compressedImage);
-          setImageUri(compressedImage.uri);
-        } catch (error) {
-          console.error("Error processing image: ", error);
-        }
-      }
-    });
-  };
-
-  const pickImage = async () => {
-    console.log("object", "hii");
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 4],
-      base64: true,
-      quality: 1,
-    });
-
-    console.log("pickImage", "result");
-    if (!result.canceled) {
-      // getImageUrl(result.assets[0]);
-      const newImageUri = result.assets[0].uri;
-      const compressedImage = await manipulateAsync(
-        newImageUri,
-        [{ resize: { width: 600, height: 800 } }],
-        { compress: 0.5, format: "jpeg", base64: true }
-      );
-      // await getImageUrl(compressedImage);
-      setImageUri(compressedImage.uri);
-    }
-  };
-
-  useEffect(() => {
-    console.log("hello opening camera", openCamera);
-    if (openCamera === false) {
-      pickImage();
-    } else {
-      takePicture();
-    }
-  }, [openCamera]);
-
-  if (hasCameraPermission === null) {
-    return <View />;
-  }
-  if (hasCameraPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+ 
+  
 
   return (
     <View style={{ flex: 1 }}>
