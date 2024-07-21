@@ -30,7 +30,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   setPanCard,
   setUserDetails,
-  setPanScreenImage
+  setPanScreenImage,
+  setAccessToken,
+  setRefreshToken
 } from "../../redux/reducers/storeDataSlice";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,6 +42,7 @@ import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImgOrange.svg"
 import RightArrow from "../../assets/arrow-right.svg";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -110,12 +113,7 @@ const PanCardScreen = () => {
       // Create user data object
 
       // Send user data to the server
-      const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
+      
       const response = await axios.post(
         `${baseUrl}/retailer/`,
         {
@@ -126,22 +124,34 @@ const PanCardScreen = () => {
           homeDelivery: storeService,
           panCard: panCard,
 
-        },config
+        }
       );
-      // console.log("res", response);
+      console.log("res of creating new retailer", response.data);
 
       // Check if user creation was successful
 
       if (response.status === 201) {
         console.log("User created:", response.data);
+       
+        dispatch(setAccessToken(response.data.accessToken));
+        dispatch(setRefreshToken(response.data.refreshToken));
+
+       
+        await AsyncStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+        await AsyncStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
         // dispatch(setUserDetails(response.data));
-        
-        const res = await axios.patch(
+        const configg = {
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${response.data.accessToken}`,
+          }
+         }
+        const res = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
-            _id: response?.data?._id,
+            _id: response?.data?.retailer?._id,
             uniqueToken: uniqueToken,
-          },config
+          },configg
         );
         dispatch(setUserDetails(res.data));
         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
@@ -150,6 +160,7 @@ const PanCardScreen = () => {
 
         // Navigate to the next screen
         navigation.navigate("completeProfile");
+        setLoading(false);
       } else {
         // Handle error if user creation failed
         console.error("Error creating user:");
@@ -213,12 +224,14 @@ const PanCardScreen = () => {
         type: 'image/jpeg',
         name: `photo-${Date.now()}.jpg`
       })
-
-      await axios.post(`${baseUrl}/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      const config = {
+        headers:{
+          'Content-Type':'multipart/form-data',
+          'Authorization':`Bearer ${accessToken}`,
+        }
+       }
+      console.log('config', config)
+      await axios.post(`${baseUrl}/upload`, formData, config)
         .then(res => {
           console.log('imageUrl updated from server', res.data[0]);
           const imgUri = res.data[0];

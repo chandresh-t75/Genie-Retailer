@@ -31,7 +31,7 @@ import {
   Ionicons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setImages } from "../../redux/reducers/storeDataSlice";
 import ModalCancel from "../../components/ModalCancel";
 import { manipulateAsync } from "expo-image-manipulator";
@@ -157,7 +157,7 @@ const AddImageScreen = () => {
       await axios.post(`${baseUrl}/upload`, formData,config)
         .then(res => {
           console.log('imageUrl updated from server', res.data[0]);
-          const imgUri = res.data[0];
+          const imgUri = res.data[0]; 
           if (imgUri) {
             console.log("Image Updated Successfully");
             setImagesLocal((prevImages) => [...prevImages, imgUri]);

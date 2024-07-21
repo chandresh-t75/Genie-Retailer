@@ -147,7 +147,11 @@ const UserNameEntryScreen = () => {
 
 
         </KeyboardAvoidingView>
-        <TouchableOpacity
+      
+
+
+      </ScrollView>
+      <TouchableOpacity
           disabled={!storeName || !storeOwnerName}
           onPress={storeDetails}
           style={{
@@ -171,11 +175,7 @@ const UserNameEntryScreen = () => {
           >
             Next
           </Text>
-        </TouchableOpacity>
-
-
-      </ScrollView>
-
+        </TouchableOpacity> 
 
       {modalVisible && (
         <>

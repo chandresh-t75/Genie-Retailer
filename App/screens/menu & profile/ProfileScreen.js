@@ -27,6 +27,7 @@ import DelImg from "../../assets/delImgOrange.svg";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
 import BackArrow from "../../assets/BackArrow.svg";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -91,7 +92,7 @@ const ProfileScreen = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.patch(
+      const response = await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: user?._id,
@@ -194,7 +195,7 @@ const ProfileScreen = () => {
               'Authorization':`Bearer ${accessToken}`,
             }
            }
-          const response = await axios.patch(
+          const response = await axiosInstance.patch(
             `${baseUrl}/retailer/editretailer`,
             {
               _id: user?._id,
@@ -229,7 +230,7 @@ const ProfileScreen = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      await axios
+      await axiosInstance
         .patch(`${baseUrl}/retailer/editretailer`, {
           _id: user?._id,
           storeImages: updatedUser.storeImages,

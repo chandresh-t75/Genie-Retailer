@@ -38,6 +38,7 @@ import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImg.svg"
 import RightArrow from "../../assets/arrow-right.svg";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -80,7 +81,7 @@ const  GSTDocumentVerify = () => {
             'Authorization':`Bearer ${accessToken}`,
           }
          }
-        await axios.patch(
+        await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
             _id:user?._id,

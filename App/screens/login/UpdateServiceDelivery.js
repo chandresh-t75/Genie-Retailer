@@ -24,6 +24,7 @@ import {
 import axios from "axios";
 import { baseUrl } from "../utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axiosInstance from "../utils/axiosInstance";
   
   const UpdateServiceDelivery = () => {
     const navigation = useNavigation();
@@ -59,7 +60,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
               'Authorization':`Bearer ${accessToken}`,
             }
            }
-          const response = await axios.patch(
+          const response = await axiosInstance.patch(
             `${baseUrl}/retailer/editretailer`,
             {
               _id: user?._id,

@@ -27,6 +27,7 @@ import {
 import { setUserDetails } from "../redux/reducers/storeDataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../screens/utils/constants";
+import axiosInstance from "../screens/utils/axiosInstance";
 
 const RequestAcceptModal = ({
   user,
@@ -77,7 +78,7 @@ const RequestAcceptModal = ({
        }
       if (requestInfo?.requestType === "new") {
         try {
-          await axios.patch(
+          await axiosInstance.patch(
             `${baseUrl}/chat/product-available`,
             {
               id: requestInfo?._id,
@@ -104,7 +105,7 @@ const RequestAcceptModal = ({
             setAcceptLocal(true);
             setModalVisible(false);
             setLoading(false);
-            const token = await axios.get(
+            const token = await axiosInstance.get(
               `${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,config
             );
             console.log("notify token: " + token.data);
@@ -122,7 +123,7 @@ const RequestAcceptModal = ({
               };
               NotificationRequestAccepted(notification);
             }
-                console.log("after accepting request",requestInfo);
+                // console.log("after accepting request",requestInfo);
             
           })
         } catch (error) {
@@ -132,7 +133,7 @@ const RequestAcceptModal = ({
         }
       } else {
         try {
-          const accept = await axios.patch(
+          const accept = await axiosInstance.patch(
             `${baseUrl}/chat/accept-bid`,
             {
               messageId: lastMessage?._id,
@@ -158,7 +159,7 @@ const RequestAcceptModal = ({
               setAcceptLocal(true);
               setMessages(updatedMessages);
               setLoading(false);
-              const token = await axios.get(
+              const token = await axiosInstance.get(
                 `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
               );
               if (token.data.length > 0) {
@@ -222,7 +223,7 @@ const RequestAcceptModal = ({
       },
     
      }
-    await axios.patch(
+    await axiosInstance.patch(
       `${baseUrl}/retailer/editretailer`,
       {
         _id: userDetails?._id,

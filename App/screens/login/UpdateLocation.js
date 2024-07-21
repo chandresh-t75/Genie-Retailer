@@ -29,6 +29,7 @@ import axios from "axios";
 import BackArrow from "../../assets/arrow-left.svg"
 import ModalUpdateLocationConfirm from "../../components/ModalUpdateLocationConfirm";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -171,7 +172,7 @@ const UpdateLocation = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.patch(
+      const response = await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: user?._id,

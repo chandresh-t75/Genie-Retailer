@@ -39,6 +39,7 @@ import RightArrow from "../assets/RightArrowGold.svg";
 import Time from "../assets/TimeRed.svg";
 import RemainingCustomerModal from "./RemainingCustomerModal";
 import { baseUrl } from "../screens/utils/constants";
+import axiosInstance from "../screens/utils/axiosInstance";
 
 const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const navigation = useNavigation();
@@ -144,7 +145,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${baseUrl}/chat/retailer-new-spades?id=${userData?._id}`,config
       );
       if (response.data) {
@@ -170,7 +171,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const ongoingresponse = await axios.get(
+      const ongoingresponse = await axiosInstance.get(
         `${baseUrl}/chat/retailer-ongoing-spades?id=${userData?._id}`,config
       );
       if (ongoingresponse.data) {
@@ -194,7 +195,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const history = await axios.get(
+      const history = await axiosInstance.get(
         `${baseUrl}/retailer/history?id=${userData?._id}`,config
       );
       if (history.data) {

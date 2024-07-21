@@ -20,9 +20,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Profile from "../assets/ProfileIcon.svg"
 import GinieIcon from "../assets/GinieBusinessIcon.svg"
 import History from "../assets/HistoryIcon.svg"
-import { setUserDetails } from "../redux/reducers/storeDataSlice";
+import { setAccessToken, setUserDetails } from "../redux/reducers/storeDataSlice";
 import axios from "axios";
 import { baseUrl } from "../screens/utils/constants";
+import axiosInstance from "../screens/utils/axiosInstance";
 
 const CompleteProfile = () => {
   const navigation = useNavigation();
@@ -31,6 +32,7 @@ const CompleteProfile = () => {
   //   (state) => state.storeData.serviceProvider
   // );
 const user= useSelector(state => state.storeData.userDetails)
+console.log(user)
 const dispatch=useDispatch();
 const [refreshing,setRefreshing]=useState(false);
 const isFocused = useIsFocused();
@@ -39,8 +41,8 @@ const isFocused = useIsFocused();
 const navigationState = useNavigationState(state => state);
 const isCompleteProfileScreen = navigationState.routes[navigationState.index].name === 'completeProfile';
 
-  console.log("services", user.serviceProvider,isCompleteProfileScreen);
-  console.log("profile", user.profileCompleted);
+  console.log("services", user?.serviceProvider,isCompleteProfileScreen);
+  console.log("profile", user?.profileCompleted);
 
 
 
@@ -99,26 +101,33 @@ const fetchUserData = async () => {
 
     if (response.status === 200) {
       const data = response.data.retailer;
-
+      dispatch(setAccessToken(response.data.accessToken));
+      await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
       dispatch(setUserDetails(data));
      
 
-      if (data.storeApproved) {
+      if (data?.storeApproved) {
         console.log('Store approved at profile Screen');
         // setVerified(true);
         navigation.navigate("home", { data: "" });
       } 
      
 
-      if ((data.lattitude && data.serviceProvider === "true") || (data.lattitude && data.storeImages?.length > 0)) {
+      if ((data?.lattitude && data?.serviceProvider === "true") || (data?.lattitude && data.storeImages?.length > 0)) {
         // setCompleteProfile(true);
         console.log("profile updated successfully")
-        const res = await axios.patch(
+        const config = {
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${response.data.accessToken}`,
+          }
+         }
+        const res = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
             _id:user?._id,
             profileCompleted:true
-          }
+          },config
         );
         console.log("profile updated successfully",res.data);
         dispatch(setUserDetails(res.data));
@@ -185,7 +194,7 @@ useEffect(()=>{
                     
                 </View>
     <View className="gap-[17px] mb-[20px] bg-white">
-      {!user.profileCompleted ? (
+      {!user?.profileCompleted ? (
         <Text className="text-[14px] text-center text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
           Please complete your store profile {"\n"} before starting
         </Text>
@@ -199,7 +208,7 @@ useEffect(()=>{
         </View>
       )}
 
-      {user.serviceProvider !== "true" && (
+      {user?.serviceProvider !== "true" && (
         <View className="flex items-center gap-[10px]">
           <TouchableOpacity
             disabled={user?.serviceProvider === "true"}
@@ -341,7 +350,7 @@ useEffect(()=>{
       }
         
       </View>
-      {user.profileCompleted && <HomeScreenUnverified />}
+      {user?.profileCompleted && <HomeScreenUnverified />}
     </View>
     </View>
             </ScrollView>

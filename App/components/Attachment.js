@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 // import { socket } from '../../utils/scoket.io/socket';
 
-const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setMessages }) => {
+const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setMessages,setErrorModal}) => {
     const requestInfo = useSelector(state => state.requestData.requestInfo);
 
     const navigation = useNavigation();
@@ -90,9 +90,12 @@ const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setM
         if (!result.canceled) {
             // const fileInfo = await RNFS.stat(result.uri.replace('file://', ''));
 
+            
             const fileSizeMB = parseFloat(result.assets[0].size) / (1e6); // Convert bytes to MB
             console.log(fileSizeMB);
             if (fileSizeMB > MAX_FILE_SIZE_MB) {
+                setErrorModal(true);
+                setAttachmentScreen(false);
                 console.error(
                     'File Size Limit Exceeded',
                     `Please select a file smaller than ${MAX_FILE_SIZE_MB}MB`

@@ -149,7 +149,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
                               </View>
                             </TouchableOpacity>
                           )}
-                          {userData.panCard?.length > 0 &&
+                          {userData?.panCard?.length > 0 &&
                             !userData?.documentVerified && (
                               <Text
                                 className="text-[14px] text-[#E76063]"
@@ -176,7 +176,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
                     <Text className="text-[14px] mb-[10px] px-[32px] text-center" style={{ fontFamily: "Poppins-Bold" }}>
                     You get a notification first, like this.
                     </Text>
-                    <View className="flex flex-row mb-[20px] justify-center items-center mx-[20px] border-[.5px] border-black border-opacity-10" style={{
+                    <View className="flex flex-row mb-[20px] justify-center items-center   " style={{
                   backgroundColor: '#fff', // Ensure the background is white
                   // margin: 10, // Add some margin if necessary for better shadow visibility
                   shadowColor: '#bdbdbd',
@@ -187,7 +187,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
                   borderRadius:8,
 
                 }}>
-                     <Card width={350}  className=""/>
+                     <Card width={340}  className=""/>
                     </View>
                  </View>
                  <View className="flex items-center gap-2 mb-[10px] ">

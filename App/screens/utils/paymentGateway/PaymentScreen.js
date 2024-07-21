@@ -25,6 +25,7 @@ import { setUserDetails } from "../../../redux/reducers/storeDataSlice";
 import PaymentSuccessFulModal from "../../../components/PaymentSuccessFulModal";
 import { getFormattedDate } from "../lib";
 import { baseUrl } from "../constants";
+import axiosInstance from "../axiosInstance";
 
 const PaymentScreen = () => {
     const navigation = useNavigation();
@@ -57,7 +58,7 @@ const PaymentScreen = () => {
         setLoading(true);
         try {
 
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 "https://api.razorpay.com/v1/orders",
                 {
                     amount: 100,  // INR amount in paisa 1Rs = 100 paisa
@@ -127,7 +128,7 @@ const PaymentScreen = () => {
               'Authorization':`Bearer ${accessToken}`,
             }
            }
-        await axios.patch(
+        await axiosInstance.patch(
             `${baseUrl}/retailer/editretailer`,
             {
                 _id: userDetails?._id,
@@ -162,7 +163,7 @@ const PaymentScreen = () => {
                   'Authorization':`Bearer ${accessToken}`,
                 }
                }
-            await axios
+            await axiosInstance
                 .patch(`${baseUrl}/user/edit-profile`, {
                     _id: userDetails._id,
                     updateData: { freeSpades: userDetails.freeSpades - 1, lastPaymentStatus: "paid" },
@@ -202,7 +203,7 @@ const PaymentScreen = () => {
             }
            }
         try {
-            await axios.get(`${baseUrl}/coupon/verify-coupon`,config)
+            await axiosInstance.get(`${baseUrl}/coupon/verify-coupon`,config)
                 .then(res => {
                     console.log('res', res.data);
                     if (res.data.message === "Coupon code is valid") {

@@ -149,16 +149,16 @@ const fetchUserData = async () => {
       dispatch(setUserDetails(userData));
       dispatch(setAccessToken(accessToken));
       // console.log('Fetched user data successfully at HomeScreen', userData);
-      const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        },
-        params: {
-          storeMobileNo: userData?.storeMobileNo
+    
+      const response = await axios.get(
+        `${baseUrl}/retailer/`,
+        {
+          params: {
+            storeMobileNo: userData?.storeMobileNo
+          }
+  
         }
-       }
-      const response = await axios.get(`${baseUrl}/retailer/`, config);
+      );
       // console.log("res at compltete profile", response.data.retailer);
       if (response.status === 200) {
         const data = response.data.retailer;

@@ -36,6 +36,8 @@ import Close from "../../assets/delImgOrange.svg";
 import BackArrow from "../../assets/BackArrow.svg";
 import * as Clipboard from "expo-clipboard";
 import RightArrow from "../../assets/arrow-right.svg";
+import DropDown from "../../assets/dropDown.svg";
+import DropDownUp from "../../assets/dropDownUp.svg";
 
 
 const BidPageImageUpload = () => {
@@ -49,6 +51,8 @@ const BidPageImageUpload = () => {
   const [cameraScreen, setCameraScreen] = useState(false);
   const [addMore, setAddMore] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [requestOpen,setRequestOpen] = useState(false);
+
 
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
@@ -64,6 +68,8 @@ const BidPageImageUpload = () => {
   const [scaleAnimation] = useState(new Animated.Value(0));
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   const user = useSelector((state) => state.storeData.userDetails);
+  const onlineUser=useSelector(state=>state.requestData.onlineUser)
+
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
@@ -213,8 +219,8 @@ const BidPageImageUpload = () => {
     <>
       {!cameraScreen && (
         <View style={{ flex: 1, backgroundColor: "#ffe7c8" }}>
-          <View style={{ flex: 1 }}>
-            <View className="relative  bg-[#ffe7c8]">
+          <ScrollView style={{ flex: 1}} contentContainerStyle={{flexGrow:1}}>
+            <View className="relative  bg-[#ffe7c8] ">
               <View className=" bg-[#ffe7c8] w-full flex flex-row px-[32px] gap-[5px] items-center pt-[20px] pb-[20px]">
                 <TouchableOpacity
                   onPress={() => {
@@ -249,12 +255,22 @@ const BidPageImageUpload = () => {
                         )}
                       </Text>
 
-                      <Text
-                        className="text-[12px] text-[#79B649]"
-                        style={{ fontFamily: "Poppins-Regular" }}
-                      >
-                        Online
-                      </Text>
+                      {onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#79B649]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Online
+                    </Text>
+                  )}
+                  {!onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#7c7c7c]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Offline
+                    </Text>
+                  )}
                     </View>
                   </View>
                 </View>
@@ -312,16 +328,50 @@ const BidPageImageUpload = () => {
                     )}
                   </View>
                 </View>
+                <View className=" gap-2 mt-[10px]">
+              {
+                requestOpen && 
                 <Text
-                  style={{ fontFamily: "Poppins-Regular" }}
-                  className="text-[#2e2c43] mt-[10px]"
-                >
-                  {requestInfo?.requestId?.requestDescription
-                    ?.split(" ")
-                    .slice(0, 12)
-                    .join(" ")}
-                  ....
-                </Text>
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription}
+                
+              </Text>
+              }
+              {
+               !requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription
+                  ?.split(" ")
+                  .slice(0, 12)
+                  .join(" ")}...
+                
+              </Text>
+              }
+          
+            {
+              !requestOpen && requestInfo?.requestId?.requestDescription?.length>50 &&  <TouchableOpacity onPress={()=>{setRequestOpen(true)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+              <Text style={{ fontFamily: "Poppins-SemiBold" }} className="text-[#fc8b00]">View More</Text>
+                  <DropDown width={14} height={16} />
+                 
+            </TouchableOpacity>
+            }
+            {
+              requestOpen &&  requestInfo?.requestId?.requestDescription?.length>50 &&
+              <TouchableOpacity onPress={()=>{setRequestOpen(false)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+                <Text style={{ fontFamily: "Poppins-SemiBold" }}
+                className="text-[#fc8b00]">View Less</Text>
+              <DropDownUp width={14} height={16} />
+              </TouchableOpacity>
+            }
+          
+            
+            </View>
+           
                 {/* {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}
@@ -357,7 +407,7 @@ const BidPageImageUpload = () => {
                       }}
                     >
                       <View className="flex-row justify-center">
-                        <ClickImage />
+                        <ClickImage width={260} height={260} />
                       </View>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -477,7 +527,7 @@ const BidPageImageUpload = () => {
             <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
             </View>
           </TouchableOpacity>
-          <View className="bg-white absolute bottom-0 left-0 right-0 ">
+          <View className="bg-white absolute bottom-0 left-0 right-0">
 
             <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
               <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
@@ -496,7 +546,7 @@ const BidPageImageUpload = () => {
         </View>
               )}
             </View>
-          </View>
+          </ScrollView>
 
           <ModalCancel
             modalVisible={modalVisible}

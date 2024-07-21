@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import BackArrow from "../../assets/BackArrow.svg";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -63,7 +64,7 @@ const accessToken=useSelector(state=>state.storeData.accessToken)
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.patch(
+      const response = await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: userId,
@@ -73,7 +74,7 @@ const accessToken=useSelector(state=>state.storeData.accessToken)
         },config
       );
 
-      // console.log('Image updated successfully:', response.data);
+      console.log('Image updated successfully:', response.data);
 
       // Update user data in AsyncStorage
       dispatch(setUserDetails(response.data))

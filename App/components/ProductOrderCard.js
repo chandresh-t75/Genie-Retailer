@@ -23,7 +23,7 @@ const ProductOrderCard = ({product}) => {
     <View className="max-w-[340px] flex-row relative items-center justify-between bg-white gap-[15px]  rounded-3xl shadow-2xl  px-[20px] h-max py-[20px]" >
                       {
                         prod?.latestMessage?.sender?.type==="UserRequest" && prod?.unreadCount>0 &&
-                        <View className="w-[30px] h-[30px] flex justify-center items-center  bg-[#E76063] rounded-full absolute top-0 right-0" style={{backgroundColor:"red"}}>
+                        <View className="w-[22px] h-[22px] flex justify-center items-center  bg-[#E76063] rounded-full absolute top-0 right-0" style={{backgroundColor:"#E76063 "}}>
                            <Text className="text-white text-center" style={{ fontFamily: "Poppins-Regular" }} >{prod?.unreadCount}</Text>
                          </View>
                       }

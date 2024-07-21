@@ -30,6 +30,7 @@ import { launchCamera } from "react-native-image-picker";
 import DelImg from "../../assets/delImgOrange.svg";
 import RightArrow from "../../assets/arrow-right.svg";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 
 const ProfileImageUpdate = () => {
@@ -76,7 +77,7 @@ const ProfileImageUpdate = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.patch(
+      const response = await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: userId,

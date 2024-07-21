@@ -43,16 +43,13 @@ const SplashScreen = () => {
         const userData = JSON.parse(await AsyncStorage.getItem("userData"));
         const accessToken = JSON.parse(await AsyncStorage.getItem("accessToken"));
             const refreshToken= JSON.parse(await AsyncStorage.getItem("refreshToken"));
-            console.log("splash",accessToken,refreshToken)
+            // console.log("splash",accessToken,refreshToken)
             // await AsyncStorage.removeItem('userData')
             // await AsyncStorage.removeItem('accessToken');
             // await AsyncStorage.removeItem('refreshToken');
         // const authData = JSON.parse(\await AsyncStorage.getItem("authData"));
         setTimeout(() => {
           if (userData!==null) {
-            
-
-            
             dispatch(setUserDetails(userData))
             dispatch(setAccessToken(accessToken))
             dispatch(setRefreshToken(refreshToken))

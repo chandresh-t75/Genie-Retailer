@@ -33,6 +33,9 @@ import BackArrow from "../../assets/BackArrow.svg";
 import { setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { setBidImages, setProductWarranty } from "../../redux/reducers/bidSlice";
 import { baseUrl } from "../utils/constants";
+import DropDown from "../../assets/dropDown.svg";
+import DropDownUp from "../../assets/dropDownUp.svg";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -43,6 +46,9 @@ const BidPreviewPage = () => {
   const [images, setImagesLocal] = useState();
   const [loading,setLoading] =useState(false)
   const [copied, setCopied] = useState(false);
+  const [requestOpen,setRequestOpen] = useState(false);
+
+
 
   // const [offeredPrice,setOfferedPrice]=useState("");
   // const [user,setUser]=useState();
@@ -59,6 +65,8 @@ const BidPreviewPage = () => {
   );
   const user=useSelector(state=>state.storeData.userDetails);
   const accessToken = useSelector((state) => state.storeData.accessToken)
+  const onlineUser=useSelector(state=>state.requestData.onlineUser)
+
 
 
   // const messages = useSelector(state => state.requestData.messages);
@@ -111,7 +119,7 @@ const BidPreviewPage = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${baseUrl}/chat/send-message`,
         formData, config
       );
@@ -154,7 +162,7 @@ const BidPreviewPage = () => {
             'Authorization':`Bearer ${accessToken}`,
           }
          }
-        const token=await axios.get(`${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config);
+        const token=await axiosInstance.get(`${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config);
         if(token.data.length>0){
         const notification = {
           token:token.data,
@@ -235,9 +243,22 @@ const BidPreviewPage = () => {
                       </Text>
                   }
                 </Text>
-                  <Text className="text-[12px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>
-                  Online
-                </Text>
+                {onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#79B649]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Online
+                    </Text>
+                  )}
+                  {!onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#7c7c7c]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Offline
+                    </Text>
+                  )}
                 </View>
               </View>
             </View>
@@ -275,13 +296,50 @@ const BidPreviewPage = () => {
               
              
             </View>
-            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43] mt-[10px]">
-              {requestInfo?.requestId?.requestDescription
-                ?.split(" ")
-                .slice(0, 12)
-                .join(" ")}
-              ....
-            </Text>
+            <View className=" gap-2 mt-[10px]">
+              {
+                requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription}
+                
+              </Text>
+              }
+              {
+               !requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription
+                  ?.split(" ")
+                  .slice(0, 12)
+                  .join(" ")}...
+                
+              </Text>
+              }
+          
+            {
+              !requestOpen && requestInfo?.requestId?.requestDescription?.length>50 && <TouchableOpacity onPress={()=>{setRequestOpen(true)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+              <Text style={{ fontFamily: "Poppins-SemiBold" }} className="text-[#fc8b00]">View More</Text>
+                  <DropDown width={14} height={16} />
+                 
+            </TouchableOpacity>
+            }
+            {
+              requestOpen &&  requestInfo?.requestId?.requestDescription?.length>50 && 
+              <TouchableOpacity onPress={()=>{setRequestOpen(false)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+                <Text style={{ fontFamily: "Poppins-SemiBold" }}
+                className="text-[#fc8b00]">View Less</Text>
+              <DropDownUp width={14} height={16} />
+              </TouchableOpacity>
+            }
+          
+            
+            </View>
+           
             {/* {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}

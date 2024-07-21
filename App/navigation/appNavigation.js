@@ -17,7 +17,7 @@ import MenuScreen from '../screens/menu & profile/MenuScreen';
 import ModalScreen from '../components/ModalScreen';
 import CameraScreen from '../screens/utils/CameraScreen';
 import AddImageScreen from '../screens/login/AddImageScreen';
-import ImagePreview from '../screens/login/ImagePreview';
+import ImagePreview from '../screens/login/ImagePreview'; 
 import RequestPage from '../screens/requests/RequestPage';
 import BidPageInput from '../screens/requests/BidPageInput';
 import BidPageImageUpload from '../screens/requests/BidPageImageUpload';

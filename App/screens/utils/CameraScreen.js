@@ -28,6 +28,7 @@ import { sendCustomNotificationAttachment } from "../../notification/notificatio
 import { setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { socket } from "../utils/socket.io/socket";
 import { baseUrl } from "./constants";
+import axiosInstance from "./axiosInstance";
 
 
 // import { setMessages } from '../../redux/reducers/requestDataSlice';
@@ -79,7 +80,7 @@ const CameraScreen = () => {
         'Authorization':`Bearer ${accessToken}`,
       }
      }
-    await axios
+    await axiosInstance
       .post(`${baseUrl}/chat/send-message`, formData,config)
       .then(async (res) => {
         // console.log(res.data);
@@ -118,7 +119,7 @@ const CameraScreen = () => {
             'Authorization':`Bearer ${accessToken}`,
           }
          }
-        const token = await axios.get(
+        const token = await axiosInstance.get(
           `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
         );
         if (token.data.length > 0) {

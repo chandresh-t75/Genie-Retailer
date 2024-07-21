@@ -10,6 +10,7 @@ const initialState = {
   retailerHistory:[],
   currentRequest: {},
   isHome: false,
+  onlineUser: false,
 };
 
 const requestDataSlice = createSlice({
@@ -40,6 +41,9 @@ const requestDataSlice = createSlice({
       setCurrentRequest: (state, action) => {
         state.currentRequest = action.payload;
       },
+      setOnlineUser: (state, action) => {
+        state.onlineUser = action.payload;
+      },
       requestClear: (state) => {
         return initialState;
       }
@@ -48,5 +52,5 @@ const requestDataSlice = createSlice({
   },
 });
 
-export const { setNewRequests,setOngoingRequests,setMessages,setRequestInfo,setRetailerHistory,requestClear,setIsHome,setCurrentRequest} = requestDataSlice.actions;
+export const { setNewRequests,setOngoingRequests,setMessages,setRequestInfo,setRetailerHistory,requestClear,setIsHome,setCurrentRequest,setOnlineUser} = requestDataSlice.actions;
 export default requestDataSlice.reducer;

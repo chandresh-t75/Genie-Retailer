@@ -23,6 +23,7 @@ import { setStoreCategory, setUserDetails } from "../../redux/reducers/storeData
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 
 const searchData = [
@@ -91,7 +92,7 @@ const UpdateCategory = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-    await axios.patch(
+    await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: user._id,

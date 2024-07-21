@@ -24,6 +24,7 @@ import {
 import { bidClear } from "../redux/reducers/bidSlice";
 import { requestClear } from "../redux/reducers/requestDataSlice";
 import { baseUrl } from "../screens/utils/constants";
+import axiosInstance from "../screens/utils/axiosInstance";
 
 
 
@@ -46,7 +47,7 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
         'Authorization':`Bearer ${accessToken}`,
       }
      }
-      const res = await axios.patch(
+      const res = await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: user?._id,

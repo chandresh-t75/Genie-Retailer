@@ -29,6 +29,9 @@ import { sendCustomNotificationChat } from "../../notification/notificationMessa
 import BackArrow from "../../assets/BackArrow.svg";
 import * as Clipboard from 'expo-clipboard';
 import { baseUrl } from "../utils/constants";
+import DropDown from "../../assets/dropDown.svg";
+import DropDownUp from "../../assets/dropDownUp.svg";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -42,6 +45,9 @@ const BidQueryPage = () => {
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   const [loading,setLoading]=useState(false)
   const [copied, setCopied] = useState(false);
+  const [requestOpen,setRequestOpen] = useState(false);
+  const onlineUser=useSelector(state=>state.requestData.onlineUser)
+
 
   const ongoingRequests = useSelector(
     (state) => state.requestData.ongoingRequests || []
@@ -86,7 +92,7 @@ const BidQueryPage = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${baseUrl}/chat/send-message`,
         formData,config
       );
@@ -132,7 +138,7 @@ const BidQueryPage = () => {
             'Authorization':`Bearer ${accessToken}`,
           }
          }
-        const token=await axios.get(`${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,config);
+        const token=await axiosInstance.get(`${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,config);
         console.log("token",token.data);
         if(token.data.length > 0){
         const notification = {
@@ -220,9 +226,22 @@ const BidQueryPage = () => {
                       </Text>
                   }
                 </Text>
-                  <Text className="text-[12px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>
-                  Online
-                </Text>
+                {onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#79B649]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Online
+                    </Text>
+                  )}
+                  {!onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#7c7c7c]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Offline
+                    </Text>
+                  )}
                 </View>
               </View>
             </View>
@@ -260,13 +279,50 @@ const BidQueryPage = () => {
               
              
             </View>
-            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43] mt-[10px]">
-              {requestInfo?.requestId?.requestDescription
-                ?.split(" ")
-                .slice(0, 12)
-                .join(" ")}
-              ....
-            </Text>
+            <View className=" gap-2 mt-[10px]">
+              {
+                requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription}
+                
+              </Text>
+              }
+              {
+               !requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription
+                  ?.split(" ")
+                  .slice(0, 12)
+                  .join(" ")}...
+                
+              </Text>
+              }
+          
+            {
+              !requestOpen &&  requestInfo?.requestId?.requestDescription?.length>50 && <TouchableOpacity onPress={()=>{setRequestOpen(true)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+              <Text style={{ fontFamily: "Poppins-SemiBold" }} className="text-[#fc8b00]">View More</Text>
+                  <DropDown width={14} height={16} />
+                 
+            </TouchableOpacity>
+            }
+            {
+              requestOpen &&  requestInfo?.requestId?.requestDescription?.length>50 &&
+              <TouchableOpacity onPress={()=>{setRequestOpen(false)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+                <Text style={{ fontFamily: "Poppins-SemiBold" }}
+                className="text-[#fc8b00]">View Less</Text>
+              <DropDownUp width={14} height={16} />
+              </TouchableOpacity>
+            }
+          
+            
+            </View>
+           
             {/* {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}

@@ -24,6 +24,8 @@ import {
 import { TouchableOpacity } from "react-native";
 import BackArrow from "../../assets/BackArrow.svg";
 import * as Clipboard from 'expo-clipboard';
+import DropDown from "../../assets/dropDown.svg";
+import DropDownUp from "../../assets/dropDownUp.svg";
 
 
 
@@ -37,6 +39,10 @@ const BidOfferedPrice = () => {
   const [copied, setCopied] = useState(false);
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   const user=useSelector(state=>state.storeData.userDetails);
+  const [requestOpen,setRequestOpen] = useState(false);
+  const onlineUser=useSelector(state=>state.requestData.onlineUser)
+
+
 
 
   const handleOfferedPrice = (offeredPrice) => {
@@ -132,9 +138,22 @@ const BidOfferedPrice = () => {
                       </Text>
                   }
                 </Text>
-                  <Text className="text-[12px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>
-                  Online
-                </Text>
+                {onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#79B649]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Online
+                    </Text>
+                  )}
+                  {!onlineUser && (
+                    <Text
+                      className="text-[12px] text-[#7c7c7c]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Offline
+                    </Text>
+                  )}
                 </View>
               </View>
             </View>
@@ -172,13 +191,50 @@ const BidOfferedPrice = () => {
               
              
             </View>
-            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43] mt-[10px]">
-              {requestInfo?.requestId?.requestDescription
-                ?.split(" ")
-                .slice(0, 12)
-                .join(" ")}
-              ....
-            </Text>
+            <View className=" gap-2 mt-[10px]">
+              {
+                requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription}
+                
+              </Text>
+              }
+              {
+               !requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription
+                  ?.split(" ")
+                  .slice(0, 12)
+                  .join(" ")}...
+                
+              </Text>
+              }
+          
+            {
+              !requestOpen && requestInfo?.requestId?.requestDescription?.length>50 &&  <TouchableOpacity onPress={()=>{setRequestOpen(true)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+              <Text style={{ fontFamily: "Poppins-SemiBold" }} className="text-[#fc8b00]">View More</Text>
+                  <DropDown width={14} height={16} />
+                 
+            </TouchableOpacity>
+            }
+            {
+              requestOpen &&  requestInfo?.requestId?.requestDescription?.length>50 &&
+              <TouchableOpacity onPress={()=>{setRequestOpen(false)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+                <Text style={{ fontFamily: "Poppins-SemiBold" }}
+                className="text-[#fc8b00]">View Less</Text>
+              <DropDownUp width={14} height={16} />
+              </TouchableOpacity>
+            }
+          
+            
+            </View>
+           
             {/* {
               route.params?.data ? ( <Text>{req?.requestId?.requestDescription}</Text>):( <Text>{requestInfo?.requestId?.requestDescription}</Text>)
             } */}

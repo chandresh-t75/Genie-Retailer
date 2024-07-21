@@ -11,6 +11,8 @@ import {
   Image,
   ActivityIndicator,
   BackHandler,
+  Animated,
+  Modal,
 } from "react-native";
 import React, {
   useCallback,
@@ -50,6 +52,7 @@ import Attachment from "../../components/Attachment";
 import {
   setNewRequests,
   setOngoingRequests,
+  setOnlineUser,
   setRequestInfo,
   setRetailerHistory,
 } from "../../redux/reducers/requestDataSlice";
@@ -68,6 +71,10 @@ import SendDocument from "../../components/SendDocument";
 import UserDocumentMessage from "../../components/userDocumentMessage";
 import RetailerDocumentMessage from "../../components/RetailerDocumentMessage";
 import { baseUrl } from "../utils/constants";
+import DropDown from "../../assets/dropDown.svg";
+import DropDownUp from "../../assets/dropDownUp.svg";
+import ErrorModal from "../../components/ErrorModal";
+import axiosInstance from "../utils/axiosInstance";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -81,6 +88,8 @@ const RequestPage = () => {
   const isFocused = useIsFocused();
   const scrollViewRef = useRef(null);
   const { width } = Dimensions.get("window");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [scaleAnimation] = useState(new Animated.Value(0));
 
   // const [requestInfo, setRequestInfo] = useState();
   // const [user, setUser] = useState();
@@ -103,6 +112,7 @@ const RequestPage = () => {
   const [confirmPaymentModal, setConfirmPaymentModal] = useState(false);
   const [uploadGSTModal, setUploadGSTModal] = useState(false);
   const [type, setType] = useState("");
+  const [requestOpen,setRequestOpen] = useState(false);
 
   const [rating, setRating] = useState(1);
   // const { req } = route.params;
@@ -127,6 +137,8 @@ const RequestPage = () => {
 
   const [online, setOnline] = useState(false);
   const [viewHeight, setViewHeight] = useState(0);
+  const [errorModal, setErrorModal] = useState(false);
+
 
   // console.log("params", currentRequest);
 
@@ -154,7 +166,7 @@ const RequestPage = () => {
           id: currentRequest?.requestId,
         },
       };
-      await axios
+      await axiosInstance
         .get(`${baseUrl}/chat/get-particular-chat`, config)
         .then(async (resu) => {
           const result = resu?.data;
@@ -170,7 +182,7 @@ const RequestPage = () => {
             },
           };
 
-          await axios
+          await axiosInstance
             .get(`${baseUrl}/chat/get-spade-messages`, configg)
             .then(async (response) => {
               // console.log("fetching messages", response.data);
@@ -194,7 +206,7 @@ const RequestPage = () => {
                   },
                 };
 
-                const res = await axios.patch(
+                const res = await axiosInstance.patch(
                   `${baseUrl}/chat/mark-as-read`,
                   {
                     id: result?._id,
@@ -231,7 +243,7 @@ const RequestPage = () => {
                     Authorization: `Bearer ${accessToken}`,
                   },
                 };
-                await axios
+                await axiosInstance
                   .patch(
                     `${baseUrl}/chat/update-to-history`,
                     {
@@ -249,6 +261,7 @@ const RequestPage = () => {
                       ...result,
                       unreadCount: 0,
                       requestType: "completed",
+                 bidCompleted: true,
                       updatedAt: new Date().toISOString(),
                     };
                     dispatch(setRequestInfo(tmp));
@@ -269,7 +282,7 @@ const RequestPage = () => {
                     Authorization: `Bearer ${accessToken}`,
                   },
                 };
-                await axios
+                await axiosInstance
                   .patch(
                     `${baseUrl}/chat/update-to-history`,
                     {
@@ -287,6 +300,7 @@ const RequestPage = () => {
                       ...result,
                       unreadCount: 0,
                       requestType: "closedHistory",
+            bidCompleted: true,
                       updatedAt: new Date().toISOString(),
                     };
                     dispatch(setRequestInfo(tmp));
@@ -307,7 +321,7 @@ const RequestPage = () => {
                     Authorization: `Bearer ${accessToken}`,
                   },
                 };
-                await axios
+                await axiosInstance
                   .patch(
                     `${baseUrl}/chat/update-to-history`,
                     {
@@ -325,6 +339,7 @@ const RequestPage = () => {
                       ...result,
                       unreadCount: 0,
                       requestType: "notParticipated",
+            bidCompleted: true,
                       updatedAt: new Date().toISOString(),
                     };
                     dispatch(setRequestInfo(tmp));
@@ -397,11 +412,15 @@ const RequestPage = () => {
   useEffect(() => {
     const handleUserOnline = () => {
       setOnline(true);
+      dispatch(setOnlineUser(true));
+    
       console.log("user online");
     };
 
     const handleUserOffline = () => {
       setOnline(false);
+      dispatch(setOnlineUser(false));
+
       console.log("user offline");
     };
 
@@ -429,7 +448,7 @@ const RequestPage = () => {
             Authorization: `Bearer ${accessToken}`,
           },
         };
-        const response = await axios
+        const response = await axiosInstance
           .patch(
             `${baseUrl}/chat/reject-bid`,
             {
@@ -465,7 +484,7 @@ const RequestPage = () => {
             dispatch(setOngoingRequests(data));
             setisLoading(false);
 
-            const token = await axios.get(
+            const token = await axiosInstance.get(
               `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,
               config
             );
@@ -511,7 +530,7 @@ const RequestPage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       };
-      await axios
+      await axiosInstance
         .patch(
           `${baseUrl}/chat/update-to-history`,
           {
@@ -529,6 +548,7 @@ const RequestPage = () => {
           let tmp = {
             ...requestInfo,
             requestType: "completed",
+            bidCompleted: true,
             updatedAt: new Date().toISOString(),
             unreadCount: 0,
           };
@@ -552,7 +572,7 @@ const RequestPage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       };
-      await axios
+      await axiosInstance
         .patch(
           `${baseUrl}/chat/update-to-history`,
           {
@@ -568,11 +588,12 @@ const RequestPage = () => {
           );
 
           const filteredRequests = ongoingRequests.filter(
-            (request) => request._id !== requestInfo?._id
+            (request) => request?._id !== requestInfo?._id
           );
           let tmp = {
             ...requestInfo,
             requestType: "closedHistory",
+            bidCompleted: true,
             updatedAt: new Date().toISOString(),
             unreadCount: 0,
           };
@@ -595,7 +616,7 @@ const RequestPage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       };
-      await axios
+      await axiosInstance
         .patch(
           `${baseUrl}/chat/update-to-history`,
           {
@@ -613,6 +634,7 @@ const RequestPage = () => {
           let tmp = {
             ...requestInfo,
             requestType: "notParticipated",
+            bidCompleted: true,
             updatedAt: new Date().toISOString(),
             unreadCount: 0,
           };
@@ -627,13 +649,14 @@ const RequestPage = () => {
       console.log("error updating history new", error);
     }
   };
+
   useEffect(() => {
     const handleMessageReceived = async (newMessageReceived) => {
       console.log(
         "Message received from socket:",
         newMessageReceived,
         requestInfo?.requestType
-      );
+      );  
 
       if (
         requestInfo?.requestType === "win" &&
@@ -723,7 +746,7 @@ const RequestPage = () => {
       socket.off("message received", handleMessageReceived);
       console.log("Stopped listening for 'message received' events");
     };
-  }, []);
+  }, [requestInfo]);
 
   const handlePress = (star) => {
     setRating(star);
@@ -741,6 +764,24 @@ const RequestPage = () => {
     } catch (error) {
       console.error("Failed to copy text to clipboard", error);
     }
+  };
+
+
+  const handleImagePress = (image) => {
+    setSelectedImage(image);
+    Animated.timing(scaleAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleClose = () => {
+    Animated.timing(scaleAnimation, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setSelectedImage(null));
   };
 
   // useEffect(() => {
@@ -782,7 +823,7 @@ const RequestPage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       };
-      await axios
+      await axiosInstance
         .post(
           `${baseUrl}/rating/rating-feedback`,
           {
@@ -854,6 +895,7 @@ const RequestPage = () => {
             // requestInfo={requestInfo}
             messages={messages}
             setMessages={setMessages}
+            setErrorModal={setErrorModal}
           />
         </View>
       )}
@@ -993,16 +1035,50 @@ const RequestPage = () => {
                 )}
               </View>
             </View>
-            <Text
-              style={{ fontFamily: "Poppins-Regular" }}
-              className="text-[#2e2c43] mt-[10px]"
-            >
-              {requestInfo?.requestId?.requestDescription
-                ?.split(" ")
-                .slice(0, 12)
-                .join(" ")}
-              ....
-            </Text>
+            <View className=" gap-2 mt-[10px]">
+              {
+                requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription}
+                
+              </Text>
+              }
+              {
+               !requestOpen && 
+                <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2e2c43] flex items-center"
+              >
+                {requestInfo?.requestId?.requestDescription
+                  ?.split(" ")
+                  .slice(0, 12)
+                  .join(" ")}...
+                
+              </Text>
+              }
+          
+            {
+              !requestOpen && requestInfo?.requestId?.requestDescription?.length>50 &&  <TouchableOpacity onPress={()=>{setRequestOpen(true)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+              <Text style={{ fontFamily: "Poppins-SemiBold" }} className="text-[#fc8b00]">View More</Text>
+                  <DropDown width={14} height={16} />
+                 
+            </TouchableOpacity>
+            }
+            {
+              requestOpen &&  requestInfo?.requestId?.requestDescription?.length>50 &&
+              <TouchableOpacity onPress={()=>{setRequestOpen(false)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
+                <Text style={{ fontFamily: "Poppins-SemiBold" }}
+                className="text-[#fc8b00]">View Less</Text>
+              <DropDownUp width={14} height={16} />
+              </TouchableOpacity>
+            }
+          
+            
+            </View>
+           
            
           </View>
         </View>
@@ -1025,6 +1101,7 @@ const RequestPage = () => {
           )}
 
         {requestInfo?.requestType !== "closed" &&
+        requestInfo.bidCompleted !==true &&
           requestInfo?.requestType === "new" &&
           available === false && (
             <View
@@ -1348,7 +1425,8 @@ const RequestPage = () => {
         } `}
       >
         {requestInfo?.requestType !== "closed" &&
-        requestInfo.bidCompleted !==true &&
+        requestInfo.bidCompleted !==true && 
+        messages[messages.length - 1]?.bidType!=="update" &&
           requestInfo?.requestType === "new" &&
           available === false && (
             <View className="gap-[20px]  items-center bg-white pt-[20px] shadow-2xl ">
@@ -1370,31 +1448,54 @@ const RequestPage = () => {
                 {messages &&
                   messages[messages.length - 1]?.bidImages &&
                   messages[messages.length - 1]?.bidImages?.length > 0 && (
-                    <ScrollView
-                      horizontal
-                      contentContainerStyle={{
-                        paddingHorizontal: 10,
-                        marginTop: 10,
-                        flexDirection: "row",
-                        gap: 4,
-                      }}
-                      showsHorizontalScrollIndicator={false}
-                      style={{ maxHeight: 240 }}
-                    >
-                      {messages[messages.length - 1]?.bidImages.map(
-                        (image, index) => (
-                          <View key={index} className="rounded-3xl">
+                    <ScrollView horizontal  contentContainerStyle={{
+                      paddingHorizontal: 10,
+                      marginTop: 10,
+                      flexDirection: "row",
+                      gap: 4,
+                    }}
+                    showsHorizontalScrollIndicator={false}
+                    style={{ maxHeight: 260 }}>
+                  <View style={styles.container}>
+                    <View style={styles.imageContainer}>
+                      {messages[messages.length - 1]?.bidImages.map((image, index) => (
+                        <Pressable
+                          key={index}
+                          onPress={() => handleImagePress(image)}
+                        >
+                          <View style={styles.imageWrapper}>
                             <Image
                               source={{ uri: image }}
-                              width={174}
-                              height={232}
-                              className="rounded-3xl border-[1px] border-slate-400 object-contain"
+                              style={styles.image}
                             />
+                           
                           </View>
-                        )
-                      )}
-                    </ScrollView>
+                        </Pressable>
+                      ))}
+                    </View>
+                    <Modal
+                      transparent
+                      visible={!!selectedImage}
+                      onRequestClose={handleClose}
+                    >
+                      <Pressable style={styles.modalContainer}  onPress={handleClose}>
+                        <Animated.Image
+                          source={{ uri: selectedImage }}
+                          style={[
+                            styles.modalImage,
+                            {
+                              transform: [{ scale: scaleAnimation }],
+                            },
+                          ]}
+                        />
+                        
+                      </Pressable>
+                    </Modal>
+                  </View>
+                </ScrollView>
                   )}
+
+
 
                 {messages && messages[messages.length - 1]?.bidPrice && (
                   <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
@@ -1526,34 +1627,61 @@ const RequestPage = () => {
                 >
                   Are you accepting the customer offer ?
                 </Text>
+                <Text
+                  className="text-[14px]  text-center mt-[5px]"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  {messages[messages.length - 1]?.message}
+                </Text>
                 <View>
                   {messages &&
                     messages[messages.length - 1]?.bidImages &&
                     messages[messages.length - 1]?.bidImages?.length > 0 && (
-                      <ScrollView
-                        horizontal
-                        contentContainerStyle={{
-                          paddingHorizontal: 10,
-                          marginTop: 10,
-                          flexDirection: "row",
-                          gap: 4,
-                        }}
-                        showsHorizontalScrollIndicator={false}
-                        style={{ maxHeight: 240 }}
-                      >
-                        {messages[messages.length - 1]?.bidImages.map(
-                          (image, index) => (
-                            <View key={index} className="rounded-3xl">
+                      <ScrollView horizontal  contentContainerStyle={{
+                        paddingHorizontal: 10,
+                        marginTop: 10,
+                        flexDirection: "row",
+                        gap: 4,
+                      }}
+                      showsHorizontalScrollIndicator={false}
+                      style={{ maxHeight: 260 }}>
+                    <View style={styles.container}>
+                      <View style={styles.imageContainer}>
+                        {messages[messages.length - 1]?.bidImages.map((image, index) => (
+                          <Pressable
+                            key={index}
+                            onPress={() => handleImagePress(image)}
+                          >
+                            <View style={styles.imageWrapper}>
                               <Image
                                 source={{ uri: image }}
-                                width={174}
-                                height={232}
-                                className="rounded-3xl border-[1px] border-slate-400 object-contain"
+                                style={styles.image}
                               />
+                             
                             </View>
-                          )
-                        )}
-                      </ScrollView>
+                          </Pressable>
+                        ))}
+                      </View>
+                      <Modal
+                        transparent
+                        visible={!!selectedImage}
+                        onRequestClose={handleClose}
+                      >
+                        <Pressable style={styles.modalContainer}  onPress={handleClose}>
+                          <Animated.Image
+                            source={{ uri: selectedImage }}
+                            style={[
+                              styles.modalImage,
+                              {
+                                transform: [{ scale: scaleAnimation }],
+                              },
+                            ]}
+                          />
+                          
+                        </Pressable>
+                      </Modal>
+                    </View>
+                  </ScrollView>
                     )}
                 </View>
                 {messages && messages[messages.length - 1]?.bidPrice && (
@@ -1678,6 +1806,7 @@ const RequestPage = () => {
         modalConfirmVisible={uploadGSTModal}
         setModalConfirmVisible={setUploadGSTModal}
       />
+       {errorModal && <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} />}
 
       {/* {closeRequestModal && <View style={styles.overlay} />} */}
       {acceptRequestModal && <View style={styles.overlay} />}
@@ -1731,6 +1860,59 @@ const styles = StyleSheet.create({
   attachments: {
     zIndex: 100, // Ensure the overlay is on top
   },
+  container: {
+    flex: 1,
+  },
+  imageContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginHorizontal: 30,
+    gap: 5,
+    marginTop: 10,
+  },
+  imageWrapper: {
+    margin: 5,
+    borderRadius: 15,
+    overflow: "hidden",
+    // borderWidth: 1,
+    // borderColor: "gray",
+  },
+  image: {
+    width: 174,
+    height: 232,
+    borderRadius: 10,
+  },
+  // deleteIc: {
+  //   position: 'absolute',
+  //   top: 5,
+  //   right: 5,
+  // },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  modalImage: {
+    width: 300,
+    height: 400,
+    borderRadius: 10,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+  },
+  deleteIcon: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 2,
+  },
+  
 });
 
 export default RequestPage;

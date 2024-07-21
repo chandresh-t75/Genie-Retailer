@@ -218,9 +218,9 @@ const MobileNumberEntryScreen = () => {
           },
         }
       );
-      console.log("res", response.data.accessToken);
+      console.log("res", response.data);
      
-      if (response.data.retailer.storeMobileNo) {
+      if (response?.data?.retailer?.storeMobileNo) {
         // If mobile number is registered, navigate to home screen
         dispatch(setUserDetails(response.data.retailer));
         dispatch(setAccessToken(response.data.accessToken));
@@ -237,7 +237,7 @@ const MobileNumberEntryScreen = () => {
           }
         }
 
-        const result = await axios.patch(
+        const result = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
             _id: response?.data?.retailer._id,

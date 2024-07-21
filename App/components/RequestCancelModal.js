@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNewRequests, setRequestInfo, setRetailerHistory } from "../redux/reducers/requestDataSlice";
 import { ActivityIndicator } from "react-native-paper";
 import { baseUrl } from "../screens/utils/constants";
+import axiosInstance from "../screens/utils/axiosInstance";
 
 const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
   // const [modalVisible, setModalVisible] = useState(true);
@@ -38,7 +39,7 @@ const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const res = await axios.patch(
+      const res = await axiosInstance.patch(
         `${baseUrl}/chat/product-not-available`,
         {
           id: requestInfo?._id,

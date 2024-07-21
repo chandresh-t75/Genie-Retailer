@@ -18,6 +18,7 @@ import { setOngoingRequests, setRequestInfo } from "../redux/reducers/requestDat
 import { sendCustomNotificationDocument } from "../notification/notificationMessages";
 import { socket } from "../screens/utils/socket.io/socket";
 import { baseUrl } from "../screens/utils/constants";
+import axiosInstance from "../screens/utils/axiosInstance";
 
 
 const SendDocument = () => {
@@ -66,7 +67,7 @@ const SendDocument = () => {
                   'Authorization':`Bearer ${accessToken}`,
                 }
                }
-            await axios.post(`${baseUrl}/chat/send-message`, formData, config)
+            await axiosInstance.post(`${baseUrl}/chat/send-message`, formData, config)
                 .then(async (res) => {
                     let mess = [...messages];
                     mess.push(res.data);
@@ -103,7 +104,7 @@ const SendDocument = () => {
                           'Authorization':`Bearer ${accessToken}`,
                         }
                        }
-                    const token = await axios.get(
+                    const token = await axiosInstance.get(
                         `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
                     );
                     if (token.data.length > 0) {

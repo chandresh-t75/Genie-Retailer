@@ -28,6 +28,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import BackArrow from "../../assets/BackArrow.svg";
 import { baseUrl } from "../utils/constants";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -169,7 +170,7 @@ const LocationScreen = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axios.patch(
+      const response = await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: userId,
