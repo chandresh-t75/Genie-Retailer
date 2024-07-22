@@ -82,7 +82,7 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
       //   Alert.alert('Modal has been closed.');
       //   setModalVisible(!modalVisible);
       // }}
-      className=" flex justify-center items-center  rounded-lg h-full "
+      className=" flex justify-center items-center  rounded-lg h-full" 
     >
       <View className="flex-1  justify-center items-center">
         <View className="bg-white w-[85%] px-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl  pt-[80px] pb-[40px]">
