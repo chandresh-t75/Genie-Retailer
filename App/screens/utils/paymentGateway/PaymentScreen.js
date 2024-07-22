@@ -58,7 +58,7 @@ const PaymentScreen = () => {
         setLoading(true);
         try {
 
-            const response = await axiosInstance.post(
+            const response = await axios.post(
                 "https://api.razorpay.com/v1/orders",
                 {
                     amount: 100,  // INR amount in paisa 1Rs = 100 paisa
