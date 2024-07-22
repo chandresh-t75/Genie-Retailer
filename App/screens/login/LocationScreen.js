@@ -208,17 +208,15 @@ const LocationScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-
-
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <KeyboardAvoidingView behavior="position" >
+        <KeyboardAvoidingView>
           <View style={{ flex: 1, backgroundColor: "white", position: "relative", paddingBottom: 80 }} >
-            <View className="w-full absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
+            <View className="w-full z-40 absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
                 }}
-                style={{ padding: 20, paddingRight: 10, zIndex: 30 }}
+                style={{ padding: 20, paddingRight: 20, zIndex: 30}}
               >
                 <BackArrow />
               </TouchableOpacity>

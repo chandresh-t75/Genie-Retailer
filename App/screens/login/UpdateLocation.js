@@ -26,7 +26,8 @@ import { setServiceProvider, setStoreLocation, setUserDetails } from "../../redu
 import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import BackArrow from "../../assets/arrow-left.svg"
+import BackArrow from "../../assets/BackArrow.svg";
+
 import ModalUpdateLocationConfirm from "../../components/ModalUpdateLocationConfirm";
 import { baseUrl } from "../utils/constants";
 import axiosInstance from "../utils/axiosInstance";
@@ -207,18 +208,17 @@ const UpdateLocation = () => {
 
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <KeyboardAvoidingView behavior="position" >
+        <KeyboardAvoidingView >
           <View style={{ flex: 1, backgroundColor: "white", position: "relative", paddingBottom: 80 }} >
-            <View className="w-full absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
-              <Pressable
+          <View className="w-full z-40 absolute px-[32px]  mt-[20px] flex flex-row justify-between items-center">
+              <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
                 }}
-                className="flex flex-row p-6 items-center  gap-2"
+                style={{ padding: 20, paddingRight: 20, zIndex: 30}}
               >
-                <BackArrow width={14} height={10} />
-
-              </Pressable>
+                <BackArrow />
+              </TouchableOpacity>
             </View>
             <View className="flex flex-col justify-center items-center px-[32px] mt-[20px] ">
               <LocationImg height={322} width={width} />

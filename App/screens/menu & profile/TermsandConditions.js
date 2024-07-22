@@ -87,10 +87,10 @@ const TermsandConditions = () => {
                 borderRadius: 8,
               }}
             >
-              {/* <Card width={350} className="object-cover shadow-xl" /> */}
-              <View>
+              <Card width={350} className="object-cover shadow-xl" />
+              {/* <View>
                 <Image source={require('../../assets/requestCard.png')}/>
-              </View>
+              </View> */}
             </View>
           </View>
           <View className="flex items-center gap-2 mb-[10px]">
@@ -113,10 +113,10 @@ const TermsandConditions = () => {
                 borderRadius: 8,
               }}
             >
-              {/* <Home2 width={350} className="" /> */}
-              <View>
+              <Home2 width={350} className="" />
+              {/* <View>
                 <Image source={require('../../assets/Home3.png')}/>
-              </View>
+              </View> */}
             </View>
           </View>
           <View className="gap-[20px]  items-center">
@@ -142,10 +142,10 @@ const TermsandConditions = () => {
                 borderRadius: 8,
               }}
             >
-              {/* <Home3 width={350} className=" " /> */}
-              <View>
+              <Home3 width={350} className=" " />
+              {/* <View>
                 <Image source={require('../../assets/Home2.png')}/>
-              </View>
+              </View>  */}
             </View>
           </View>
           <View className="gap-[24px]  items-center">

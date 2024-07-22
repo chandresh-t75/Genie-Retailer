@@ -318,22 +318,32 @@ const ProfileImageUpdate = () => {
           </View>
         </View>
       )}
-      <View className="w-full h-[68px]  bg-[#fb8c00] justify-center absolute bottom-0 left-0 right-0">
-        <TouchableOpacity onPress={handleImage}>
-          <View className="w-full flex items-center justify-center">
-            {loading ? (
-              <ActivityIndicator size="small" color="#FB8C00" />
-            ) : (
-              <Text
-                className="text-white text-center text-[16px]"
-                style={{ fontFamily: "Poppins-Black" }}
-              >
-                Continue
-              </Text>
-            )}
-          </View>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        disabled={imagesLocal?.length === 0}
+        onPress={handleImage}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 63,
+          width: "100%",
+          backgroundColor:
+            imagesLocal?.length===0 ? "#e6e6e6" : "#FB8C00",
+          justifyContent: "center", // Center content vertically
+          alignItems: "center", // Center content horizontally
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontFamily: "Poppins-Black",
+            color:  imagesLocal?.length===0 ? "#888888" : "white",
+          }}
+        >
+          Continue
+        </Text>
+      </TouchableOpacity>
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#fb8c00" />

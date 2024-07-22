@@ -40,7 +40,8 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
     try {
       // Remove the item with key 'userData' from local storage
 
-       await auth().signOut();
+      //  await auth().signOut();
+
      const config = {
       headers:{
         'Content-Type':'application/json',
@@ -67,7 +68,7 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
       setModalVisible(false);
       dispatch(bidClear());
       dispatch(requestClear());
-      // dispatch(storeClear());
+      dispatch(storeClear());
     } catch (error) {
       setLoading(false);
       console.error("Error deleting user data:", error);
