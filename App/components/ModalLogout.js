@@ -40,7 +40,7 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
     try {
       // Remove the item with key 'userData' from local storage
 
-      //  await auth().signOut();
+       await auth().signOut();
      const config = {
       headers:{
         'Content-Type':'application/json',
