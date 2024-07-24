@@ -19,6 +19,9 @@ import { sendCustomNotificationDocument } from "../notification/notificationMess
 import { socket } from "../screens/utils/socket.io/socket";
 import { baseUrl } from "../screens/utils/constants";
 import axiosInstance from "../screens/utils/axiosInstance";
+import ErrorAttachment from "../assets/ErrorAttachment.svg"
+import UnableToSendMessage from "./UnableToSendMessage";
+
 
 
 const SendDocument = () => {
@@ -35,6 +38,8 @@ const SendDocument = () => {
     const fileSize = parseFloat(result.assets[0].size) / (1e6);
     console.log('document result', result);
     const accessToken = useSelector((state) => state.storeData.accessToken);
+  const [openModal, setOpenModal] = useState(false);
+
 
 
     const sendDocument = async () => {
@@ -68,7 +73,18 @@ const SendDocument = () => {
                 }
                }
             await axiosInstance.post(`${baseUrl}/chat/send-message`, formData, config)
-                .then(async (res) => {
+            .then(async (res) => {
+                // console.log(res.data);
+                if (res.status === 200) {
+                  setOpenModal(true);
+                  setTimeout(() => {
+                      setOpenModal(false);
+                        const requestId=requestInfo?._id;
+                        navigation.navigate(`requestPage${requestId}`);
+                    setIsLoading(false);
+                  }, 2000);
+              }
+              if (res.status !== 201) return;
                     let mess = [...messages];
                     mess.push(res.data);
                     //  console.log("query update",mess);
@@ -185,6 +201,8 @@ const SendDocument = () => {
                         <Send />
                     </TouchableOpacity>}
                 </View>
+      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The attachment can not be sent because the customer sent you the new offer.Please accept or reject the customer offer before sending the new attachment" ErrorIcon={ErrorAttachment} />}
+
             </View>
 
         </View>

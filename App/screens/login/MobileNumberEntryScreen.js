@@ -43,7 +43,7 @@ import auth from "@react-native-firebase/auth";
 import axios from "axios";
 import messaging from "@react-native-firebase/messaging";
 import BackArrow from "../../assets/BackArrow.svg";
-import SmsRetriever from 'react-native-sms-retriever';
+// import SmsRetriever from 'react-native-sms-retriever';
 import { baseUrl } from "../utils/constants.js";
 import axiosInstance from "../utils/axiosInstance.js";
 
@@ -139,32 +139,32 @@ const MobileNumberEntryScreen = () => {
     console.log(otp);
   };
 
-  useEffect(() => {
-    const startSmsRetriever = async () => {
-      try {
-        const registered = await SmsRetriever.startSmsRetriever(); 
-        if (registered) {
-          SmsRetriever.addSmsListener(event => {
-            const message = event.message;
-            const otpRegex = /\b\d{6}\b/; // Adjust the regex based on your OTP format
-            const extractedOtp = message?.match(otpRegex);
-            if (extractedOtp) {
-              setOtp(extractedOtp[0]);
-              SmsRetriever.removeSmsListener();
-            }
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  // useEffect(() => {
+  //   const startSmsRetriever = async () => {
+  //     try {
+  //       const registered = await SmsRetriever.startSmsRetriever(); 
+  //       if (registered) {
+  //         SmsRetriever.addSmsListener(event => {
+  //           const message = event.message;
+  //           const otpRegex = /\b\d{6}\b/; // Adjust the regex based on your OTP format
+  //           const extractedOtp = message?.match(otpRegex);
+  //           if (extractedOtp) {
+  //             setOtp(extractedOtp[0]);
+  //             SmsRetriever.removeSmsListener();
+  //           }
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    startSmsRetriever();
+  //   startSmsRetriever();
 
-    return () => {
-      SmsRetriever.removeSmsListener();
-    };
-  }, []);
+  //   return () => {
+  //     SmsRetriever.removeSmsListener();
+  //   };
+  // }, []);
 
   const sendVerification = async () => {
 

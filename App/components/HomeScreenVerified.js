@@ -46,7 +46,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const dispatch = useDispatch();
   const route = useRoute();
   const isFocused = useIsFocused();
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] =useState(false);
   const [tab, setTab] = useState("New");
   const [request, setRequest] = useState(true);
 
@@ -209,7 +209,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   };
 
   const handleRefresh = () => {
-    // setRefreshing(true); // Show the refresh indicator
+    setRefreshing(true); // Show the refresh indicator
     setLoading(true);
     try {
       // Fetch new data from the server
@@ -220,24 +220,10 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       console.error("Error fetching data:", error);
     }
     setLoading(false);
-    // setRefreshing(false); // Hide the refresh indicator
+     setRefreshing(false); // Hide the refresh indicator
   };
 
-  // Setting socket for requests
-  // useEffect(() => {
-  //   const setupNotifications = async () => {
-  //     console.log("notify data", ongoingRequests.length);
-  //     await notificationListeners(
-  //       dispatch,
-  //       newRequests,
-  //       ongoingRequests,
-  //       retailerHistory
-  //     );
 
-  //     // setRequest(true);
-  //   };
-  //   setupNotifications();
-  // }, [newRequests]);
 
   // useEffect(() => {
   //   socket.emit("setup", userData?._id);
@@ -280,13 +266,13 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   return (
     <View className="bg-white">
       <View
-      // refreshControl={
-      //   // <RefreshControl
-      //   //   refreshing={refreshing}
-      //   //   onRefresh={handleRefresh}
-      //   //   colors={["#9Bd35A", "#689F38"]}
-      //   // />
-      // }
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={["#9Bd35A", "#689F38"]}
+        />
+      }
       >
         {(newRequests?.length > 0 ||
           ongoingRequests?.length > 0 ||

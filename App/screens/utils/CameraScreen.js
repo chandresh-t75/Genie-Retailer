@@ -29,6 +29,8 @@ import { setOngoingRequests, setRequestInfo } from "../../redux/reducers/request
 import { socket } from "../utils/socket.io/socket";
 import { baseUrl } from "./constants";
 import axiosInstance from "./axiosInstance";
+import ErrorAttachment from "../../assets/ErrorAttachment.svg"
+import UnableToSendMessage from "../../components/UnableToSendMessage";
 
 
 // import { setMessages } from '../../redux/reducers/requestDataSlice';
@@ -51,6 +53,8 @@ const CameraScreen = () => {
   );
   const user = useSelector(state => state.storeData.userDetails);
   const accessToken = useSelector((state) => state.storeData.accessToken)
+  const [openModal, setOpenModal] = useState(false);
+
 
 
 
@@ -82,6 +86,17 @@ const CameraScreen = () => {
       .post(`${baseUrl}/chat/send-message`, formData,config)
       .then(async (res) => {
         // console.log(res.data);
+        if (res.status === 200) {
+          setOpenModal(true);
+          setTimeout(() => {
+              
+              const requestId=requestInfo?._id;
+                        navigation.navigate(`requestPage${requestId}`);
+                    setIsLoading(false);
+                    setOpenModal(false);
+          }, 2000);
+      }
+      if (res.status !== 201) return;
         let mess = [...messages];
         mess.push(res.data);
         //  console.log("query update",mess);
@@ -205,6 +220,8 @@ const CameraScreen = () => {
                 <Send />)}
             </TouchableOpacity>
           </View>
+      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The attachment can not be sent because the customer sent you the new offer.Please accept or reject the customer offer before sending the new attachment" ErrorIcon={ErrorAttachment} />}
+
         </View>
       )}
       {loading && (

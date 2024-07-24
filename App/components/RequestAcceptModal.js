@@ -184,6 +184,7 @@ const RequestAcceptModal = ({
                   requestId: requestInfo?._id,
                   userId: requestInfo?.users[0]._id
                 },
+                details:requestInfo?.requestId?.requestDescription,
                 tag: user?._id,
                 price: lastMessage?.bidPrice,
                 image: requestInfo?.requestId?.requestImages[0],

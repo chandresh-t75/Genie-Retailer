@@ -17,9 +17,9 @@ export const BidAcceptedOtherRetailer = async (mess) => {
 
     const notification = {
       notification: {
-        title: `${mess.title} has accepted the bid at ${mess.price}`,
+        title: `${mess.title} has accepted the offer at ${mess.price}`,
         body: mess.details,
-        image: mess?.image,
+        image: mess?.image, 
       },
       android: {
         priority: "high",
@@ -423,7 +423,7 @@ export const NotificationBidAccepted = async (mess) => {
       message: {
         token: mess.token,
         notification: {
-          title: `${mess.title} has accepted the bid at ${mess.price}`,
+          title: `${mess.title} has accepted the offer at ${mess.price}`,
           body: mess?.details,
           image: mess?.image,
         },
@@ -482,8 +482,8 @@ export const NotificationBidRejected = async (mess) => {
       message: {
         token: mess?.token,
         notification: {
-          title: `${mess.title} has rejected your bid`,
-          body: "Hi,I have rejected your bid!",
+          title: `${mess.title} has rejected your offer`,
+          body: "Try with other offer!",
           image: mess?.image,
         },
         android: {

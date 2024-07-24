@@ -75,7 +75,7 @@ const TermsandConditions = () => {
               You get a notification first, like this.
             </Text>
             <View
-              className="flex flex-row  justify-center items-center mx-[20px]"
+              className="flex flex-row  justify-center items-center"
               style={{
                 backgroundColor: "#fff", // Ensure the background is white
                 // margin: 10, // Add some margin if necessary for better shadow visibility
@@ -87,10 +87,10 @@ const TermsandConditions = () => {
                 borderRadius: 8,
               }}
             >
-              <Card width={350} className="object-cover shadow-xl" />
-              {/* <View>
-                <Image source={require('../../assets/requestCard.png')}/>
-              </View> */}
+              {/* <Card className="object-cover shadow-xl" /> */}
+              <View className="flex  justify-center items-center">
+                <Image source={require('../../assets/requestCard.png')}   className="w-[320px] h-[120px] rounded-md"/>
+              </View>
             </View>
           </View>
           <View className="flex items-center gap-2 mb-[10px]">
@@ -113,10 +113,10 @@ const TermsandConditions = () => {
                 borderRadius: 8,
               }}
             >
-              <Home2 width={350} className="" />
-              {/* <View>
-                <Image source={require('../../assets/Home3.png')}/>
-              </View> */}
+              {/* <Home2 width={350} className="" /> */}
+              <View>
+                <Image source={require('../../assets/Home2.png')}  className="w-[320px] h-[340px] rounded-md"/>
+              </View>
             </View>
           </View>
           <View className="gap-[20px]  items-center">
@@ -142,10 +142,10 @@ const TermsandConditions = () => {
                 borderRadius: 8,
               }}
             >
-              <Home3 width={350} className=" " />
-              {/* <View>
-                <Image source={require('../../assets/Home2.png')}/>
-              </View>  */}
+              {/* <Home3 width={350} className=" " /> */}
+              <View>
+                <Image source={require('../../assets/Home3.png')} className="w-[320px] h-[340px] rounded-md"/>
+              </View> 
             </View>
           </View>
           <View className="gap-[24px]  items-center">

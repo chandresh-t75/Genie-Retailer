@@ -1101,7 +1101,7 @@ const RequestPage = () => {
           )}
 
         {requestInfo?.requestType !== "closed" &&
-        requestInfo.bidCompleted !==true &&
+        requestInfo?.bidCompleted !==true &&
           requestInfo?.requestType === "new" &&
           available === false && (
             <View
@@ -1425,7 +1425,7 @@ const RequestPage = () => {
         } `}
       >
         {requestInfo?.requestType !== "closed" &&
-        requestInfo.bidCompleted !==true && 
+        requestInfo?.bidCompleted !==true && 
         messages[messages.length - 1]?.bidType!=="update" &&
           requestInfo?.requestType === "new" &&
           available === false && (
@@ -1497,7 +1497,7 @@ const RequestPage = () => {
 
 
 
-                {messages && messages[messages.length - 1]?.bidPrice && (
+                {messages && messages[messages.length - 1]?.bidPrice>0 && (
                   <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
                     <Text style={{ fontFamily: "Poppins-Medium" }}>
                       Expected Price:{" "}

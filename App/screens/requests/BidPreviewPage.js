@@ -36,6 +36,8 @@ import { baseUrl } from "../utils/constants";
 import DropDown from "../../assets/dropDown.svg";
 import DropDownUp from "../../assets/dropDownUp.svg";
 import axiosInstance from "../utils/axiosInstance";
+import ErrorOffer from "../../assets/ErrorOffer.svg"
+import UnableToSendMessage from "../../components/UnableToSendMessage";
 
 
 
@@ -47,6 +49,8 @@ const BidPreviewPage = () => {
   const [loading,setLoading] =useState(false)
   const [copied, setCopied] = useState(false);
   const [requestOpen,setRequestOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
 
 
 
@@ -69,24 +73,7 @@ const BidPreviewPage = () => {
 
 
 
-  // const messages = useSelector(state => state.requestData.messages);
 
-  // console.log("warranty",warranty);
-  // console.log("bidDetails",messages);
-
-  // useEffect(() => {
-  //     const fetchData = async () => {
-  //         if (route.params) {
-  //             const userDataString = await AsyncStorage.getItem("userData");
-  //             const userData = JSON.parse(userDataString);
-  //             console.log(userData);
-  //             setUser(userData);
-  //             setRequestInfo(route.params.requestInfo);
-  //         }
-  //     };
-
-  //     fetchData();
-  // }, [route.params]);
 
   const sendBid = async () => {
     setLoading(true)
@@ -119,12 +106,20 @@ const BidPreviewPage = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axiosInstance.post(
+    await axiosInstance.post(
         `${baseUrl}/chat/send-message`,
         formData, config
-      );
-      // console.log("res of meassage", response);
-      if (response.status === 201) {
+      ).then(async (response) => {
+        if (response.status === 200) {
+          setOpenModal(true);
+          setTimeout(() => {
+            const requestId=requestInfo?._id;
+            navigation.navigate(`requestPage${requestId}`);
+            setLoading(false);
+            setOpenModal(false);
+          }, 2000);
+        }
+        if (response.status !== 201) return;
         // console.log("messages recieved", response.data);
         socket.emit("new message", response.data);
         let mess = [...messages];
@@ -183,9 +178,7 @@ const BidPreviewPage = () => {
         }
 
          
-      } else {
-        console.error("Error updating message:");
-      }
+     })
     } catch (error) {
       setLoading(false)
       console.log("error sending message", error);
@@ -432,6 +425,8 @@ const BidPreviewPage = () => {
             </View>
           </TouchableOpacity>
         </View>
+      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The offer can not be sent because the customer sent you the new offer.Please accept or reject the customer offer before sending the new offer" ErrorIcon={ErrorOffer} />}
+
       </View>
     </View>
   );

@@ -32,6 +32,8 @@ import { baseUrl } from "../utils/constants";
 import DropDown from "../../assets/dropDown.svg";
 import DropDownUp from "../../assets/dropDownUp.svg";
 import axiosInstance from "../utils/axiosInstance";
+import ErrorMessage from "../../assets/ErrorMessage.svg"
+import UnableToSendMessage from "../../components/UnableToSendMessage";
 
 
 
@@ -47,6 +49,7 @@ const BidQueryPage = () => {
   const [copied, setCopied] = useState(false);
   const [requestOpen,setRequestOpen] = useState(false);
   const onlineUser=useSelector(state=>state.requestData.onlineUser)
+  const [openModal, setOpenModal] = useState(false);
 
 
   const ongoingRequests = useSelector(
@@ -92,12 +95,21 @@ const BidQueryPage = () => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-      const response = await axiosInstance.post(
+     await axiosInstance.post(
         `${baseUrl}/chat/send-message`,
         formData,config
-      );
-        //  console.log("res",response);
-      if (response.status === 201) {
+      ).then(async (response) => {
+        if (response.status === 200) {
+          setOpenModal(true);
+          setTimeout(() => {
+            const requestId=requestInfo?._id;
+            navigation.navigate(`requestPage${requestId}`);
+            setLoading(false);
+            setOpenModal(false);
+          }, 2000);
+        }
+        if (response.status !== 201) return;
+       
         //  console.log("messages recieved",response.data);
 
         socket.emit("new message", response.data);
@@ -154,19 +166,10 @@ const BidQueryPage = () => {
         };
         sendCustomNotificationChat(notification);
          }
-        //  console.log("res after sending notification ",res);
-        //   try{
-        //  const res=await axios.get(`http://localhost:3000/send-notification-chat?name=Rohit&body=Hii how are you&redirect_to=requestPage&requestInfo={"__v": 1, "_id": "66532414ff164bf94697251d", "bidCompleted": true, "createdAt": "2024-05-26T11:59:16.279Z", "requestId": {"__v": 0, "_id": "66532414ff164bf94697251b", "createdAt": "2024-05-26T11:59:16.052Z", "customer": "664d6fb333bcb1bbd6cf9f66", "expectedPrice": 2500, "requestAcceptedChat": "66532414ff164bf94697251d", "requestActive": "completed", "requestCategory": "spare parts", "requestDescription": "bike tyre", "requestImages": ["https://res.cloudinary.com/kumarvivek/image/upload/v1716724746/zznnqcnga7ktx9v4vlto.jpg"], "updatedAt": "2024-05-26T12:00:58.405Z"}, "requestType": "completed", "updatedAt": "2024-05-26T12:00:58.844Z", "users": [{"_id": "66532414ff164bf94697251e", "refId": "664d74f100215ea2aea8a35d", "type": "Retailer"}, {"_id": "66532437ff164bf94697252e", "refId": "66532414ff164bf94697251b", "type": "UserRequest"}]}`)
-        //     console.log("res after sending notification ",res);
-
-        //   }
-        //   catch(err){
-        //     console.log("error sending notification",err);
-        //   }
+      
         setQuery("");
-      } else {
-        console.error("Error updating message:");
-      }
+      
+      })
     } catch (error) {
       setLoading(false)
       console.log("error sending message", error);
@@ -383,6 +386,9 @@ const BidQueryPage = () => {
               Next
             </Text>)}
           </TouchableOpacity>
+
+      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The message can not be sent because the customer sent you the new offer.Please accept or reject the customer offer before sending the new message" ErrorIcon={ErrorMessage} />}
+
 
     </View>
   );
