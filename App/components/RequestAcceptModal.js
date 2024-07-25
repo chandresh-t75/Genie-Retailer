@@ -163,7 +163,7 @@ const RequestAcceptModal = ({
               const token = await axiosInstance.get(
                 `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
               );
-              if (token.data.length > 0) {
+              if (token.data.length > 0){
                 const notification = {
                   token: token.data,
                   title: user?.storeName,
@@ -171,30 +171,29 @@ const RequestAcceptModal = ({
                     requestId: requestInfo?._id,
                     userId: requestInfo?.users[1]._id
                   },
-                 
                   tag: user?._id,
                   price: lastMessage?.bidPrice,
                   image: requestInfo?.requestId?.requestImages[0],
                 };
                 NotificationBidAccepted(notification);
               }
-              const notification = {
-                token: accept?.data?.uniqueTokens,
-                title: user?.storeName,
-                requestInfo: {
-                  requestId: requestInfo?._id,
-                  userId: requestInfo?.users[0]._id
-                },
-                details:requestInfo?.requestId?.requestDescription,
-                tag: user?._id,
-                price: lastMessage?.bidPrice,
-                image: requestInfo?.requestId?.requestImages[0],
-              };
+              // const notification = {
+              //   token: accept?.data?.uniqueTokens,
+              //   title: user?.storeName,
+              //   requestInfo: {
+              //     requestId: requestInfo?._id,
+              //     userId: requestInfo?.users[0]._id
+              //   },
+              //   details:requestInfo?.requestId?.requestDescription,
+              //   tag: user?._id,
+              //   price: lastMessage?.bidPrice,
+              //   image: requestInfo?.requestId?.requestImages[0],
+              // };
               //  console.log("new notification",notification);
               setModalVisible(false);
-              setTimeout(() => {
-                BidAcceptedOtherRetailer(notification)
-              }, 500)
+              // setTimeout(() => {
+              //   BidAcceptedOtherRetailer(notification)
+              // }, 500)
 
             } catch (error) {
               console.error("Error updating chat details:", error);
