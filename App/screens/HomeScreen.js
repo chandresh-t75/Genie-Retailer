@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { setAccessToken, setUserDetails } from '../redux/reducers/storeDataSlice'
 import RemainingCustomerModal from '../components/RemainingCustomerModal'
 import { baseUrl } from './utils/constants'
+import NetworkError from '../components/NetworkError'
 
  
 
@@ -20,6 +21,7 @@ const HomeScreen = () => {
     const navigation =useNavigation()
     const dispatch=useDispatch();
   const [modalVisible,setModalVisible]=useState(false);
+  const [networkError, setNetworkError] = useState(false);
 
  
 
@@ -55,123 +57,48 @@ const navigationState = useNavigationState(state => state);
   }, [isHomeScreen]);
 
   
-//   const fetchUserData = async () => {
-//     try {
-//         const userData = JSON.parse(await AsyncStorage.getItem("userData"));
-//         dispatch(setUserDetails(userData));
-
-//         console.log('Fetched user data successfully at HomeScreen',userData);
-              
-      
-        
-//         const response = await axios.get('https://culturtap.com/api/retailer/', {
-//             params: {
-//                 storeMobileNo: userData.storeMobileNo
-//             }
-//         });
-//           console.log("res at home",response.data);
-        
-//         if (response.status === 200) {
-            
-//             // setLocation(response?.data.longitude);
-//             // setStore(response?.data.storeImages);
-//             // setServiceProvider(response?.data.serviceProvider);
-//             if (response.data.storeApproved) {
-//               console.log('Store  approved at Home Screen');
-//               setVerified(true);
-//               return;
-              
-//            }
-    
-//             if (!response.data.storeApproved) {
-//                 console.log('Store not approved');
-//                 setVerified(false);
-                
-//             }
-    
-           
-           
-           
-            
-//             if(response.data.location && response.data.serviceProvider==="true"){
-//                 setCompleteProfile(true);
-//                 return;
-//             }
-//            else if (response.data.location && response.data.storeImages?.length > 0) {
-//                 setCompleteProfile(true);
-//                 return;
-//             }
-//             else{
-//                 setCompleteProfile(false);
-//             }
-//             dispatch(setUserDetails(response.data));
-            
-//             await AsyncStorage.setItem('userData', JSON.stringify(response.data));
-//             console.log('User data fetched successfully from backend',response.data);
-//             // Update state with user data
-        
-//         }
-      
-//     } catch (error) {
-//         console.error('Error fetching user data on home screen:', error);
-//     }
-// };
-  
-// useEffect(() => {
-//     if (isFocused) {
-      
-//        handleRefresh();
-//       // 
-//     }
-//   }, [isFocused]);
-
-  
-
-// // Only re-run effect when screen is focused
-// const handleRefresh = () => {
-//     setRefreshing(true); // Show the refresh indicator
-//     // setLoading(true);
-//     try {
-//       fetchUserData();
-//     } catch (error) {
-//       console.error("Error fetching data:", error);
-//     }
-//     // setLoading(false);
-//      setRefreshing(false); // Hide the refresh indicator
-//   };
 
 const fetchUserData = async () => {
-  // try {
+
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
     const accessToken =  JSON.parse(await AsyncStorage.getItem("accessToken"));
     // console.log(accessToken);
-    if (userData) {
-      dispatch(setUserDetails(userData));
-      dispatch(setAccessToken(accessToken));
-      // console.log('Fetched user data successfully at HomeScreen', userData);
-    
-      const response = await axios.get(
-        `${baseUrl}/retailer/`,
-        {
-          params: {
-            storeMobileNo: userData?.storeMobileNo
-          }
-  
-        }
-      );
-      // console.log("res at compltete profile", response.data.retailer);
-      if (response.status === 200) {
-        const data = response.data.retailer;
-        const accessToken =response.data.accessToken;
-  
-        dispatch(setUserDetails(data));
+
+    try{
+      if (userData) {
+        dispatch(setUserDetails(userData));
         dispatch(setAccessToken(accessToken));
-        await AsyncStorage.setItem('userData', JSON.stringify(data));
-        await AsyncStorage.setItem('accessToken', JSON.stringify(accessToken));
-
-
+        // console.log('Fetched user data successfully at HomeScreen', userData);
+      
+        const response = await axios.get(
+          `${baseUrl}/retailer/`,
+          {
+            params: {
+              storeMobileNo: userData?.storeMobileNo
+            }
+    
+          }
+        );
+        // console.log("res at compltete profile", response.data.retailer);
+        if (response.status === 200) {
+          const data = response.data.retailer;
+          const accessToken =response.data.accessToken;
+          // setNetworkError(false)
+          dispatch(setUserDetails(data));
+          dispatch(setAccessToken(accessToken));
+          await AsyncStorage.setItem('userData', JSON.stringify(data));
+          await AsyncStorage.setItem('accessToken', JSON.stringify(accessToken));
+        }
       }
+
     }
+    catch(error){
+      console.log("hii network")
+      // if (!error?.response?.status){
+      //     setNetworkError(true);
+      // }
+    }
+  
 
 
 
@@ -228,6 +155,7 @@ useEffect(()=>{
             <View style={styles.overlay} />
           </>
         )}
+
 
         </View>
     )

@@ -40,6 +40,7 @@ import UpdateLocation from '../screens/login/UpdateLocation';
 import ProfileImageUpdate from '../screens/login/ProfileImageUpdate';
 import SendDocument from '../components/SendDocument';
 import UpdateServiceDelivery from '../screens/login/UpdateServiceDelivery';
+import UpdateStoreDescription from '../screens/login/UpdateStoreDescription';
 
 const Stack = createNativeStackNavigator();
 const GlobalNavigation = () => {
@@ -91,6 +92,7 @@ const GlobalNavigation = () => {
       <Stack.Screen name="update-location" component={UpdateLocation} />
       <Stack.Screen name="update-profile-image" component={ProfileImageUpdate} />
       <Stack.Screen name="update-service-delivery" component={UpdateServiceDelivery} />
+      <Stack.Screen name="update-store-description" component={UpdateStoreDescription} />
 
 
       <Stack.Screen name={`requestPage${userId}`} component={RequestPage} />

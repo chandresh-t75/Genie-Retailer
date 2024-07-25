@@ -40,6 +40,7 @@ import Time from "../assets/TimeRed.svg";
 import RemainingCustomerModal from "./RemainingCustomerModal";
 import { baseUrl } from "../screens/utils/constants";
 import axiosInstance from "../screens/utils/axiosInstance";
+import NetworkError from "./NetworkError";
 
 const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const navigation = useNavigation();
@@ -66,6 +67,8 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const isFirstLoad = useRef(true);
   const [socketConnected, setSocketConnected] = useState(false);
   const accessToken=useSelector((state) => state.storeData.accessToken)
+  const [networkError, setNetworkError] = useState(false);
+
   const connectSocket = useCallback(async (id) => {
     // socket.emit("setup", currentSpadeRetailer?.users[1]._id);
     const userId = id;
@@ -156,6 +159,12 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     } catch (error) {
       setLoading(false);
       dispatch(setNewRequests([]));
+      
+      if (!error?.response?.status){
+        console.log("hii net")
+          setNetworkError(true);
+      }
+
       // console.error('Error fetching new requests:', error);
     }
   };
@@ -182,6 +191,11 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     } catch (error) {
       setIsLoading(false);
       dispatch(setOngoingRequests([]));
+      if (!error?.response?.status){
+        console.log("hii net")
+          setNetworkError(true);
+      }
+    
       //console.error('Error fetching ongoing requests:', error);
     }
   };
@@ -204,6 +218,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       // console.log("history", history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
+   
       // console.error('Error fetching history requests:', error);
     }
   };
@@ -217,6 +232,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       fetchOngoingRequests();
       fetchRetailerHistory();
     } catch (error) {
+      
       console.error("Error fetching data:", error);
     }
     setLoading(false);
@@ -495,11 +511,15 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
               </View>
             </View>
           )}
+{networkError && <View style={{ marginTop: 80 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={handleRefresh} setNetworkError={setNetworkError} /></View>}
+
         {!(
           newRequests?.length > 0 ||
           ongoingRequests?.length > 0 ||
           retailerHistory?.length > 0
-        ) && <HomeScreenRequests modalVisible={modalVisible} setModalVisible={setModalVisible} />}
+        ) && !networkError && <HomeScreenRequests modalVisible={modalVisible} setModalVisible={setModalVisible} />}
+
+
       </View>
     </View>
   );

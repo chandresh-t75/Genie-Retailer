@@ -253,12 +253,17 @@ const TermsandConditions = () => {
               </View>
               <View style={styles.listItem}>
                 <Text style={styles.dot}></Text>
+                <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}> 
+                Maintain your store rating on top for customer trust and satisfaction.</Text>
+              </View>
+              <View style={styles.listItem}>
+                <Text style={styles.dot}></Text>
                 
                 <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}>
                 <Text style={styles.boldText}>Don’ts:</Text>
                   {" "}
                   Customer complaints may lead to a permanent account block or a
-                  significant penalty to unlock the account.
+                  significant penalty for unlocking the account.
                 </Text>
               </View>
               <View style={styles.listItem}>
@@ -266,19 +271,14 @@ const TermsandConditions = () => {
                 <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}>
                 <Text style={styles.boldText}>Support:</Text>
                   {" "}
-                  Tell us what you want to start, and we'll create your business
-                  category.
+                  Tell us what you want to start as a new small business ,and we'll consider your business category for our platform.We support small businesses to attract local customers online and help to convert into a profitable business.
                 </Text>
               </View>
-              <View style={styles.listItem}>
-                <Text style={styles.dot}></Text>
-                <Text style={{fontFamily:"Poppins-Regular",fontSize:14,color:"#2E2C43"}}> 
-                <Text style={styles.boldText}>Grow Your Business:</Text>
-                {" "}
-                We will help you attract and keep customers.</Text>
-              </View>
+              
             </View>
             </View>
+            <Text className="text-[14px] px-[32px] text-center mb-2  py-[10px] " style={{fontFamily:"Poppins-Bold"}}>Let's Grow together! We create what you believe in.</Text>
+
             <Text className="text-[14px] px-[32px] text-center mb-2 border-[1px] py-[10px] " style={{fontFamily:"Poppins-Regular",borderColor:"green",color:"green"}}>There are charges like 100 rupees for 1000 customers. So please accept and proceed with the customer's request carefully. Only accept requests when you have the right product availability.</Text>
              <Text className="text-[14px] px-[32px] text-center mb-2"style={{fontFamily:"Poppins-Regular"}}>Unlock Your Business Potential – Download CulturTap Genie Business and Transform Your Sales Now!</Text>
 

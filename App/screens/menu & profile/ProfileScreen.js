@@ -3,6 +3,7 @@ import {
   Animated,
   Image,
   KeyboardAvoidingView,
+  Linking,
   Modal,
   Pressable,
   ScrollView,
@@ -28,6 +29,9 @@ import { FontAwesome, Entypo } from "@expo/vector-icons";
 import BackArrow from "../../assets/BackArrow.svg";
 import { baseUrl } from "../utils/constants";
 import axiosInstance from "../utils/axiosInstance";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import DocumentIcon from '../../assets/DocumentIcon.svg';
+
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -245,6 +249,14 @@ const ProfileScreen = () => {
     }
   };
 
+
+  const handleDownloadDocument = async () => {
+    // const url = `https://www.google.com/search?q=${encodeURIComponent(bidDetails.bidImages[0])}`
+    const url = `${user?.panCard}`;
+    Linking.openURL(url)
+        .catch((err) => console.error('An error occurred', err));
+}
+
   return (
     <View className="bg-white">
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -451,6 +463,26 @@ const ProfileScreen = () => {
                 <Text className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize" style={{ fontFamily: "Poppins-Regular" }}>{storeCategory}</Text>
               </View>
             </View>
+            <View className="px-[20px] mb-[10px]">
+              <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="mb-[10px] text-[#2E2C43]"
+              >
+                Store Description
+              </Text>
+              <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+
+                <Text className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeDescription}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("update-store-description");
+                  }}
+                  style={{paddingHorizontal:10}}
+                >
+                  <EditIcon className="px-[10px]"/>
+                </TouchableOpacity>
+              </View>
+            </View>
 
             <View className="px-[32px] mb-[10px]">
               <Text
@@ -498,29 +530,15 @@ const ProfileScreen = () => {
                 GST/Labor certificate
               </Text>
             </View>
-            {user?.panCard && (
-              <Pressable onPress={() => handleImagePress(user?.panCard)}>
-                <View className="rounded-[16px]">
-                  <Image
-                    source={{ uri: user?.panCard }}
-                    width={119}
-                    height={164}
-                    className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
-                  />
-                  {/* <Pressable
-                      onPress={() => deleteImage(0)}
-                      style={{position: "absolute",
-                        top: 5,
-                         left:90,
-                        backgroundColor: "white",
-                        borderRadius: 50,
-                        padding: 2,}}
-                    >
-                      <DelImg />
-                    </Pressable> */}
-                </View>
-              </Pressable>
-            )}
+            {user?.panCard  && 
+                      <View  className="rounded-[16px]  mb-[100px]">
+                        <TouchableOpacity className="flex-col" onPress={()=>{handleDownloadDocument()}}>
+                      <DocumentIcon  size={90} />
+                      <Text className=" text-[16px] pt-[10px] text-[#fb8c00]" style={{ fontFamily: "Poppins-Medium" }}>View Document</Text>
+                      {/* <Text className="pt-[5px]">{fileSize < 1 ? `${(parseFloat(fileSize).toFixed(3) * 1000)} kb` : `${parseFloat(fileSize).toFixed(1)}Mb`}</Text> */}
+                  </TouchableOpacity>
+                  </View>
+            }
             {!user?.panCard && (
               <View>
                 <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">

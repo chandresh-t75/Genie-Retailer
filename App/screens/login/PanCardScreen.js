@@ -43,6 +43,9 @@ import DelImg from "../../assets/delImgOrange.svg"
 import RightArrow from "../../assets/arrow-right.svg";
 import { baseUrl } from "../utils/constants";
 import axiosInstance from "../utils/axiosInstance";
+import * as DocumentPicker from 'expo-document-picker';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import DocumentIcon from '../../assets/DocumentIcon.svg';
 
 
 
@@ -71,7 +74,9 @@ const PanCardScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { width } = Dimensions.get("window");
-  console.log("User data sent to", uniqueToken);
+  // console.log("User data sent to", uniqueToken);
+  const [errorModal, setErrorModal] = useState(false)
+ const [fileSize,setFileSize] = useState(0)
 
   console.log(
     mobileNumber,
@@ -112,7 +117,9 @@ const PanCardScreen = () => {
     try {
       // Create user data object
 
-      // Send user data to the server
+      // Send user data to the server\
+
+      
       
       const response = await axios.post(
         `${baseUrl}/retailer/`,
@@ -123,7 +130,6 @@ const PanCardScreen = () => {
           storeCategory: storeCategory,
           homeDelivery: storeService,
           panCard: panCard,
-
         }
       );
       console.log("res of creating new retailer", response.data);
@@ -251,7 +257,64 @@ const PanCardScreen = () => {
   }
 
 
+  const pickDocument = async () => {
+    const MAX_FILE_SIZE_MB = 2; // Maximum file size in MB
+    const DOCUMENT_MIME_TYPES = [
+        'application/pdf',
+        'text/plain',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
 
+    const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*', // Allow all file types initially
+    });
+
+    if (!result?.canceled) {
+        // const fileInfo = await RNFS.stat(result.uri.replace('file://', ''));
+
+        
+        const fileSizeMB = parseFloat(result?.assets[0].size) / (1e6); // Convert bytes to MB
+        console.log(fileSizeMB);
+        if (fileSizeMB > MAX_FILE_SIZE_MB) {
+            setErrorModal(true);
+            console.error(
+                'File Size Limit Exceeded',
+                `Please select a file smaller than ${MAX_FILE_SIZE_MB}MB`
+            );
+        }
+        else {
+          console.log(result);
+          const formData = new FormData();
+
+          formData.append('storeImages',{
+            uri:result.assets[0].uri,
+            type:result.assets[0].mimeType,
+            name:result.assets[0].name,
+          })
+          
+          const config = {
+            headers:{
+              'Content-Type':'multipart/form-data',
+              'Authorization':`Bearer ${accessToken}`,
+            }
+           }
+          await axios.post(`${baseUrl}/upload`, formData,config)
+            .then(async(res) => {
+              console.log('imageUrl updated from server', res.data[0]);
+              const imgUri = res.data[0];
+              if (imgUri) {
+            setImagesLocal(result);
+            setFileSize(fileSizeMB);
+            setPanCardLocal(imgUri);
+              }
+        })
+      }
+
+    return null;
+
+}
+
+    }
 
 
   const pickImage = async () => {
@@ -284,7 +347,7 @@ const PanCardScreen = () => {
   const deleteImage = () => {
 
     setImagesLocal("");
-    dispatch(setPanCard(""));
+    // dispatch(setPanCard(""));
     setPanCardLocal("");
   };
 
@@ -304,7 +367,6 @@ const PanCardScreen = () => {
             <View
               style={{
                 justifyContent: "center",
-
               }}
             >
               <View
@@ -352,55 +414,60 @@ const PanCardScreen = () => {
                 <Text style={{ fontSize: 14, color: "#2e2c43", fontFamily: "Poppins-Regular" }}>
                   GST Certificate/Labor Certificate
                 </Text>
-                <View className="flex flex-row gap-[40px] mt-[10px]">
-                  <TouchableOpacity onPress={() => setAddMore(!addMore)}>
+                <View className="flex flex-row  mt-[10px]">
+                  <TouchableOpacity onPress={() => pickDocument()}>
                     <View>
                       <AddMoreImage />
                     </View>
                   </TouchableOpacity>
-
+                  
                   {
-                    imagesLocal.length > 0 && (
-                      <View className="rounded-[16px] pb-[100px]">
+                    // imagesLocal.length > 0 && (
+                    //   <View className="rounded-[16px] pb-[100px]">
 
-                        <Pressable
+                    //     <Pressable
 
-                          onPress={() => handleImagePress(imagesLocal)}
-                        >
-                          <View style={styles.imageWrapper}>
-                            <Image
-                              source={{ uri: imagesLocal }}
-                              style={styles.image}
-                            />
-                            <Pressable
-                              onPress={() => deleteImage()}
-                              style={styles.deleteIcon}
-                            >
-                              <DelImg width={24} height={24} />
-                            </Pressable>
-                          </View>
-                        </Pressable>
-                      </View>
+                    //       onPress={() => handleImagePress(imagesLocal)}
+                    //     >
+                    //       <View style={styles.imageWrapper}>
+                    //         <Image
+                    //           source={{ uri: imagesLocal }}
+                    //           style={styles.image}
+                    //         />
+                    //         <Pressable
+                    //           onPress={() => deleteImage()}
+                    //           style={styles.deleteIcon}
+                    //         >
+                    //           <DelImg width={24} height={24} />
+                    //         </Pressable>
+                    //       </View>
+                    //     </Pressable>
+                    //   </View>
+                    // )
+                    panCard  && (
+                      <View  className="rounded-[16px] w-[80%] mb-[100px]">
+                        <View className="flex-col items-center">
+                      <DocumentIcon size={30} />
+                      <Text className=" text-[16px] pt-[10px] w-[70%] text-center">{imagesLocal ?imagesLocal?.assets[0].name:""}</Text>
+                      <Text className="pt-[5px]">{fileSize < 1 ? `${(parseFloat(fileSize).toFixed(3) * 1000)} kb` : `${parseFloat(fileSize).toFixed(1)}Mb`}</Text>
+                  </View>
+                    {/* <Image
+                      source={{ uri: imagesLocal }}
+                      width={154}
+                      height={124}
+                      className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                    /> */}
+                    <Pressable
+                                onPress={() => deleteImage()}
+                                style={styles.deleteIcon}
+                              >
+                               <DelImg width={30} height={30} />
+                              </Pressable>
+                  </View>
                     )
                   }
-                  <Modal
-                    transparent
-                    visible={!!selectedImage}
-                    onRequestClose={handleClose}
-                  >
-                    <Pressable style={styles.modalContainer} onPress={handleClose}>
-                      <Animated.Image
-                        source={{ uri: selectedImage }}
-                        style={[
-                          styles.modalImage,
-                          {
-                            transform: [{ scale: scaleAnimation }],
-                          },
-                        ]}
-                      />
 
-                    </Pressable>
-                  </Modal>
+                
                 </View>
 
 
@@ -426,12 +493,12 @@ const PanCardScreen = () => {
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
                 <Text style={{ color: "white", fontSize: 18, fontFamily: "Poppins-Black" }}>
-                  NEXT
+                  Next
                 </Text>
               )}
             </TouchableOpacity>
           )}
-          {addMore && (
+          {/* {addMore && (
             <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
               <TouchableOpacity onPress={() => { setAddMore(false) }}>
                 <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
@@ -454,7 +521,10 @@ const PanCardScreen = () => {
 
               </View>
             </View>
-          )}
+          )} */}
+
+       {errorModal && <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal}/>}
+
         </KeyboardAvoidingView>
         {loading && (
           <View style={styles.loadingContainer}>
@@ -477,11 +547,12 @@ const styles = StyleSheet.create({
   },
   deleteIcon: {
     position: "absolute",
-    top: 5,
-    right: 5,
+    top: -10,
+    right:40,
     // backgroundColor: "white",
     borderRadius: 50,
-    padding: 1,
+    borderColor:"#fc8b00",
+    borderWidth:1,
   },
   imageContainer: {
     flexDirection: "row",
@@ -524,14 +595,7 @@ const styles = StyleSheet.create({
     top: 20,
     right: 20,
   },
-  deleteIcon: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-    backgroundColor: "white",
-    borderRadius: 50,
-    padding: 2,
-  },
+  
   overlay: {
     flex: 1,
     ...StyleSheet.absoluteFillObject,

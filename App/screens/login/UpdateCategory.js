@@ -198,7 +198,7 @@ const UpdateCategory = () => {
                 fontFamily:"Poppins-Black"
               }}
             >
-              NEXT
+              Next
             </Text>
           </View>
         </TouchableOpacity>

@@ -120,6 +120,7 @@ const RequestAcceptModal = ({
                 tag: user?._id,
                 image: requestInfo?.requestId?.requestImages[0],
                 redirect_to: "bargain",
+                details: requestInfo?.requestId?.requestDescription
               };
               NotificationRequestAccepted(notification);
             }

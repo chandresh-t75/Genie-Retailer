@@ -366,8 +366,8 @@ export const NotificationRequestAccepted = async (mess) => {
       message: {
         token: mess?.token,
         notification: {
-          title: `${mess.title} has accepted your request`,
-          body: "Congrats!",
+          title: `Congrats! ${mess.title} has accepted your request`,
+          body:mess?.details,
           image: mess?.image,
         },
         android: {
@@ -423,7 +423,7 @@ export const NotificationBidAccepted = async (mess) => {
       message: {
         token: mess.token,
         notification: {
-          title: `${mess.title} has accepted the offer at ${mess.price}`,
+          title: `Congrats ${mess.title} has accepted the offer at ${mess.price}`,
           body: mess?.details,
           image: mess?.image,
         },
@@ -483,7 +483,7 @@ export const NotificationBidRejected = async (mess) => {
         token: mess?.token,
         notification: {
           title: `${mess.title} has rejected your offer`,
-          body: "Try with other offer!",
+          body: "Try with better offer!",
           image: mess?.image,
         },
         android: {

@@ -136,7 +136,7 @@ const HelpScreen = () => {
                 color: !query ? "#888888" : "white",
               }}
             >
-              SUBMIT
+              Submit
             </Text>)}
           </TouchableOpacity>
           {modalVisible  && (

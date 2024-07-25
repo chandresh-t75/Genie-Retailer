@@ -8,7 +8,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import ModalImg from "../assets/Cancel.svg";
+import ModalImg from "../assets/requestCancel.svg";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -78,7 +78,7 @@ const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
       className=" flex justify-center items-center  rounded-lg h-full "
     >
       <View className="flex-1  justify-center items-center">
-        <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl">
+        <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl pt-[50px]">
           <ModalImg classname="w-[117px] h-[75px]" />
           <View className="">
             <Text
@@ -117,7 +117,7 @@ const RequestCancelModal = ({ modalVisible, setModalVisible }) => {
                 ) : (
                   <Text
                     className="text-[14.5px] text-[#FB8C00]  text-center"
-                    style={{ fontFamily: "Poppins-SemiBold" }}
+                    style={{ fontFamily: "Poppins-Bold" }}
                   >
                     Yes
                   </Text>

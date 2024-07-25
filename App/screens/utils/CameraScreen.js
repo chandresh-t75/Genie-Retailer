@@ -88,13 +88,13 @@ const CameraScreen = () => {
         // console.log(res.data);
         if (res.status === 200) {
           setOpenModal(true);
-          setTimeout(() => {
+          // setTimeout(() => {
               
-              const requestId=requestInfo?._id;
-                        navigation.navigate(`requestPage${requestId}`);
-                    setIsLoading(false);
-                    setOpenModal(false);
-          }, 2000);
+          //     const requestId=requestInfo?._id;
+          //               navigation.navigate(`requestPage${requestId}`);
+          //           setIsLoading(false);
+          //           setOpenModal(false);
+          // }, 2000);
       }
       if (res.status !== 201) return;
         let mess = [...messages];

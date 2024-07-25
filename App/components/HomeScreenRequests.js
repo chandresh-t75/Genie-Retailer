@@ -24,10 +24,12 @@ import RemainingCustomerModal from "./RemainingCustomerModal";
 
 import ThumbIcon from "../assets/ThumbIcon.svg";
 import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
 const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
   const userData = useSelector((state) => state.storeData.userDetails);
   const { width } = Dimensions.get("window");
+  const navigation=useNavigation();
 
   return (
     <View className="flex items-center flex-col gap-[0px] bg-white">

@@ -77,12 +77,12 @@ const SendDocument = () => {
                 // console.log(res.data);
                 if (res.status === 200) {
                   setOpenModal(true);
-                  setTimeout(() => {
-                      setOpenModal(false);
-                        const requestId=requestInfo?._id;
-                        navigation.navigate(`requestPage${requestId}`);
-                    setIsLoading(false);
-                  }, 2000);
+                //   setTimeout(() => {
+                //       setOpenModal(false);
+                //         const requestId=requestInfo?._id;
+                //         navigation.navigate(`requestPage${requestId}`);
+                //     setIsLoading(false);
+                //   }, 2000);
               }
               if (res.status !== 201) return;
                     let mess = [...messages];

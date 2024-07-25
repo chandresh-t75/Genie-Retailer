@@ -101,12 +101,12 @@ const BidQueryPage = () => {
       ).then(async (response) => {
         if (response.status === 200) {
           setOpenModal(true);
-          setTimeout(() => {
-            const requestId=requestInfo?._id;
-            navigation.navigate(`requestPage${requestId}`);
-            setLoading(false);
-            setOpenModal(false);
-          }, 2000);
+          // setTimeout(() => {
+          //   const requestId=requestInfo?._id;
+          //   navigation.navigate(`requestPage${requestId}`);
+          //   setLoading(false);
+          //   setOpenModal(false);
+          // }, 4000);
         }
         if (response.status !== 201) return;
        

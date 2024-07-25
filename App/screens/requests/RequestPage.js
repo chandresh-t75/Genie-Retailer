@@ -15,6 +15,7 @@ import {
   Modal,
 } from "react-native";
 import React, {
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -75,6 +76,7 @@ import DropDown from "../../assets/dropDown.svg";
 import DropDownUp from "../../assets/dropDownUp.svg";
 import ErrorModal from "../../components/ErrorModal";
 import axiosInstance from "../utils/axiosInstance";
+import NetworkError from "../../components/NetworkError";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -138,6 +140,8 @@ const RequestPage = () => {
   const [online, setOnline] = useState(false);
   const [viewHeight, setViewHeight] = useState(0);
   const [errorModal, setErrorModal] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
+
 
 
   // console.log("params", currentRequest);
@@ -151,7 +155,7 @@ const RequestPage = () => {
     dispatch(setUserDetails(userData));
   };
 
-  const fetchRequestData = async () => {
+  const fetchRequestData = useCallback(async () => {
     setLoading(true);
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
@@ -172,194 +176,214 @@ const RequestPage = () => {
           const result = resu?.data;
           console.log("new requestInfo fetched successfully", result._id);
           dispatch(setRequestInfo(result));
-          const configg = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-              id: result?._id,
-            },
-          };
-
-          await axiosInstance
-            .get(`${baseUrl}/chat/get-spade-messages`, configg)
-            .then(async (response) => {
-              // console.log("fetching messages", response.data);
-              setMessages(response.data);
-              // console.log("Messages found successfully", response.data);
-              // console.log("user joined chat with chatId", response.data[0].chat._id);
-              socket.emit("join chat", response?.data[0]?.chat?._id);
-
-              console.log("socket join chat setup successfully");
-              const lastMessage = response?.data[response?.data.length - 1];
-              console.log("last Mesage: ", lastMessage);
-
-              if (
-                result?.unreadCount > 0 &&
-                result?.latestMessage?.sender?.type === "UserRequest"
-              ) {
-                const configh = {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                };
-
-                const res = await axiosInstance.patch(
-                  `${baseUrl}/chat/mark-as-read`,
-                  {
-                    id: result?._id,
-                  },
-                  configh
-                );
-
-                let tmp = {
-                  ...result,
-                  unreadCount: 0,
-                  updatedAt: new Date().toISOString(),
-                };
-                console.log("mar as read ");
-
-                dispatch(setRequestInfo(tmp));
-                const filteredRequests = ongoingRequests.filter(
-                  (request) => request._id !== result?._id
-                );
-
-                const data = [tmp, ...filteredRequests];
-                dispatch(setOngoingRequests(data));
-
-                console.log("mark as read", res?.data?.unreadCount);
-              }
-              if (
-                result.requestType === "win" &&
-                lastMessage &&
-                lastMessage?.bidType === "update"
-              ) {
-                console.log("update");
-                const configc = {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                };
-                await axiosInstance
-                  .patch(
-                    `${baseUrl}/chat/update-to-history`,
-                    {
-                      id: result?._id,
-                      type: "completed",
-                    },
-                    configc
-                  )
-                  .then((res) => {
-                    const filteredRequests = ongoingRequests.filter(
-                      (request) => request._id !== result?._id
-                    );
-
-                    let tmp = {
-                      ...result,
-                      unreadCount: 0,
-                      requestType: "completed",
-                 bidCompleted: true,
-                      updatedAt: new Date().toISOString(),
-                    };
-                    dispatch(setRequestInfo(tmp));
-                    const data = [...filteredRequests];
-                    dispatch(setOngoingRequests(data));
-                    const data2 = [tmp, ...retailerHistory];
-                    dispatch(setRetailerHistory(data2));
-                  });
-              } else if (
-                result.requestType === "closed" &&
-                lastMessage &&
-                lastMessage?.bidType === "update"
-              ) {
-                console.log("update");
-                const configcl = {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                };
-                await axiosInstance
-                  .patch(
-                    `${baseUrl}/chat/update-to-history`,
-                    {
-                      id: result?._id,
-                      type: "closedHistory",
-                    },
-                    configcl
-                  )
-                  .then((res) => {
-                    const filteredRequests = ongoingRequests.filter(
-                      (request) => request._id !== result?._id
-                    );
-
-                    let tmp = {
-                      ...result,
-                      unreadCount: 0,
-                      requestType: "closedHistory",
-            bidCompleted: true,
-                      updatedAt: new Date().toISOString(),
-                    };
-                    dispatch(setRequestInfo(tmp));
-                    const data = [...filteredRequests];
-                    dispatch(setOngoingRequests(data));
-                    const data2 = [tmp, ...retailerHistory];
-                    dispatch(setRetailerHistory(data2));
-                  });
-              } else if (
-                result.requestType === "new" &&
-                lastMessage &&
-                lastMessage?.bidType === "update"
-              ) {
-                console.log("update");
-                const confign = {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                };
-                await axiosInstance
-                  .patch(
-                    `${baseUrl}/chat/update-to-history`,
-                    {
-                      id: result?._id,
-                      type: "notParticipated",
-                    },
-                    confign
-                  )
-                  .then((res) => {
-                    const filteredRequests = newRequests.filter(
-                      (request) => request._id !== result?._id
-                    );
-
-                    let tmp = {
-                      ...result,
-                      unreadCount: 0,
-                      requestType: "notParticipated",
-            bidCompleted: true,
-                      updatedAt: new Date().toISOString(),
-                    };
-                    dispatch(setRequestInfo(tmp));
-                    const data = [...filteredRequests];
-                    dispatch(setNewRequests(data));
-                    const data2 = [tmp, ...retailerHistory];
-                    dispatch(setRetailerHistory(data2));
-                  });
-              }
-
-              setLoading(false);
-            });
-        });
+          fetchMessages(result)
+         
+      })
     } catch (error) {
       // dispatch(setMessages(response.data));
 
       // socket.emit("join chat", response?.data[0].chat._id);
+      setLoading(false);
+      if (!error?.response?.status)
+          setNetworkError(true);
+    
       console.error("Error fetching messages:", error);
     }
-  };
+  },[]);
+
+  const fetchMessages=async(result)=>{
+    const configg = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        id: result?._id,
+      },
+    };
+
+    try{
+      await axiosInstance
+      .get(`${baseUrl}/chat/get-spade-messages`, configg)
+      .then(async (response) => {
+        // console.log("fetching messages", response.data);
+        setMessages(response.data);
+        // console.log("Messages found successfully", response.data);
+        // console.log("user joined chat with chatId", response.data[0].chat._id);
+        socket.emit("join chat", response?.data[0]?.chat?._id);
+
+        console.log("socket join chat setup successfully");
+        const lastMessage = response?.data[response?.data.length - 1];
+        console.log("last Mesage: ", lastMessage);
+
+        if (
+          result?.unreadCount > 0 &&
+          result?.latestMessage?.sender?.type === "UserRequest"
+        ) {
+          const configh = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          };
+
+          const res = await axiosInstance.patch(
+            `${baseUrl}/chat/mark-as-read`,
+            {
+              id: result?._id,
+            },
+            configh
+          );
+
+          let tmp = {
+            ...result,
+            unreadCount: 0,
+            updatedAt: new Date().toISOString(),
+          };
+          console.log("mar as read ");
+
+          dispatch(setRequestInfo(tmp));
+          const filteredRequests = ongoingRequests.filter(
+            (request) => request._id !== result?._id
+          );
+
+          const data = [tmp, ...filteredRequests];
+          dispatch(setOngoingRequests(data));
+
+          console.log("mark as read", res?.data?.unreadCount);
+        }
+        if (
+          result.requestType === "win" &&
+          lastMessage &&
+          lastMessage?.bidType === "update"
+        ) {
+          console.log("update");
+          const configc = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          };
+          await axiosInstance
+            .patch(
+              `${baseUrl}/chat/update-to-history`,
+              {
+                id: result?._id,
+                type: "completed",
+              },
+              configc
+            )
+            .then((res) => {
+              const filteredRequests = ongoingRequests.filter(
+                (request) => request._id !== result?._id
+              );
+
+              let tmp = {
+                ...result,
+                unreadCount: 0,
+                requestType: "completed",
+           bidCompleted: true,
+                updatedAt: new Date().toISOString(),
+              };
+              dispatch(setRequestInfo(tmp));
+              const data = [...filteredRequests];
+              dispatch(setOngoingRequests(data));
+              const data2 = [tmp, ...retailerHistory];
+              dispatch(setRetailerHistory(data2));
+            });
+        } else if (
+          result.requestType === "closed" &&
+          lastMessage &&
+          lastMessage?.bidType === "update"
+        ) {
+          console.log("update");
+          const configcl = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          };
+          await axiosInstance
+            .patch(
+              `${baseUrl}/chat/update-to-history`,
+              {
+                id: result?._id,
+                type: "closedHistory",
+              },
+              configcl
+            )
+            .then((res) => {
+              const filteredRequests = ongoingRequests.filter(
+                (request) => request._id !== result?._id
+              );
+
+              let tmp = {
+                ...result,
+                unreadCount: 0,
+                requestType: "closedHistory",
+      bidCompleted: true,
+                updatedAt: new Date().toISOString(),
+              };
+              dispatch(setRequestInfo(tmp));
+              const data = [...filteredRequests];
+              dispatch(setOngoingRequests(data));
+              const data2 = [tmp, ...retailerHistory];
+              dispatch(setRetailerHistory(data2));
+            });
+        } else if (
+          result.requestType === "new" &&
+          lastMessage &&
+          lastMessage?.bidType === "update"
+        ) {
+          console.log("update");
+          const confign = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          };
+          await axiosInstance
+            .patch(
+              `${baseUrl}/chat/update-to-history`,
+              {
+                id: result?._id,
+                type: "notParticipated",
+              },
+              confign
+            )
+            .then((res) => {
+              const filteredRequests = newRequests.filter(
+                (request) => request._id !== result?._id
+              );
+
+              let tmp = {
+                ...result,
+                unreadCount: 0,
+                requestType: "notParticipated",
+      bidCompleted: true,
+                updatedAt: new Date().toISOString(),
+              };
+              dispatch(setRequestInfo(tmp));
+              const data = [...filteredRequests];
+              dispatch(setNewRequests(data));
+              const data2 = [tmp, ...retailerHistory];
+              dispatch(setRetailerHistory(data2));
+            });
+        }
+
+        setLoading(false);
+      })
+    }
+  catch (error) {
+    setLoading(false);
+    console.log("hii")
+    if (!error?.response?.status){
+        setNetworkError(true);
+    }
+  
+    console.error("Error fetching messages:", error);
+  }
+  }
 
   const SocketSetUp = async (userId, senderId) => {
     console.log("setup", userId);
@@ -367,38 +391,26 @@ const RequestPage = () => {
     console.log("socket setup for personal user setup successfully");
     // console.log("user connected with userId", requestInfo.users[0]._id);
 
-    socket.on("connected", () => {
-      setSocketConnected(true);
-    });
+    // socket.on("connected", () => {
+    //   setSocketConnected(true);
+    // });
   };
 
+  // const memoizeFunctionCalls = useMemo(()=>{
+    
+  // },[])
+
   useEffect(() => {
+   
     console.log("route.params.data", currentRequest);
-    // if (requestInfo) {
-    //   console.log("find error of requestPage from home screen");
-    //   SocketSetUp(requestInfo?.users[0]._id);
-    // }
+    
     console.log("Params data found");
+
     fetchUserDetails();
     SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
-    // if (requestInfo && requestInfo._id===currentRequest.requestId) {
-    //   setLoading(true);
-    //   fetchRequestData();
-    //   fetchMessages();
-    //   setLoading(false);
-    // }
-    // else{
-
+   
     fetchRequestData();
-
-    // }
-
-    // setTimeout(()=>{
     console.log("reqInfo from params", socketConnected);
-
-    // console.log("reqInfo from params", requestInfo);
-    // },2000);
-
     return () => {
       if (socket) {
         // socket.disconnect();
@@ -424,12 +436,25 @@ const RequestPage = () => {
       console.log("user offline");
     };
 
+    const handleConnectUser = (value) => {
+        if(value.value){
+          setOnline(true);
+          dispatch(setOnlineUser(true));
+        }
+        else{
+          setOnline(false);
+          dispatch(setOnlineUser(false));
+        }
+    };
+
     socket.on("online", handleUserOnline);
     socket.on("offline", handleUserOffline);
+    socket.on("connected",handleConnectUser);
 
     return () => {
       socket.off("online", handleUserOnline);
       socket.off("offline", handleUserOffline);
+      socket.off("connected", handleConnectUser);
     };
   }, []);
 
@@ -1008,6 +1033,7 @@ const RequestPage = () => {
             </View>
           )}
 
+
           <View className="px-[50px] pb-[20px] flex bg-[#ffe7c8]">
             <View className="gap-[0px] relative ">
               <Text
@@ -1115,6 +1141,10 @@ const RequestPage = () => {
               }}
             ></View>
           )}
+
+
+
+{networkError && <View style={{ marginTop: 30 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={fetchRequestData} setNetworkError={setNetworkError} /></View>}
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
@@ -1425,7 +1455,7 @@ const RequestPage = () => {
         } `}
       >
         {requestInfo?.requestType !== "closed" &&
-        requestInfo?.bidCompleted !==true && 
+        requestInfo?.bidCompleted !==true && !networkError &&
         messages[messages.length - 1]?.bidType!=="update" &&
           requestInfo?.requestType === "new" &&
           available === false && (
@@ -1581,10 +1611,10 @@ const RequestPage = () => {
               >
                 <View className="h-[63px] flex  flex-1 items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl">
                   <Text
-                    className="text-[16px] text-[#fb8c00] text-center"
+                    className="text-[16px] text-[#fb8c00] text-center px-[10px]"
                     style={{ fontFamily: "Poppins-Regular" }}
                   >
-                    Send message to customer
+                    Send query message
                   </Text>
                 </View>
               </TouchableOpacity>
