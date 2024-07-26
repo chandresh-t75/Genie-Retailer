@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Modal, Animated, StyleSheet } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 // import ArrowLeft from '../../assets/arrow-left.svg';
@@ -14,6 +14,26 @@ import BackArrow from "../../assets/BackArrow.svg";
 const ViewRequestScreen = () => {
     const navigation = useNavigation();
     const requestInfo= useSelector(state => state.requestData.requestInfo);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [scaleAnimation] = useState(new Animated.Value(0));
+
+
+    const handleImagePress = (image) => {
+        setSelectedImage(image);
+        Animated.timing(scaleAnimation, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      };
+    
+      const handleClose = () => {
+        Animated.timing(scaleAnimation, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start(() => setSelectedImage(null));
+      };
 
     return (
         <SafeAreaView style={{ flex: 1,backgroundColor:"white"}}>
@@ -40,7 +60,7 @@ const ViewRequestScreen = () => {
 
                 <Text className=" text-[#2e2c43] text-[14px] mt-[36px] mb-[15px]" style={{ fontFamily: "Poppins-Bold" }}>Reference images for vendors</Text>
 
-                <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row', gap: 4, paddingHorizontal: 5, }}>
+                {/* <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row', gap: 4, paddingHorizontal: 5, }}>
                     {
                         requestInfo?.requestId?.requestImages?.map((image, index) => (
                             <View key={index}>
@@ -48,6 +68,51 @@ const ViewRequestScreen = () => {
                             </View>
                         ))
                     }
+                </ScrollView> */}
+                <ScrollView horizontal  contentContainerStyle={{
+                      paddingRight: 10,
+                    //   marginTop: 10,
+                      flexDirection: "row",
+                      gap: 4,
+                    }}
+                    showsHorizontalScrollIndicator={false}
+                    style={{ maxHeight: 220 }}>
+                  <View style={styles.container}>
+                    <View style={styles.imageContainer}>
+                      {requestInfo?.requestId?.requestImages?.map((image, index) => (
+                        <Pressable
+                          key={index}
+                          onPress={() => handleImagePress(image)}
+                        >
+                          <View style={styles.imageWrapper}>
+                            <Image
+                              source={{ uri: image }}
+                              style={styles.image}
+                            />
+                           
+                          </View>
+                        </Pressable>
+                      ))}
+                    </View>
+                    <Modal
+                      transparent
+                      visible={!!selectedImage}
+                      onRequestClose={handleClose}
+                    >
+                      <Pressable style={styles.modalContainer}  onPress={handleClose}>
+                        <Animated.Image
+                          source={{ uri: selectedImage }}
+                          style={[
+                            styles.modalImage,
+                            {
+                              transform: [{ scale: scaleAnimation }],
+                            },
+                          ]}
+                        />
+                        
+                      </Pressable>
+                    </Modal>
+                  </View>
                 </ScrollView>
 
                 <Text className=" text-[#2e2c43] text-[14px] mt-[60px]" style={{ fontFamily: "Poppins-Bold" }}>Expected price</Text>
@@ -61,5 +126,83 @@ const ViewRequestScreen = () => {
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    overlay: {
+      zIndex: 100,
+      flex: 1,
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      //  position:"absolute",
+      //  bottom:0// Semi-transparent greyish background
+    },
+  
+    loadingContainer: {
+      ...StyleSheet.absoluteFill,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    // menuContainer: {
+    //     flex: 1,
+    //     // Add other styles for menu container
+    // },
+    attachments: {
+      zIndex: 100, // Ensure the overlay is on top
+    },
+    container: {
+      flex: 1,
+    },
+    imageContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+    //   marginHorizontal: 30,
+      gap: 5,
+      marginTop: 10,
+    },
+    imageWrapper: {
+      margin: 5,
+      borderRadius: 15,
+      overflow: "hidden",
+      // borderWidth: 1,
+      // borderColor: "gray",
+    },
+    image: {
+      width: 120,
+      height: 160,
+      borderRadius: 10,
+    },
+    // deleteIc: {
+    //   position: 'absolute',
+    //   top: 5,
+    //   right: 5,
+    // },
+    modalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.7)",
+    },
+    modalImage: {
+      width: 300,
+      height: 400,
+      borderRadius: 10,
+    },
+    closeButton: {
+      position: "absolute",
+      top: 20,
+      right: 20,
+    },
+    deleteIcon: {
+      position: "absolute",
+      top: 5,
+      right: 5,
+      backgroundColor: "white",
+      borderRadius: 50,
+      padding: 2,
+    },
+    
+  });
 
 export default ViewRequestScreen

@@ -43,7 +43,7 @@ const AboutScreen = () => {
                       "Get bigger profit and more sales with high demand"
                       </Text>
                       <Text className="text-center text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>
-                      Give the best offer to the customer to attract them, and you will experience high demand for your stock products if you engage in smart bargaining.
+                      Give the best offers to the customers to attract them, and you will experience high demand for your stock products if you engage in smart bargaining.
                       </Text>
                     </View>
                     <View className="gap-[15px] items-center">

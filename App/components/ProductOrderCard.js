@@ -18,7 +18,7 @@ const ProductOrderCard = ({product}) => {
 //    console.log('data and time', prod?.latestMessage?.sender?.type, prod?.)
 
     // Call the function to format the date and time
-    const { formattedTime, formattedDate } = formatDateTime(prod?.updatedAt);
+    const { formattedTime, formattedDate } = formatDateTime(prod?.createdAt);
   return (
     <View className="max-w-[340px] flex-row relative items-center justify-between bg-white gap-[15px]  rounded-3xl shadow-2xl  px-[20px] h-max py-[20px]" >
                         {

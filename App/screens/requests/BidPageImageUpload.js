@@ -393,7 +393,7 @@ const BidPageImageUpload = () => {
                   style={{ fontFamily: "Poppins-Regular" }}
                   className="text-[#2e2c43]"
                 >
-                  Provide product images for better referencing to customers for product quality and availability.
+                  Provide product images for better reference to customers for product quality and availability.
                 </Text>
               </View>
             </View>

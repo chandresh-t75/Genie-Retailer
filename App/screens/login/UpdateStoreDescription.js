@@ -23,11 +23,11 @@ import { baseUrl } from "../utils/constants";
   
   const UpdateStoreDescription= () => {
     const navigation = useNavigation();
-    const [query, setQuery] = useState("");
     const dispatch = useDispatch();
     const [loading,setLoading] = useState(false);
     const user = useSelector(state => state.storeData.userDetails)
     const accessToken = useSelector((state) => state.storeData.accessToken)
+    const [query, setQuery] = useState(user?.storeDescription);
   
     const storeDescription = async() => {
         setLoading(true);
@@ -135,6 +135,7 @@ import { baseUrl } from "../utils/constants";
                   paddingVertical: 10,
                   // borderWidth: 0.3,
                   // borderColor: "gray",
+                 textAlignVertical: 'top',
                   
                   borderRadius: 20,
                   fontFamily:"Poppins-Regular",

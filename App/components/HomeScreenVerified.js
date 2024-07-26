@@ -498,6 +498,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                       }
                       return item?._id.toString();
                     }}
+                    
                     ListEmptyComponent={
                       <Text
                         className="text-[14px] text-center mb-[20px]"

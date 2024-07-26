@@ -236,7 +236,7 @@ const BidPageInput = () => {
                   placeholderTextColor="#dbcdbb"
                   classname="w-full p-4"
                   onChangeText={handleBidDetails}
-                  style={{ fontFamily: "Poppins-Regular" }}
+                  style={{ fontFamily: "Poppins-Regular" ,  textAlignVertical: 'top',}}
                 />
               </View>
             </View>

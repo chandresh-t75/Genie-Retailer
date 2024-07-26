@@ -247,7 +247,7 @@ const BidOfferedPrice = () => {
                     Step 3/3
                   </Text>
               </View>
-              <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">Tell the customer your offered price.</Text>
+              <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">Your offered price</Text>
               <View className="bg-white p-4 rounded-lg text-center">
                 <TextInput
                   onChangeText={handleOfferedPrice}

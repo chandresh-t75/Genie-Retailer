@@ -197,6 +197,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       gap: 10,
     },
+    
     imageContainer: {
       borderRadius: 30,
       borderWidth: 1,

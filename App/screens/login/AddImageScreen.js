@@ -21,10 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import ClickImage from "../../assets/ClickImg.svg";
 import AddMoreImage from "../../assets/AddMoreImg.svg";
 
-
-
-
-import DelImg from "../../assets/delImgOrange.svg"
+import DelImg from "../../assets/delImgOrange.svg";
 import {
   FontAwesome,
   Entypo,
@@ -41,7 +38,6 @@ import axios from "axios";
 import BackArrow from "../../assets/BackArrow.svg";
 import RightArrow from "../../assets/arrow-right.svg";
 import { baseUrl } from "../utils/constants";
-
 
 const AddImageScreen = () => {
   const [imagesLocal, setImagesLocal] = useState([]);
@@ -64,7 +60,7 @@ const AddImageScreen = () => {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
-  const accessToken=useSelector(state=>state.storeData.accessToken);
+  const accessToken = useSelector((state) => state.storeData.accessToken);
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
@@ -91,15 +87,15 @@ const AddImageScreen = () => {
   }, [cameraScreen]);
   const takePicture = async () => {
     const options = {
-      mediaType: 'photo',
+      mediaType: "photo",
       saveToPhotos: true,
     };
-  
+
     launchCamera(options, async (response) => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
+        console.log("User cancelled image picker");
       } else if (response.error) {
-        console.log('ImagePicker Error: ');
+        console.log("ImagePicker Error: ");
       } else {
         try {
           const newImageUri = response.assets[0].uri;
@@ -110,12 +106,11 @@ const AddImageScreen = () => {
           );
           await getImageUrl(compressedImage.uri);
         } catch (error) {
-          console.error('Error processing image: ', error);
+          console.error("Error processing image: ", error);
         }
       }
     });
   };
-  
 
   // const takePicture = async () => {
   //   if (camera) {
@@ -138,38 +133,37 @@ const AddImageScreen = () => {
   //   }
   // };
   const getImageUrl = async (image) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const formData = new FormData();
 
-      formData.append('storeImages', {
+      formData.append("storeImages", {
         uri: image,
-        type: 'image/jpeg',
-        name: `photo-${Date.now()}.jpg`
-      })
+        type: "image/jpeg",
+        name: `photo-${Date.now()}.jpg`,
+      });
       const config = {
-        headers:{
-          'Content-Type':'multipart/form-data',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
 
-      await axios.post(`${baseUrl}/upload`, formData,config)
-        .then(res => {
-          console.log('imageUrl updated from server', res.data[0]);
-          const imgUri = res.data[0]; 
-          if (imgUri) {
-            console.log("Image Updated Successfully");
-            setImagesLocal((prevImages) => [...prevImages, imgUri]);
-            dispatch(setImages(imgUri));
-            setLoading(false);
-          }
-        })
+      await axios.post(`${baseUrl}/upload`, formData, config).then((res) => {
+        console.log("imageUrl updated from server", res.data[0]);
+        const imgUri = res.data[0];
+        if (imgUri) {
+          console.log("Image Updated Successfully");
+          setImagesLocal((prevImages) => [...prevImages, imgUri]);
+          dispatch(setImages(imgUri));
+          setLoading(false);
+        }
+      });
     } catch (error) {
-  setLoading(false);
-  console.error('Error getting imageUrl: ', error);
+      setLoading(false);
+      console.error("Error getting imageUrl: ", error);
     }
-  }
+  };
   // const getImageUrl = async (image) => {
   //   setLoading(true);
   //   const CLOUDINARY_URL =
@@ -213,7 +207,7 @@ const AddImageScreen = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [3,4],
+      aspect: [3, 4],
       base64: true,
       quality: 1,
     });
@@ -239,19 +233,26 @@ const AddImageScreen = () => {
   return (
     <>
       {!cameraScreen && (
-        <View style={{ flex: 1 }}  className="bg-white"> 
-          <View style={{ flex: 1 ,marginTop:30}}>
+        <View style={{ flex: 1 }} className="bg-white">
+          <View style={{ flex: 1, marginTop: 30 }}>
             <View className="w-full z-40  flex flex-row justify-between items-center px-[32px]">
-            <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
-              }}
-              style={{padding:24,paddingTop:16,position:"absolute",zIndex:100}}
-            >
-                             <BackArrow  />
-
-            </TouchableOpacity>
-              <Text className="text-[16px] flex flex-1 justify-center  items-center text-center text-[#2E2C43]" style={{ fontFamily: "Poppins-Bold" }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}
+                style={{
+                  padding: 24,
+                  paddingTop: 16,
+                  position: "absolute",
+                  zIndex: 100,
+                }}
+              >
+                <BackArrow />
+              </TouchableOpacity>
+              <Text
+                className="text-[16px] flex flex-1 justify-center  items-center text-center text-[#2E2C43]"
+                style={{ fontFamily: "Poppins-Bold" }}
+              >
                 Add Store Image
               </Text>
               {/* {imagesLocal.length === 0 && <Pressable onPress={() => navigation.navigate("addexpectedprice")} className="">
@@ -259,32 +260,47 @@ const AddImageScreen = () => {
               </Pressable>} */}
             </View>
             <View className="mt-[10px] mb-[27px]">
-                  {
-                    imagesLocal.length === 0 ?(<Text className="text-[14.5px]  text-[#FB8C00] text-center mb-[10px]" style={{ fontFamily: "Poppins-SemiBold" }}>
-                      Step 2/4
-                    </Text>):(<Text className="text-[14.5px]  text-[#FB8C00] text-center mb-[10px]" style={{ fontFamily: "Poppins-SemiBold" }}>
-                    Step 3/4
-                  </Text>)
-                  }
-              <Text className="text-[14px] text-center px-[32px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
-              Please remember to provide easy-to-understand image references that people can use to find your shop.
+              {imagesLocal.length === 0 ? (
+                <Text
+                  className="text-[14.5px]  text-[#FB8C00] text-center mb-[10px]"
+                  style={{ fontFamily: "Poppins-SemiBold" }}
+                >
+                  Step 2/4
+                </Text>
+              ) : (
+                <Text
+                  className="text-[14.5px]  text-[#FB8C00] text-center mb-[10px]"
+                  style={{ fontFamily: "Poppins-SemiBold" }}
+                >
+                  Step 3/4
+                </Text>
+              )}
+              <Text
+                className="text-[14px] text-center px-[32px] text-[#2e2c43]"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
+                Please remember to provide easy-to-understand image references
+                that people can use to find your shop.
               </Text>
             </View>
 
             {imagesLocal.length === 0 ? (
-              <View className="z-0">
+              <View className="z-0 mt-[20px]">
                 <TouchableOpacity onPress={() => takePicture()}>
                   <View className="flex-row justify-center">
                     <ClickImage />
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => pickImage()}>
+                {/* <TouchableOpacity onPress={() => pickImage()}>
                   <View className="mx-[28px] mt-[30px] h-[63px] flex-row items-center justify-center border-2 border-[#fb8c00] rounded-3xl">
-                    <Text className="text-[16px]  text-[#fb8c00] text-center" style={{ fontFamily: "Poppins-ExtraBold" }}>
+                    <Text
+                      className="text-[16px]  text-[#fb8c00] text-center"
+                      style={{ fontFamily: "Poppins-ExtraBold" }}
+                    >
                       Browse Image
                     </Text>
                   </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             ) : (
               <View>
@@ -305,7 +321,7 @@ const AddImageScreen = () => {
                               onPress={() => deleteImage(index)}
                               style={styles.deleteIcon}
                             >
-                              <DelImg width={24} height={24}/>
+                              <DelImg width={24} height={24} />
                             </Pressable>
                           </View>
                         </Pressable>
@@ -316,7 +332,10 @@ const AddImageScreen = () => {
                       visible={!!selectedImage}
                       onRequestClose={handleClose}
                     >
-                      <Pressable style={styles.modalContainer}  onPress={handleClose}>
+                      <Pressable
+                        style={styles.modalContainer}
+                        onPress={handleClose}
+                      >
                         <Animated.Image
                           source={{ uri: selectedImage }}
                           style={[
@@ -326,7 +345,6 @@ const AddImageScreen = () => {
                             },
                           ]}
                         />
-                        
                       </Pressable>
                     </Modal>
                   </View>
@@ -351,36 +369,60 @@ const AddImageScreen = () => {
                     }
                   >
                     <View className="w-full flex justify-center items-center">
-                    <Text className="text-white  text-center text-[16px]" style={{ fontFamily: "Poppins-Black" }}>
-                      Continue
-                    </Text>
+                      <Text
+                        className="text-white  text-center text-[16px]"
+                        style={{ fontFamily: "Poppins-Black" }}
+                      >
+                        Continue
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 </View>
               )
             ) : (
-              <View style={{ flex: 1 }} className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl " >
-              <TouchableOpacity onPress={() => { setAddMore(false) }}>
-                <View className="h-full w-screen " style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}  >
-                </View>
-              </TouchableOpacity>
-              <View className="bg-white absolute bottom-0 left-0 right-0 ">
-    
-                <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+              <View
+                style={{ flex: 1 }}
+                className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl "
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    setAddMore(false);
+                  }}
+                >
+                  <View
+                    className="h-full w-screen "
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+                  ></View>
+                </TouchableOpacity>
+                <View className="bg-white absolute bottom-0 left-0 right-0 ">
+                  {/* <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
                   <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
                     <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
                     <RightArrow />
                   </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
-                  <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
-                    <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
-                    <RightArrow />
-                  </View>
-                </TouchableOpacity>
-    
+                </TouchableOpacity> */}
+                  <TouchableOpacity
+                    onPress={() => {
+                      takePicture();
+                      setAddMore(false);
+                    }}
+                  >
+                    <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] pt-[30px] pb-[10px]">
+                      <Text style={{ fontFamily: "Poppins-Bold" }}>
+                        Click Image
+                      </Text>
+                      <RightArrow />
+                    </View>
+                    <Text
+                      className="w-[90%] items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] pb-[30px]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Please take a real photo of your store for customers'
+                      shopping reference.
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
             )}
           </View>
           <ModalCancel
@@ -394,7 +436,6 @@ const AddImageScreen = () => {
         </View>
       )}
 
-      
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#fb8c00" />

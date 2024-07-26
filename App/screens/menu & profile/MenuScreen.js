@@ -84,7 +84,12 @@ const MenuScreen = () => {
                         }
                         <View className="flex-col w-[70%]">
                             <Text className=" text-[16px] flex  capitalize" style={{ fontFamily: "Poppins-Black" }}>{user?.storeName}</Text>
-                            <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeMobileNo}</Text>
+                            <View className="flex flex-row gap-1">
+                            <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeMobileNo.substring(0,3)}</Text>
+                            <Text className="text-[14px] text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeMobileNo.substring(3)}</Text>
+                             
+
+                            </View>
                         </View>
                     </View>
 

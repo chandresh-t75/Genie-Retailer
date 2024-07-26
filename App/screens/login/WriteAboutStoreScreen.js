@@ -99,7 +99,7 @@ const WriteAboutStoreScreen = () => {
                 paddingVertical: 10,
                 // borderWidth: 0.3,
                 // borderColor: "gray",
-                
+                textAlignVertical: 'top',
                 borderRadius: 20,
                 fontFamily:"Poppins-Regular",
               }}

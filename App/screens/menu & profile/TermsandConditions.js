@@ -280,7 +280,7 @@ const TermsandConditions = () => {
             <Text className="text-[14px] px-[32px] text-center mb-2  py-[10px] " style={{fontFamily:"Poppins-Bold"}}>Let's Grow together! We create what you believe in.</Text>
 
             <Text className="text-[14px] px-[32px] text-center mb-2 border-[1px] py-[10px] " style={{fontFamily:"Poppins-Regular",borderColor:"green",color:"green"}}>There are charges like 100 rupees for 1000 customers. So please accept and proceed with the customer's request carefully. Only accept requests when you have the right product availability.</Text>
-             <Text className="text-[14px] px-[32px] text-center mb-2"style={{fontFamily:"Poppins-Regular"}}>Unlock Your Business Potential – Download CulturTap Genie Business and Transform Your Sales Now!</Text>
+             <Text className="text-[14px] px-[32px] text-center mb-2"style={{fontFamily:"Poppins-Regular"}}>Unlock Your Business Potential – Download CulturTap Genie Business App and Transform Your Sales Now!</Text>
 
             <ThumbIcon className=" " />
           </View>

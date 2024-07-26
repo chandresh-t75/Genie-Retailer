@@ -116,7 +116,7 @@ const RequestPage = () => {
   const [type, setType] = useState("");
   const [requestOpen,setRequestOpen] = useState(false);
 
-  const [rating, setRating] = useState(1);
+  const [rating, setRating] = useState(0);
   // const { req } = route.params;
   const retailerHistory = useSelector(
     (state) => state.requestData.retailerHistory || []
@@ -1152,7 +1152,7 @@ const RequestPage = () => {
           onContentSizeChange={() =>
             scrollViewRef.current.scrollToEnd({ animated: true })
           }
-          style={{ marginBottom: 120 }}
+          style={{ marginBottom: 150 }}
         >
           {loading && (
             <View style={{ flex: 1 }}>

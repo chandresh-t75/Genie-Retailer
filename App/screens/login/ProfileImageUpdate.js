@@ -31,6 +31,7 @@ import DelImg from "../../assets/delImgOrange.svg";
 import RightArrow from "../../assets/arrow-right.svg";
 import { baseUrl } from "../utils/constants";
 import axiosInstance from "../utils/axiosInstance";
+import DeleteImageModal from "../../components/DeleteImageModal";
 
 
 const ProfileImageUpdate = () => {
@@ -302,17 +303,19 @@ const ProfileImageUpdate = () => {
           </TouchableOpacity>
           <View className="bg-white absolute bottom-0 left-0 right-0 ">
 
-            <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
+            {/* <TouchableOpacity onPress={() => { pickImage(); setAddMore(false) }}>
               <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]  border-b-[1px] border-gray-400">
                 <Text style={{ fontFamily: "Poppins-Regular" }}>Upload Image</Text>
                 <RightArrow />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity onPress={() => { takePicture(); setAddMore(false); }}>
-              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] py-[30px]">
-                <Text style={{ fontFamily: "Poppins-Regular" }}>Click Image</Text>
+              <View className="items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] pt-[30px] pb-[10px]">
+                <Text style={{ fontFamily: "Poppins-Bold" }}>Click Image</Text>
                 <RightArrow />
               </View>
+              <Text className="w-[90%] items-center flex-row justify-between pl-[15px] pr-[30px] mx-[20px] pb-[30px]" style={{ fontFamily: "Poppins-Regular" }}>Please take a real photo of your store for customers' shopping reference.</Text>
+
             </TouchableOpacity>
 
           </View>
@@ -349,6 +352,7 @@ const ProfileImageUpdate = () => {
           <ActivityIndicator size="large" color="#fb8c00" />
         </View>
       )}
+     
     </View>
   );
 };
@@ -382,6 +386,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
 
+  },
+  overlay: {
+    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent greyish background
   },
 });
 

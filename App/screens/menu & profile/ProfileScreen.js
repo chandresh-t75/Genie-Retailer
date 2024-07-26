@@ -31,6 +31,7 @@ import { baseUrl } from "../utils/constants";
 import axiosInstance from "../utils/axiosInstance";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DocumentIcon from '../../assets/DocumentIcon.svg';
+import DeleteImageModal from "../../components/DeleteImageModal";
 
 
 const ProfileScreen = () => {
@@ -55,6 +56,8 @@ const ProfileScreen = () => {
   const [panCard, setPanCard] = useState(user?.panCard || "");
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
+  const [indexImg,setIndexImg] = useState(null);
+  const [modalVisible,setModalVisible] = useState(false);
   const accessToken = useSelector((state) => state.storeData.accessToken)
 
 
@@ -249,6 +252,11 @@ const ProfileScreen = () => {
     }
   };
 
+  const handleImageClick = (index) => {
+    setIndexImg(index);
+    setModalVisible(true);
+  };
+
 
   const handleDownloadDocument = async () => {
     // const url = `https://www.google.com/search?q=${encodeURIComponent(bidDetails.bidImages[0])}`
@@ -374,7 +382,7 @@ const ProfileScreen = () => {
                       className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
                     />
                     <Pressable
-                      onPress={() => deleteImage(index)}
+                      onPress={() => handleImageClick(index)}
                       style={styles.deleteIcon}
                     >
                       <DelImg width={24} height={24} />
@@ -472,7 +480,7 @@ const ProfileScreen = () => {
               </Text>
               <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
 
-                <Text className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeDescription}</Text>
+                <Text className="w-[240px] text-[14px]  text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeDescription}</Text>
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate("update-store-description");
@@ -502,14 +510,14 @@ const ProfileScreen = () => {
                   scrollEnabled={true}
                   editable={false}
                 />
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => {
                     navigation.navigate("update-service-delivery");
                   }}
                   style={{paddingHorizontal:10}}
                 >
                   <EditIcon className="px-[10px]"/>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </View>
 
@@ -559,6 +567,13 @@ const ProfileScreen = () => {
           <ActivityIndicator size="large" color="#fb8c00" />
         </View>
       )}
+
+<DeleteImageModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            index={indexImg}
+          />
+          {modalVisible && <View style={styles.overlay} />}
     </View>
   );
 };
@@ -599,7 +614,7 @@ const EditableField = ({
           editable={editable}
           placeholder={label}
           placeholderTextColor={"#dbcdbb"}
-          className="w-[230px] text-[14px] py-[10px] text-[#2E2C43] capitalize"
+          className={`w-[230px] text-[14px] py-[10px] text-[#2E2C43] ${editable?"":"capitalize"}`}
           style={{ fontFamily: "Poppins-Regular" }}
         />
         {label != "Mobile Number" && (
@@ -627,6 +642,8 @@ const EditableField = ({
           </TouchableOpacity>
         )}
       </View>
+
+      
     </KeyboardAvoidingView>
   </View>
 );
@@ -653,6 +670,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
+  },
+  overlay: {
+    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent greyish background
   },
   modalImage: {
     width: 300,

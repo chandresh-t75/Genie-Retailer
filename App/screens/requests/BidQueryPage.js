@@ -333,7 +333,7 @@ const BidQueryPage = () => {
           <KeyboardAvoidingView>
             <View className="flex gap-[21px] px-[50px] pt-[10px] pb-[100px]">
               <View className="flex-row justify-between">
-                <Text className="text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>Send Message</Text>
+                <Text className="text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>Send query message</Text>
                 {/* <Text>Step 1/3</Text> */}
               </View>
               {/* <Text style={{ fontFamily: "Poppins-Regular" }}>Type your response here to the customer</Text> */}
@@ -345,7 +345,7 @@ const BidQueryPage = () => {
                   placeholderTextColor="#dbcdbb"
                   classname=" "
                   onChangeText={(text) => setQuery(text)}
-                  style={{ fontFamily: "Poppins-Regular" }}
+                  style={{ fontFamily: "Poppins-Regular",  textAlignVertical: 'top', }}
                 />
               </View>
             </View>
