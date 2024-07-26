@@ -15,19 +15,19 @@ const ProductOrderCard = ({product}) => {
     // console.log("prod",prod.requestId?.requestImages[0]);
     
 
-   
+//    console.log('data and time', prod?.latestMessage?.sender?.type, prod?.)
 
     // Call the function to format the date and time
     const { formattedTime, formattedDate } = formatDateTime(prod?.updatedAt);
   return (
     <View className="max-w-[340px] flex-row relative items-center justify-between bg-white gap-[15px]  rounded-3xl shadow-2xl  px-[20px] h-max py-[20px]" >
-                      {
+                        {
                         prod?.latestMessage?.sender?.type==="UserRequest" && prod?.unreadCount>0 &&
-                        <View className="w-[22px] h-[22px] flex justify-center items-center  bg-[#E76063] rounded-full absolute top-0 right-0" style={{backgroundColor:"#E76063 "}}>
-                           <Text className="text-white text-center" style={{ fontFamily: "Poppins-Regular" }} >{prod?.unreadCount}</Text>
-                         </View>
-                      }
-                       <View className="w-[95px] h-[95px]  rounded-[15px]">
+                        <View className="w-[20px] h-[20px] flex justify-center items-center  rounded-full absolute -top-[10px] right-[20px]" style={{backgroundColor:"#558B2F"}}>
+                            <Text className="text-white text-center" style={{ fontFamily: "Poppins-Regular" }} >{prod?.unreadCount}</Text>
+                        </View>
+                        }
+                        <View className="w-[95px] h-[95px]  rounded-[15px]">
                         {
                             prod?.requestId?.requestImages?.length>0 ?
                             (<Image source={ {uri: prod.requestId.requestImages[0] }} className="w-full h-full object-contain rounded-[15px]"  />):(

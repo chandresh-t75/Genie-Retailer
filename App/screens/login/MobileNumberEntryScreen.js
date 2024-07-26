@@ -175,10 +175,10 @@ const MobileNumberEntryScreen = () => {
       // dispatch(storeClear());
       try {
         const phoneNumber = countryCode + mobileNumber;
-        // console.log(phoneNumber);
-        // const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-        // setConfirm(confirmation);
-        // console.log(confirmation);
+        console.log(phoneNumber);
+        const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+        setConfirm(confirmation);
+        console.log(confirmation);
 
         dispatch(setMobileNumber(phoneNumber));
         setMobileScreen(false);
@@ -204,11 +204,11 @@ const MobileNumberEntryScreen = () => {
     try {
       // Make a request to your backend API to check if the mobile number is registered
 
-      //  console.log(confirm) 
-      //  const res=await confirm.confirm(otp);
-      //  console.log("res",res);
-      // console.log(otp);  
-      // if(res.status===200 || res?.user?.phoneNumber?.length>0){
+       console.log(confirm) 
+       const res=await confirm.confirm(otp);
+       console.log("res",res);
+      console.log(otp);  
+      if(res.status===200 || res?.user?.phoneNumber?.length>0){
       const phoneNumber = countryCode + mobileNumber;
       console.log("phone", phoneNumber);
       const response = await axios.get(
@@ -270,13 +270,13 @@ const MobileNumberEntryScreen = () => {
         setMobileNumberLocal("");
         setMobileScreen(true);
       } 
-      // }
-      // else{
-      //   setLoading(false);
-      //   console.log('Invalid otp:');
-      //   alert('Invalid otp');
-      //   return;
-      // }
+      }
+      else{
+        setLoading(false);
+        console.log('Invalid otp:');
+        alert('Invalid otp');
+        return;
+      }
     } catch (error) {
       console.log("Invalid otp:", otp);
       alert("Invalid otp");

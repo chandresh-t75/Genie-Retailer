@@ -92,13 +92,13 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         updatedUser?.unreadCount
       );
 
-      console.log("ongoing requests", ongoingRequests?.length, updatedUser);
+      // console.log("ongoing requests", ongoingRequests?.length, updatedUser);
 
       const filteredRequests = ongoingRequests.filter(
         (request) => request?._id !== updatedUser?._id
       );
-      console.log("ongoing requests", filteredRequests.length);
-
+      // console.log("ongoing requests", filteredRequests.length);
+  
       const updatedRequest = [updatedUser, ...filteredRequests];
       dispatch(setOngoingRequests(updatedRequest));
     };

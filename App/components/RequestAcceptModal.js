@@ -153,7 +153,7 @@ const RequestAcceptModal = ({
               dispatch(setRequestInfo(tmp));
               const updatedMessages = messages.map((message) => {
                 if (message?._id === lastMessage?._id) {
-                  return { ...message, bidAccepted: "accepted" };
+                  return { ...message, bidAccepted: "accepted"};
                 }
                 return message;
               });
@@ -174,6 +174,8 @@ const RequestAcceptModal = ({
                   tag: user?._id,
                   price: lastMessage?.bidPrice,
                   image: requestInfo?.requestId?.requestImages[0],
+                  details: requestInfo?.requestId?.requestDescription
+
                 };
                 NotificationBidAccepted(notification);
               }

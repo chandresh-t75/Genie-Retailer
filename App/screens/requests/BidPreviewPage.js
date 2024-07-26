@@ -347,7 +347,7 @@ const BidPreviewPage = () => {
               <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2e2c43]">{bidDetails}</Text>
             </View>
             <View className="gap-[10px]">
-              <Text className=" text-[14px] px-[50px] text-[#2e2c43]" style={{ fontFamily: "Poppins-SemiBold" }}>
+              <Text className=" text-[14px] px-[50px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>
                 Reference Images
               </Text>
               {bidImages ? (
@@ -391,13 +391,13 @@ const BidPreviewPage = () => {
               )}
             </View>
             <View className="gap-[0px] px-[50px]">
-              <Text className=" text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-SemiBold" }}>Offered Price</Text>
+              <Text className=" text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>Offered Price</Text>
               <Text className=" text-[24px] text-[#558B2F]" style={{ fontFamily: "Poppins-Bold" }}>
                  {bidOfferedPrice?`Rs ${bidOfferedPrice}`:"Na"}
               </Text>
             </View>
             <View className="gap-[0px] px-[50px]">
-              <Text className=" text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-SemiBold" }}>
+              <Text className=" text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Bold" }}>
                 Product Warranty
               </Text>
               <Text className=" text-[24px] text-[#558B2F]" style={{ fontFamily: "Poppins-Bold" }}>
