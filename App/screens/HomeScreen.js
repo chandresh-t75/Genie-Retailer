@@ -22,6 +22,8 @@ const HomeScreen = () => {
     const dispatch=useDispatch();
   const [modalVisible,setModalVisible]=useState(false);
   const [networkError, setNetworkError] = useState(false);
+  const [refreshing, setRefreshing] =useState(false);
+
 
  
 
@@ -62,7 +64,7 @@ const fetchUserData = async () => {
 
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
     const accessToken =  JSON.parse(await AsyncStorage.getItem("accessToken"));
-    // console.log(accessToken);
+    console.log(accessToken);
 
     try{
       if (userData) {
@@ -115,37 +117,12 @@ useEffect(()=>{
 
     return (
         <View className="flex-1 bg-white " >
-            <ScrollView 
-          >
-            <View className="flex flex-col mt-[20px]  gap-[32px] ">
-                <View className="flex flex-row justify-between items-center px-[32px]">
-                  
-                        <TouchableOpacity onPress={()=>navigation.navigate("menu")} style={{padding:8}}>
-                           <View className="bg-[#FB8C00] p-[4px] rounded-full">
-                            <Profile />
-                            </View>
-                        </TouchableOpacity>
-                   
-                    <GinieIcon/>
-                    
-                        <TouchableOpacity onPress={()=>navigation.navigate("history")} style={{padding:8}}>
-                        <View className="bg-[#FB8C00] p-[4px] rounded-full">
-                            <History height={28} width={28}/>
-                            </View>
-                        </TouchableOpacity>
-                   
-                    
-                </View>
-                {
+           
+                
                      <HomeScreenVerified modalVisible={modalVisible} setModalVisible={setModalVisible} />
-                }
+                
                
-            
-
-
-            </View>
-              
-            </ScrollView>
+    
             {modalVisible && (
           <>
             <RemainingCustomerModal

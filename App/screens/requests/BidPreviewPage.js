@@ -123,9 +123,9 @@ const BidPreviewPage = () => {
         // console.log("messages recieved", response.data);
         socket.emit("new message", response.data);
         let mess = [...messages];
-        console.log("query send", mess);
+        // console.log("query send", mess);
         mess.push(response.data);
-        console.log("query update", mess);
+        // console.log("query update", mess);
        
 
 

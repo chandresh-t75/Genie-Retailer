@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  AppState,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -41,6 +42,9 @@ import RemainingCustomerModal from "./RemainingCustomerModal";
 import { baseUrl } from "../screens/utils/constants";
 import axiosInstance from "../screens/utils/axiosInstance";
 import NetworkError from "./NetworkError";
+import Profile from "../assets/ProfileIcon.svg"
+import GinieIcon from "../assets/GinieBusinessIcon.svg"
+import History from "../assets/HistoryIcon.svg"
 
 const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const navigation = useNavigation();
@@ -68,19 +72,45 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const [socketConnected, setSocketConnected] = useState(false);
   const accessToken=useSelector((state) => state.storeData.accessToken)
   const [networkError, setNetworkError] = useState(false);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+// ////////////////////////////////////Connecting socket from when app goes from backgroun to foreground/////////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        
+          connectSocket();
+      }
 
-  const connectSocket = useCallback(async (id) => {
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('AppState', appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+
+
+  const connectSocket = useCallback(async () => {
     // socket.emit("setup", currentSpadeRetailer?.users[1]._id);
-    const userId = id;
-    const senderId = id;
-    socket.emit("setup", { userId, senderId });
+    const userDetailsData = JSON.parse(await AsyncStorage.getItem('userData'));
+    const userId = userDetailsData?._id;
+    const senderId = userDetailsData?._id;
+    if(userId && senderId) 
+      socket.emit("setup", { userId, senderId });
     //  console.log('Request connected with socket with id', spadeId);
     socket.on("connected", () => setSocketConnected(true));
-    console.log("Home Screen socekt connect with id", id);
+    console.log("Home Screen socekt connect with id");
   });
 
   useEffect(() => {
-    connectSocket(userData?._id);
+    connectSocket();
   }, []);
 
   useEffect(() => {
@@ -152,7 +182,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         `${baseUrl}/chat/retailer-new-spades?id=${userData?._id}`,config
       );
       if (response.data) {
-        console.log("hiii verified");
+        // console.log("hiii verified");
         dispatch(setNewRequests(response.data));
         setLoading(false);
       }
@@ -161,7 +191,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       dispatch(setNewRequests([]));
       
       if (!error?.response?.status){
-        console.log("hii net")
+        // console.log("hii net")
           setNetworkError(true);
       }
 
@@ -184,7 +214,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         `${baseUrl}/chat/retailer-ongoing-spades?id=${userData?._id}`,config
       );
       if (ongoingresponse.data) {
-        console.log("hiiiuu");
+        // console.log("hiiiuu");
         dispatch(setOngoingRequests(ongoingresponse.data));
         setIsLoading(false);
       }
@@ -218,7 +248,6 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       // console.log("history", history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
-   
       // console.error('Error fetching history requests:', error);
     }
   };
@@ -280,16 +309,37 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   );
 
   return (
-    <View className="bg-white">
-      <View
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          colors={["#9Bd35A", "#689F38"]}
-        />
-      }
-      >
+    <View className="flex-1 bg-white" >
+    <ScrollView 
+    refreshControl={
+     <RefreshControl
+       refreshing={refreshing}
+       onRefresh={handleRefresh}
+       colors={["#9Bd35A", "#FB8C00"]}
+     />
+   }
+    
+ >
+   <View className="flex flex-col mt-[20px]  gap-[32px] ">
+       <View className="flex flex-row justify-between items-center px-[32px]" style={{zIndex:10}}>
+         
+               <TouchableOpacity onPress={()=>navigation.navigate("menu")} style={{padding:8}}>
+                  <View className="bg-[#FB8C00] p-[4px] rounded-full">
+                   <Profile />
+                   </View>
+               </TouchableOpacity>
+          
+           <GinieIcon/>
+           
+               <TouchableOpacity onPress={()=>navigation.navigate("history")} style={{padding:8}}>
+               <View className="bg-[#FB8C00] p-[4px] rounded-full">
+                   <History height={28} width={28}/>
+                   </View>
+               </TouchableOpacity>
+          
+           
+       </View>
+    
         {(newRequests?.length > 0 ||
           ongoingRequests?.length > 0 ||
           retailerHistory?.length > 0) && (
@@ -423,18 +473,9 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                               >
                                 Attach your GST/Labor{"\n"}certificate
                               </Text>
-                              {/* <TouchableOpacity>
-                                <QueIcon />
-                              </TouchableOpacity> */}
+                             
                             </View>
-                            {/* <View className="flex flex-row items-center gap-[10px]">
-                                 <Time/>
-    
-                                <Text className="text-[14px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>
-                                   <Text>{remainingDays}</Text> Days remaining
-                                  </Text>
-    
-                                </View> */}
+                           
                             {userData.panCard?.length == 0 && (
                               <TouchableOpacity
                                 onPress={() => navigation.navigate("gstVerify")}
@@ -522,7 +563,10 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
 
       </View>
+      </ScrollView>
     </View>
+
+
   );
 };
 

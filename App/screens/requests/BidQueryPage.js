@@ -151,7 +151,7 @@ const BidQueryPage = () => {
           }
          }
         const token=await axiosInstance.get(`${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,config);
-        console.log("token",token.data);
+        // console.log("token",token.data);
         if(token.data.length > 0){
         const notification = {
           token:token.data,

@@ -13,6 +13,7 @@ import {
   BackHandler,
   Animated,
   Modal,
+  AppState,
 } from "react-native";
 import React, {
   memo,
@@ -142,7 +143,31 @@ const RequestPage = () => {
   const [errorModal, setErrorModal] = useState(false);
   const [networkError, setNetworkError] = useState(false);
 
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+// ////////////////////////////////////Connecting socket from when app goes from backgroun to foreground/////////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        
+        if(currentRequest?.userId && currentRequest?.senderId)
+          SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
+        else 
+          navigation.navigate('home');
+      }
 
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('AppState', appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   // console.log("params", currentRequest);
 
@@ -160,7 +185,7 @@ const RequestPage = () => {
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       // setUser(userData);
-      console.log("User data found successfully", currentRequest);
+      // console.log("User data found successfully", currentRequest);
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -174,7 +199,7 @@ const RequestPage = () => {
         .get(`${baseUrl}/chat/get-particular-chat`, config)
         .then(async (resu) => {
           const result = resu?.data;
-          console.log("new requestInfo fetched successfully", result._id);
+          // console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
           fetchMessages(result)
          
@@ -407,7 +432,8 @@ const RequestPage = () => {
     console.log("Params data found");
 
     fetchUserDetails();
-    SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
+    if(currentRequest?.userId && currentRequest?.senderId)
+      SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
    
     fetchRequestData();
     console.log("reqInfo from params", socketConnected);
@@ -1455,11 +1481,11 @@ const RequestPage = () => {
         } `}
       >
         {requestInfo?.requestType !== "closed" &&
-        requestInfo?.bidCompleted !==true && !networkError &&
+        requestInfo?.bidCompleted !==true && !networkError && messages && messages.length > 0 &&
         messages[messages.length - 1]?.bidType!=="update" &&
           requestInfo?.requestType === "new" &&
           available === false && (
-            <View className="gap-[20px]  items-center bg-white pt-[20px] shadow-2xl ">
+            <View className="gap-[20px]  items-center bg-white pt-[20px] shadow-2xl">
               <View className="flex flex-col justify-center items-center">
                 <Text
                   className="text-[14px] text-center"

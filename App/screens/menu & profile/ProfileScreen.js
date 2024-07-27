@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EditIconWhite from "../../assets/editIconWhite.svg";
 import EditIcon from "../../assets/editIcon.svg";
@@ -32,6 +32,16 @@ import axiosInstance from "../utils/axiosInstance";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DocumentIcon from '../../assets/DocumentIcon.svg';
 import DeleteImageModal from "../../components/DeleteImageModal";
+
+
+
+const initialReviews = [
+  { customerName: "John Doe", stars: 3.3, review: "Great product!" },
+  { customerName: "Jane Smith", stars: 5, review: "Excellent service!" },
+  { customerName: "Alice Johnson", stars: 3, review: "Could be better." },
+  { customerName: "Bob Brown", stars: 2, review: "Not satisfied." },
+  { customerName: "Mary Davis", stars: 5, review: "Amazing quality!" },
+];
 
 
 const ProfileScreen = () => {
@@ -59,6 +69,11 @@ const ProfileScreen = () => {
   const [indexImg,setIndexImg] = useState(null);
   const [modalVisible,setModalVisible] = useState(false);
   const accessToken = useSelector((state) => state.storeData.accessToken)
+    const [showAllReviews, setShowAllReviews] = useState(false);
+    const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbackLoading,setFeedbackLoading] = useState(false);
+
+
 
 
   const handleImagePress = (image) => {
@@ -218,44 +233,13 @@ const ProfileScreen = () => {
   };
 
  
-  const deleteImage = async (index) => {
-    if (index >= 0 && index < user.storeImages.length) {
-      const updatedStoreImages = [
-        ...user.storeImages.slice(0, index),
-        ...user.storeImages.slice(index + 1),
-      ];
-      const updatedUser = {
-        ...user,
-        storeImages: updatedStoreImages,
-      };
-      dispatch(setUserDetails(updatedUser));
-      await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
-
-      const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
-      await axiosInstance
-        .patch(`${baseUrl}/retailer/editretailer`, {
-          _id: user?._id,
-          storeImages: updatedUser.storeImages,
-        },config
-      )
-        .then(async (res) => {
-          dispatch(setUserDetails(res.data));
-          await AsyncStorage.setItem("userData", JSON.stringify(res.data));
-        });
-    } else {
-      console.error("Invalid index for deleting image");
-    }
-  };
 
   const handleImageClick = (index) => {
     setIndexImg(index);
     setModalVisible(true);
   };
+
+
 
 
   const handleDownloadDocument = async () => {
@@ -264,6 +248,36 @@ const ProfileScreen = () => {
     Linking.openURL(url)
         .catch((err) => console.error('An error occurred', err));
 }
+
+
+const fetchRetailerFeedbacks = useCallback(async () => {
+  setFeedbackLoading(true)
+  try {
+      const config = {
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`,
+          },
+          params: {
+              id:user._id,
+          }
+      }
+      await axiosInstance.get(`${baseUrl}/rating/get-retailer-feedbacks`, config)
+          .then((res) => {
+              console.log('Feedbacks fetched successfully', res.data);
+              setFeedbacks(res.data);
+              setFeedbackLoading(false);
+          })
+  } catch (error) {
+    setFeedbackLoading(false);
+      console.error('Error while fetching retailer feedbacks');
+  }
+})
+
+useEffect(() => {
+  fetchRetailerFeedbacks();
+  
+}, []);
 
   return (
     <View className="bg-white">
@@ -532,14 +546,14 @@ const ProfileScreen = () => {
             />
           </View>
 
-          <View className="px-[32px] flex  gap-[26px] mb-[60px]">
+          <View className="px-[32px] flex  gap-[26px] mb-[40px] ">
             <View className="flex-row items-center justify-between  my-[10px]">
               <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2E2C43]">
                 GST/Labor certificate
               </Text>
             </View>
             {user?.panCard  && 
-                      <View  className="rounded-[16px]  mb-[100px]">
+                      <View  className="rounded-[16px] ">
                         <TouchableOpacity className="flex-col" onPress={()=>{handleDownloadDocument()}}>
                       <DocumentIcon  size={90} />
                       <Text className=" text-[16px] pt-[10px] text-[#fb8c00]" style={{ fontFamily: "Poppins-Medium" }}>View Document</Text>
@@ -560,6 +574,52 @@ const ProfileScreen = () => {
               </View>
             )}
           </View>
+
+          <View className="mb-[40px]">
+                        <Text className="capitalize text-[#2e2c43]  px-[32px]" style={{ fontFamily: 'Poppins-Regular' }}>Store Reviews</Text>
+
+                       { feedbackLoading ? (<ActivityIndicator size="small" color="#fb8c00" />):(
+                         <View style={styles.revcontainer}>
+                         <ScrollView>
+                             {feedbacks
+                                 .slice(0, showAllReviews ? feedbacks.length : 3)
+                                 .map((review, index) => (
+                                     <View key={index} className="shadow-2xl bg-white" style={{ marginBottom: 20, paddingBottom: 10,borderRadius: 20 }}>
+                                         <View className="flex-row items-center gap-[20px] mb-[5px] ">
+                                             <Text className="capitalize text-[#2e2c43]  " style={{ fontFamily: 'Poppins-SemiBold' }}>
+                                                 {review?.senderName}
+                                             </Text>
+                                         </View>
+                                         <View className="w-[50%]">
+                                         <StarRating rating={review.rating} />
+
+                                         </View>
+
+                                         <Text style={{ color: '#7c7c7c', marginTop: 5, fontFamily: 'Poppins-Regular' }}>{review.feedback}</Text>
+                                     </View>
+                                 ))}
+                         </ScrollView>
+                         {!showAllReviews && feedbacks.length > 4 && (
+                             <Pressable
+                                 onPress={() => setShowAllReviews(true)}
+                                 className=""
+                             >
+                                 <Text className="text-[#fb8c00] text-center">View All</Text>
+                             </Pressable>
+                         )
+                         }
+                         {showAllReviews && feedbacks.length > 4 && (
+                             <Pressable
+                                 onPress={() => setShowAllReviews(false)}
+                                 className=""
+                             >
+                                 <Text className="text-[#fb8c00] text-center">View Less</Text>
+                             </Pressable>
+                         )
+                         }
+                     </View>)
+                       } 
+                    </View>
         </View>
       </ScrollView>
       {loading && (
@@ -648,6 +708,21 @@ const EditableField = ({
   </View>
 );
 
+
+const StarRating = ({ rating }) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+      stars.push(
+          <FontAwesome
+              key={i}
+              name={i <= rating ? "star" : "star-o"}
+              size={18}
+              color="#fb8c00"
+          />
+      );
+  }
+  return <View style={{ flexDirection: 'row',gap:2 }}>{stars}</View>;
+};
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
@@ -693,5 +768,22 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 50,
     padding: 2,
+  },
+
+  revcontainer: {
+    flex: 1,
+    padding:32,
+  },
+  reviewContainer: {
+    marginBottom: 20,
+    paddingBottom: 10,
+  },
+  customerName: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  reviewText: {
+    marginTop: 5,
+    fontSize: 14,
   },
 });
