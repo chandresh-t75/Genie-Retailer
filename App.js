@@ -11,7 +11,9 @@ import { useFonts } from 'expo-font';
 import * as MediaLibrary from 'expo-media-library';
 import * as Notifications from 'expo-notifications';
 import { notificationListeners } from './App/notification/notificationServices';
-import { getCurrentUserId } from './App/screens/utils/getCurrentUserId';
+import { Camera } from "expo-camera";
+import * as Location from "expo-location";
+
 
 
 
@@ -26,7 +28,9 @@ export default function App() {
     (async () => {
       const media = await MediaLibrary.requestPermissionsAsync();
       const notification = await Notifications.requestPermissionsAsync();
-      console.log("status notification", media,notification);
+      const camera = await Camera.requestCameraPermissionsAsync();
+      const location=await Location.requestForegroundPermissionsAsync();
+      console.log("status notification", media,notification,camera,location);
 
     })();
   }, []);

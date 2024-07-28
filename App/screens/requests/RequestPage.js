@@ -155,7 +155,7 @@ const RequestPage = () => {
         
         if(currentRequest?.userId && currentRequest?.senderId)
           SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
-        else 
+        else
           navigation.navigate('home');
       }
 
@@ -239,7 +239,7 @@ const RequestPage = () => {
 
         console.log("socket join chat setup successfully");
         const lastMessage = response?.data[response?.data.length - 1];
-        console.log("last Mesage: ", lastMessage);
+        // console.log("last Mesage: ", lastMessage);
 
         if (
           result?.unreadCount > 0 &&
@@ -427,7 +427,7 @@ const RequestPage = () => {
 
   useEffect(() => {
    
-    console.log("route.params.data", currentRequest);
+    // console.log("route.params.data", currentRequest);
     
     console.log("Params data found");
 
@@ -547,6 +547,8 @@ const RequestPage = () => {
                 requestInfo: {
                   requestId: requestInfo?._id,
                   userId: requestInfo?.users[1]._id,
+                  senderId: requestInfo?.users[0]._id,
+
                 },
                 tag: user?._id,
                 image: lastMessage?.bidImages[0],
@@ -744,7 +746,7 @@ const RequestPage = () => {
                 unreadCount: 0,
                 //  requestId:{requestActive:"completed"}
               };
-              console.log("request updated", tmp);
+              // console.log("request updated", tmp);
               dispatch(setRequestInfo(tmp));
               const filteredRequests = ongoingRequests.filter(
                 (request) => request._id !== tmp?._id
@@ -754,7 +756,7 @@ const RequestPage = () => {
 
               const data = [tmp, ...filteredRequests];
               dispatch(setOngoingRequests(data));
-              console.log("requestAccepted", requestInfo);
+              // console.log("requestAccepted", requestInfo);
               // console.log("request ongoing",filteredRequests)
             }
 
@@ -888,7 +890,7 @@ const RequestPage = () => {
           config
         )
         .then((response) => {
-          console.log("response of feedback", response.data);
+          // console.log("response of feedback", response.data);
           let tmp = {
             ...requestInfo,
             rated: true,
@@ -1105,9 +1107,7 @@ const RequestPage = () => {
                 className="text-[#2e2c43] flex items-center"
               >
                 {requestInfo?.requestId?.requestDescription
-                  ?.split(" ")
-                  .slice(0, 12)
-                  .join(" ")}...
+                  ?.substring(0,50)}...
                 
               </Text>
               }
@@ -1178,7 +1178,7 @@ const RequestPage = () => {
           onContentSizeChange={() =>
             scrollViewRef.current.scrollToEnd({ animated: true })
           }
-          style={{ marginBottom: 150 }}
+          style={{ marginBottom: 120 }} 
         >
           {loading && (
             <View style={{ flex: 1 }}>
@@ -1195,10 +1195,10 @@ const RequestPage = () => {
             <View
               style={{
                 flex: 1,
-                gap: 21,
+                gap: 20,
                 paddingHorizontal: 10,
                 paddingTop: 40,
-                paddingBottom: 100,
+                paddingBottom: 150,
               }}
             >
               {/* <ChatMessage bidDetails={messages[0]} /> */}
@@ -1657,7 +1657,7 @@ const RequestPage = () => {
                 <View className="h-[63px] flex-row gap-1 flex-1 w-full items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl px-[4px]">
                   <Document />
                   <Text
-                    className=" text-[16px] text-[#fb8c00] text-center"
+                    className=" text-[16px] text-[#fb8c00] text-center flex flex-wrap"
                     style={{ fontFamily: "Poppins-Regular" }}
                   >
                     Send attachment

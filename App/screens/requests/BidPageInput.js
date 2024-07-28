@@ -190,10 +190,8 @@ const BidPageInput = () => {
                 style={{ fontFamily: "Poppins-Regular" }}
                 className="text-[#2e2c43] flex items-center"
               >
-                {requestInfo?.requestId?.requestDescription
-                  ?.split(" ")
-                  .slice(0, 12)
-                  .join(" ")}...
+                 {requestInfo?.requestId?.requestDescription
+                  ?.substring(0,50)}...
                 
               </Text>
               }

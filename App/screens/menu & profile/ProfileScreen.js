@@ -52,7 +52,7 @@ const ProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   //   const [user,setUser]= useState(route.params.user);
   const user = useSelector((state) => state.storeData.userDetails);
-  console.log("user at profile", user);
+  // console.log("user at profile", user);
 
   const [editableField, setEditableField] = useState(null);
   const [location, setLocation] = useState(user?.location || "");
@@ -124,7 +124,7 @@ const ProfileScreen = () => {
 
       if (response.status === 200) {
         // Update successful
-        console.log("updated", response.data);
+        // console.log("updated", response.data);
         dispatch(setUserDetails(response.data));
         await AsyncStorage.setItem("userData", JSON.stringify(response.data));
 
@@ -195,7 +195,7 @@ const ProfileScreen = () => {
       await axios
         .post(`${baseUrl}/upload`, formData, config)
         .then(async (res) => {
-          console.log("imageUrl updated from server", res.data[0]);
+          // console.log("imageUrl updated from server", res.data[0]);
           const imgUri = res.data[0];
           let updatedUser;
           if (type === "main") {
@@ -264,7 +264,7 @@ const fetchRetailerFeedbacks = useCallback(async () => {
       }
       await axiosInstance.get(`${baseUrl}/rating/get-retailer-feedbacks`, config)
           .then((res) => {
-              console.log('Feedbacks fetched successfully', res.data);
+              console.log('Feedbacks fetched successfully');
               setFeedbacks(res.data);
               setFeedbackLoading(false);
           })
@@ -310,7 +310,7 @@ useEffect(() => {
             </Text>
           </View>
           <Text
-            className="text-center mb-[20px] capitalize text-[#2E2C43]"
+            className="text-center mb-[20px] capitalize px-[32px] text-[#2E2C43]"
             style={{ fontFamily: "Poppins-Regular" }}
           >
             {user?.storeName}
@@ -370,7 +370,9 @@ useEffect(() => {
             <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2E2C43]">Store Images</Text>
             <TouchableOpacity
               onPress={() => {
-                handleEditIconPress("other");
+                navigation.navigate("update-profile-image", {
+                  data: user?.storeImages,
+                });
               }}
             >
               {/* <EditIcon className="p-[10px]" /> */}
@@ -436,7 +438,7 @@ useEffect(() => {
                   value={user?.location}
                   placeholder={user?.location}
                   placeholderTextColor={"#dbcdbb"}
-                  className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
+                  className="w-[200px] text-[14px]  text-[#2E2C43]  capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
                   multiline={true}
                   scrollEnabled={true}
@@ -446,7 +448,7 @@ useEffect(() => {
                   onPress={() => {
                     navigation.navigate("update-location");
                   }}
-                  style={{paddingHorizontal:10}}
+                  style={{paddingHorizontal:20}}
 
                 >
                   <EditIcon className="px-[10px]" />
@@ -494,12 +496,12 @@ useEffect(() => {
               </Text>
               <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
 
-                <Text className="w-[240px] text-[14px]  text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeDescription}</Text>
+                <Text className="w-[200px] text-[14px]  text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeDescription}</Text>
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate("update-store-description");
                   }}
-                  style={{paddingHorizontal:10}}
+                  style={{paddingHorizontal:20}}
                 >
                   <EditIcon className="px-[10px]"/>
                 </TouchableOpacity>
@@ -674,11 +676,13 @@ const EditableField = ({
           editable={editable}
           placeholder={label}
           placeholderTextColor={"#dbcdbb"}
-          className={`w-[230px] text-[14px] py-[10px] text-[#2E2C43] ${editable?"":"capitalize"}`}
+          multiline={true}  
+          className={`w-[200px] text-[14px] py-[10px] text-[#2E2C43] ${editable?"":"capitalize"}`}
           style={{ fontFamily: "Poppins-Regular" }}
         />
         {label != "Mobile Number" && (
           <TouchableOpacity onPress={editable ? onSavePress : onEditPress} 
+          style={{paddingHorizontal:20}}
           
           >
             {editable ? (

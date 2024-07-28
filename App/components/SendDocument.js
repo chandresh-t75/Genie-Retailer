@@ -107,7 +107,8 @@ const SendDocument = () => {
 
                     const req = {
                         requestId: updatedRequest?._id,
-                        userId: updatedRequest?.users[0]._id
+                        userId: updatedRequest?.users[0]._id,
+                        senderId:updatedRequest?.users[1]._id,
                     };
 
                     // console.log("notification send", notification);

@@ -165,7 +165,9 @@ const BidPreviewPage = () => {
            body: bidDetails,
            requestInfo: {
             requestId: requestInfo?._id,
-            userId: requestInfo?.users[1]._id
+            userId: requestInfo?.users[1]._id,
+            senderId: requestInfo?.users[0]._id
+
           },
            tag: user?._id,
            price:bidOfferedPrice,
@@ -306,10 +308,8 @@ const BidPreviewPage = () => {
                 style={{ fontFamily: "Poppins-Regular" }}
                 className="text-[#2e2c43] flex items-center"
               >
-                {requestInfo?.requestId?.requestDescription
-                  ?.split(" ")
-                  .slice(0, 12)
-                  .join(" ")}...
+                 {requestInfo?.requestId?.requestDescription
+                  ?.substring(0,50)}...
                 
               </Text>
               }

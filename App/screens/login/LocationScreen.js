@@ -71,7 +71,14 @@ const LocationScreen = () => {
       // console.log("location", data);
       if (!data.error) {
         // return data.display_name;
-        setAddress(data?.display_name.split(" ").slice(0, 5).join(" "));
+        if(data?.display_name.length>60){
+          setAddress(data?.display_name.substring(0,60));
+          }
+          else{
+          setAddress(data?.display_name);
+  
+          }
+
       } else {
         return null;
       }
@@ -240,7 +247,7 @@ const LocationScreen = () => {
                     placeholder="189/2, Out Side Datia Gate ,Jhansi, 28402"
                     placeholderTextColor="#dbcdbb"
                     value={address}
-                    onChangeText={handleLocation}
+                    onChangeText={()=>{setAddress(address)}}
                     editable={false} // if you want to make it read-only
                     multiline={true}
                     scrollEnabled={true}

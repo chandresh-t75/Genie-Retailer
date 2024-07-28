@@ -87,7 +87,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
-      console.log('AppState', appState.current);
+      console.log('AppState at home', appState.current);
     });
 
     return () => {
@@ -103,7 +103,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     const userId = userDetailsData?._id;
     const senderId = userDetailsData?._id;
     if(userId && senderId) 
-      socket.emit("setup", { userId, senderId });
+      socket.emit("setup",{ userId, senderId });
     //  console.log('Request connected with socket with id', spadeId);
     socket.on("connected", () => setSocketConnected(true));
     console.log("Home Screen socekt connect with id");
@@ -158,15 +158,15 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     };
   }, [dispatch, newRequests]);
 
-  const remainingDays =
-    daysDifference(userData?.createdAt) > 60
-      ? 0
-      : 60 - daysDifference(userData?.createdAt);
+  // const remainingDays =
+  //   daysDifference(userData?.createdAt) > 60
+  //     ? 0
+  //     : 60 - daysDifference(userData?.createdAt);
 
   useEffect(() => {
     console.log("request refreshing");
     handleRefresh();
-  }, [route.params]);
+  }, []);
 
   const fetchNewRequests = async () => {
     setLoading(true);

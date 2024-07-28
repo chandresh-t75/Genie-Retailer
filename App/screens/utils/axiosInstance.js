@@ -27,15 +27,15 @@ const setToken = async (key, value) => {
 // Function to refresh tokens
 const refreshToken = async () => {
     try {
-        console.log('hello');
+        console.log('refresh token');
         const refreshToken = await getToken('refreshToken');
-        console.log(refreshToken);
+        // console.log(refreshToken);
         if (!refreshToken) throw new Error('No refresh token available');
 
         const response = await axios.get(`${baseUrl}/retailer/refresh-token`, { params: { refreshToken: refreshToken } });
         // console.log(response);
         const { accessToken, refreshToken: newRefreshToken } = response.data;
-        console.log('refresh token:', accessToken, refreshToken);
+        // console.log('refresh token:', accessToken, refreshToken);
         await setToken('accessToken', accessToken);
         await setToken('refreshToken', newRefreshToken);
 

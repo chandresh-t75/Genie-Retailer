@@ -142,7 +142,9 @@ const CameraScreen = () => {
             body: query,
             requestInfo: {
               requestId: requestInfo?._id,
-              userId: requestInfo?.users[1]._id
+              userId: requestInfo?.users[1]._id,
+              senderId: requestInfo?.users[0]._id,
+
             },
             tag: user?._id,
             redirect_to: "bargain",

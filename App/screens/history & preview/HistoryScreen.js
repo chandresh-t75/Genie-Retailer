@@ -156,6 +156,7 @@ const HistoryScreen = () => {
                       const req = {
                         requestId: product?._id,
                         userId: product?.users[0]._id,
+                        senderId:product?.users[1]?._id
                       };
                       console.log("request details", req);
                       const requestId = req?.requestId;

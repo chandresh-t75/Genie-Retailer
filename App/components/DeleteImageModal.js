@@ -86,8 +86,7 @@ const DeleteImageModal= ({modalVisible,setModalVisible,index}) => {
                       <ModalImg classname="w-[117px] h-[75px]"/>
                         <View className="">
                              <Text className="text-[15px]  text-center text-[#001B33]" style={{ fontFamily: "Poppins-Bold" }}> Are you sure? </Text>
-                              <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>You are removing a Image reference. </Text>
-                              
+                              <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>You are removing a store image </Text>
                         </View>
                         
                             <View className="w-full flex flex-row  justify-center">

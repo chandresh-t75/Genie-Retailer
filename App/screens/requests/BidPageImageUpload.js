@@ -345,10 +345,8 @@ const BidPageImageUpload = () => {
                 style={{ fontFamily: "Poppins-Regular" }}
                 className="text-[#2e2c43] flex items-center"
               >
-                {requestInfo?.requestId?.requestDescription
-                  ?.split(" ")
-                  .slice(0, 12)
-                  .join(" ")}...
+                 {requestInfo?.requestId?.requestDescription
+                  ?.substring(0,50)}...
                 
               </Text>
               }
@@ -399,7 +397,7 @@ const BidPageImageUpload = () => {
             </View>
             <View className="flex-grow">
               {images.length === 0 && (
-                <View className="z-0">
+                <View className="z-0 pb-[40px]">
                   <View>
                     <TouchableOpacity
                       onPress={() => {
@@ -433,6 +431,9 @@ const BidPageImageUpload = () => {
                   <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
+                    style={{
+                      alignSelf: "flex-start",
+                    }}
                   >
                     <View style={styles.container}>
                       <View style={styles.imageContainer}>

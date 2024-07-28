@@ -92,7 +92,7 @@ const RequestAcceptModal = ({
             );
             console.log("RequestType new response", res.data, res.data.users[0], res.data.users[1]);
             let tmp = { ...requests[0],requestType: "ongoing", updatedAt: new Date().toISOString(), users:[res.data.users[0], res.data.users[1]] };
-            console.log("new requestInfo", tmp)
+            // console.log("new requestInfo", tmp)
 
             dispatch(setRequestInfo(tmp));
             const filteredRequests = newRequests.filter(
@@ -115,7 +115,8 @@ const RequestAcceptModal = ({
                 title: user?.storeName,
                 requestInfo: {
                   requestId: requestInfo?._id,
-                  userId: res.data?.users[1]._id
+                  userId: res.data?.users[1]._id,
+                  senderId:res.data?.users[0]._id
                 },
                 tag: user?._id,
                 image: requestInfo?.requestId?.requestImages[0],
@@ -169,12 +170,13 @@ const RequestAcceptModal = ({
                   title: user?.storeName,
                   requestInfo: {
                     requestId: requestInfo?._id,
-                    userId: requestInfo?.users[1]._id
+                    userId: requestInfo?.users[1]._id,
+                    senderId:requestInfo?.users[0]._id
                   },
                   tag: user?._id,
                   price: lastMessage?.bidPrice,
-                  image: requestInfo?.requestId?.requestImages[0],
-                  details: requestInfo?.requestId?.requestDescription
+                  image:  lastMessage?.bidImages[0],
+                  details:lastMessage?.message,
 
                 };
                 NotificationBidAccepted(notification);
@@ -233,9 +235,9 @@ const RequestAcceptModal = ({
         freeSpades: userDetails.freeSpades - 1,
       },config)
       .then(async (res) => {
-        console.log("userData updated Successfully after payment ");
+        // console.log("userData updated Successfully after payment ");
         dispatch(setUserDetails(res.data));
-        console.log("res after user update", res.data);
+        // console.log("res after user update", res.data);
         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
 
       })

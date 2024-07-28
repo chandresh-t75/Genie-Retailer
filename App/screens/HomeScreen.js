@@ -15,6 +15,8 @@ import RemainingCustomerModal from '../components/RemainingCustomerModal'
 import { baseUrl } from './utils/constants'
 import NetworkError from '../components/NetworkError'
 
+
+
  
 
 const HomeScreen = () => {
@@ -64,7 +66,7 @@ const fetchUserData = async () => {
 
     const userData = JSON.parse(await AsyncStorage.getItem("userData"));
     const accessToken =  JSON.parse(await AsyncStorage.getItem("accessToken"));
-    console.log(accessToken);
+    // console.log(accessToken);
 
     try{
       if (userData) {

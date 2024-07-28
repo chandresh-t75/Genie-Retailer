@@ -29,7 +29,7 @@ import axiosInstance from "../screens/utils/axiosInstance";
 
 
 const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
-  console.log("user at menu", user);
+  // console.log("user at menu", user);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const accessToken = useSelector(state => state.storeData.accessToken);

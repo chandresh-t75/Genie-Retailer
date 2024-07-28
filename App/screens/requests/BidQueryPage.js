@@ -73,7 +73,7 @@ const BidQueryPage = () => {
   
   const sendQuery = async () => {
     setLoading(true)
-    console.log("requestInfo",requestInfo);
+    // console.log("requestInfo",requestInfo);
     try {
       const formData = new FormData();
      
@@ -159,7 +159,10 @@ const BidQueryPage = () => {
           body: query,
           requestInfo: {
             requestId: requestInfo?._id,
-            userId: requestInfo?.users[1]._id
+            userId: requestInfo?.users[1]._id,
+            senderId: requestInfo?.users[0]._id,
+
+
           },
           tag: user?._id,
           redirect_to: "bargain",
@@ -300,9 +303,7 @@ const BidQueryPage = () => {
                 className="text-[#2e2c43] flex items-center"
               >
                 {requestInfo?.requestId?.requestDescription
-                  ?.split(" ")
-                  .slice(0, 12)
-                  .join(" ")}...
+                  ?.substring(0,50)}...
                 
               </Text>
               }
