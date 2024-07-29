@@ -111,6 +111,10 @@ const SendDocument = () => {
                         senderId:updatedRequest?.users[1]._id,
                     };
 
+                 
+                      console.log("RequestType new response", req);
+                      dispatch(setCurrentRequest(req));
+
                     // console.log("notification send", notification);
                     const requestId = req?.requestId
                     navigation.navigate(`requestPage${requestId}`);

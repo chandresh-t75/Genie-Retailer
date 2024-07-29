@@ -152,10 +152,13 @@ const RequestPage = () => {
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        
+        console.log(currentRequest)
         if(currentRequest?.userId && currentRequest?.senderId)
           SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
-        else
+        else if(currentRequest?.userId && !currentRequest?.senderId){
+          SocketSetUp(currentRequest?.userId, null);
+        }
+        else if(!currentRequest?.userId && !currentRequest?.senderId)
           navigation.navigate('home');
       }
 
@@ -410,7 +413,7 @@ const RequestPage = () => {
   }
   }
 
-  const SocketSetUp = async (userId, senderId) => {
+  const  SocketSetUp = async (userId, senderId) => {
     console.log("setup", userId);
     socket.emit("setup", { userId, senderId });
     console.log("socket setup for personal user setup successfully");
@@ -705,11 +708,7 @@ const RequestPage = () => {
 
   useEffect(() => {
     const handleMessageReceived = async (newMessageReceived) => {
-      console.log(
-        "Message received from socket:",
-        newMessageReceived,
-        requestInfo?.requestType
-      );  
+      console.log("Message received from socket:",newMessageReceived._id, newMessageReceived.message);  
 
       if (
         requestInfo?.requestType === "win" &&
@@ -758,6 +757,25 @@ const RequestPage = () => {
               dispatch(setOngoingRequests(data));
               // console.log("requestAccepted", requestInfo);
               // console.log("request ongoing",filteredRequests)
+            }
+            else if (newMessageReceived.bidAccepted === "rejected") {
+             
+              let tmp = {
+                ...requestInfo,
+                updatedAt: new Date().toISOString(),
+                unreadCount: 0,
+                //  requestId:{requestActive:"completed"}
+              };
+              // console.log("request updated", tmp);
+              dispatch(setRequestInfo(tmp));
+              const filteredRequests = ongoingRequests.filter(
+                (request) => request._id !== tmp?._id
+              );
+
+              //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
+
+              const data = [tmp, ...filteredRequests];
+              dispatch(setOngoingRequests(data));
             }
 
             return prevMessages.map((message) =>
@@ -827,7 +845,7 @@ const RequestPage = () => {
       duration: 300,
       useNativeDriver: true,
     }).start();
-  };
+  }; 
 
   const handleClose = () => {
     Animated.timing(scaleAnimation, {
@@ -1493,13 +1511,16 @@ const RequestPage = () => {
                 >
                   Are you accepting the customer request ?
                 </Text>
-                <Text
-                  className="text-[14px] text-center px-[10px]"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  Please confirm the product/service availability by accepting
-                  this request
-                </Text>
+               
+
+                {messages && requestInfo && (
+                  <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
+                    <Text style={{ fontFamily: "Poppins-Medium" }} className="text-center">
+                      {requestInfo?.requestId?.requestDescription}
+                    </Text>
+                    
+                  </View>
+                )}
 
                 {messages &&
                   messages[messages.length - 1]?.bidImages &&
@@ -1566,7 +1587,17 @@ const RequestPage = () => {
                     </Text>
                   </View>
                 )}
+
+                <Text
+                  className="text-[14px] text-center px-[10px] mt-2"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  ( Please confirm the product/service availability by accepting
+                  this request )
+                </Text>
               </View>
+
+
 
               <View className="w-full flex-row justify-between bg-white">
                 <TouchableOpacity
@@ -1575,6 +1606,7 @@ const RequestPage = () => {
                       ? (() => {
                           setAcceptRequestModal(true);
                           setType("Request");
+                          SocketSetUp(currentRequest?.userId,currentRequest?.senderId)
                         })()
                       : setConfirmPaymentModal(true);
                   }}
@@ -1657,10 +1689,10 @@ const RequestPage = () => {
                 <View className="h-[63px] flex-row gap-1 flex-1 w-full items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl px-[4px]">
                   <Document />
                   <Text
-                    className=" text-[16px] text-[#fb8c00] text-center flex flex-wrap"
+                    className=" text-[16px] text-[#fb8c00] text-center "
                     style={{ fontFamily: "Poppins-Regular" }}
                   >
-                    Send attachment
+                    Send{"\n"} attachment
                   </Text>
                 </View>
               </TouchableOpacity>

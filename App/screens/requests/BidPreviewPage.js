@@ -30,7 +30,7 @@ import {
   
 } from "../../notification/notificationMessages";
 import BackArrow from "../../assets/BackArrow.svg";
-import { setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
+import { setCurrentRequest, setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { setBidImages, setProductWarranty } from "../../redux/reducers/bidSlice";
 import { baseUrl } from "../utils/constants";
 import DropDown from "../../assets/dropDown.svg";
@@ -144,9 +144,11 @@ const BidPreviewPage = () => {
          
          const req={
           requestId:updatedRequest?._id,
-          userId:updatedRequest?.users[0]._id
+          userId:updatedRequest?.users[0]._id,
+          senderId:updatedRequest?.users[1]._id
         };
-
+        dispatch(setCurrentRequest(req))
+  
         const requestId=req?.requestId
         navigation.navigate(`requestPage${requestId}`);
 

@@ -25,7 +25,7 @@ import axios from "axios";
 import { AntDesign, Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { launchCamera } from "react-native-image-picker";
 import { sendCustomNotificationAttachment } from "../../notification/notificationMessages";
-import { setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
+import { setCurrentRequest, setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { socket } from "../utils/socket.io/socket";
 import { baseUrl } from "./constants";
 import axiosInstance from "./axiosInstance";
@@ -117,10 +117,14 @@ const CameraScreen = () => {
         dispatch(setOngoingRequests(data));
         dispatch(setRequestInfo(updatedRequest));
 
+      
         const req = {
-          requestId: updatedRequest?._id,
-          userId: updatedRequest?.users[0]._id
+          requestId:  updatedRequest?._id,
+          userId: updatedRequest?.users[0]?._id,
+          senderId:  updatedRequest?.users[1]?._id
         };
+        console.log("attachment", req);
+        dispatch(setCurrentRequest(req));
 
         // console.log("notification send", notification);
         const requestId = req?.requestId

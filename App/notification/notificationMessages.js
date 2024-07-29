@@ -155,7 +155,7 @@ export const sendCustomNotificationChat = async (mess) => {
     };
 
     const accessToken = await getAccessToken();
-    console.log("access token", accessToken);
+    // console.log("access token", accessToken);
     // if(mess?.token.length > 0) {
 
     const notificationResponse = await fetch(`https://fcm.googleapis.com/v1/projects/genie-user/messages:send`,

@@ -24,7 +24,7 @@ import Profile from "../../assets/ProfileIcon2.svg";
 import axios from "axios";
 import { socket } from "../utils/socket.io/socket";
 import { useDispatch, useSelector } from "react-redux";
-import { setMessages, setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
+import { setCurrentRequest, setMessages, setOngoingRequests, setRequestInfo } from "../../redux/reducers/requestDataSlice";
 import { sendCustomNotificationChat } from "../../notification/notificationMessages";
 import BackArrow from "../../assets/BackArrow.svg";
 import * as Clipboard from 'expo-clipboard';
@@ -135,8 +135,11 @@ const BidQueryPage = () => {
          dispatch(setRequestInfo(updatedRequest));
          const req={
           requestId:updatedRequest?._id,
-          userId:updatedRequest?.users[0]._id
+          userId:updatedRequest?.users[0]._id,
+          senderId:updatedRequest?.users[1]._id
+          
         };
+        dispatch(setCurrentRequest(req))
         
        
         // console.log("notification", notification.requestInfo);
@@ -359,7 +362,7 @@ const BidQueryPage = () => {
 
       
         <TouchableOpacity
-           disabled={!query} 
+           disabled={!query || loading} 
            onPress={sendQuery}
             style={{
               position: "absolute",

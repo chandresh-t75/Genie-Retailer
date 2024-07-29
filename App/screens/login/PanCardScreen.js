@@ -46,6 +46,7 @@ import axiosInstance from "../utils/axiosInstance";
 import * as DocumentPicker from 'expo-document-picker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DocumentIcon from '../../assets/DocumentIcon.svg';
+import ErrorModal from "../../components/ErrorModal";
 
 
 
@@ -138,7 +139,6 @@ const PanCardScreen = () => {
 
       if (response.status === 201) {
         console.log("User created:", response.data);
-       
         dispatch(setAccessToken(response.data.accessToken));
         dispatch(setRefreshToken(response.data.refreshToken));
 
@@ -187,74 +187,74 @@ const PanCardScreen = () => {
   };
 
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(status === "granted");
-    })();
-  }, [cameraScreen]);
-  const takePicture = async () => {
-    const options = {
-      mediaType: 'photo',
-      saveToPhotos: true,
-    };
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } = await Camera.requestCameraPermissionsAsync();
+  //     setHasCameraPermission(status === "granted");
+  //   })();
+  // }, [cameraScreen]);
+  // const takePicture = async () => {
+  //   const options = {
+  //     mediaType: 'photo',
+  //     saveToPhotos: true,
+  //   };
 
-    launchCamera(options, async (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ');
-      } else {
-        try {
-          const newImageUri = response.assets[0].uri;
-          const compressedImage = await manipulateAsync(
-            newImageUri,
-            [{ resize: { width: 600, height: 800 } }],
-            { compress: 0.5, format: "jpeg", base64: true }
-          );
-          await getImageUrl(compressedImage.uri);
-        } catch (error) {
-          console.error('Error processing image: ', error);
-        }
-      }
-    });
-  };
+  //   launchCamera(options, async (response) => {
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ');
+  //     } else {
+  //       try {
+  //         const newImageUri = response.assets[0].uri;
+  //         const compressedImage = await manipulateAsync(
+  //           newImageUri,
+  //           [{ resize: { width: 600, height: 800 } }],
+  //           { compress: 0.5, format: "jpeg", base64: true }
+  //         );
+  //         await getImageUrl(compressedImage.uri);
+  //       } catch (error) {
+  //         console.error('Error processing image: ', error);
+  //       }
+  //     }
+  //   });
+  // };
 
-  const getImageUrl = async (image) => {
-    setLoading(true)
-    try {
-      const formData = new FormData();
+  // const getImageUrl = async (image) => {
+  //   setLoading(true)
+  //   try {
+  //     const formData = new FormData();
 
-      formData.append('storeImages', {
-        uri: image,
-        type: 'image/jpeg',
-        name: `photo-${Date.now()}.jpg`
-      })
-      const config = {
-        headers:{
-          'Content-Type':'multipart/form-data',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
-      console.log('config', config)
-      await axios.post(`${baseUrl}/upload`, formData, config)
-        .then(res => {
-          console.log('imageUrl updated from server', res.data[0]);
-          const imgUri = res.data[0];
-          if (imgUri) {
-            console.log("Image Updated Successfully");
-            setImagesLocal(imgUri);
-            dispatch(setPanScreenImage(imgUri));
-            dispatch(setPanCard(imgUri));
-            setPanCardLocal(imgUri);
-            setLoading(false);
-          }
-        })
-    } catch (error) {
-      setLoading(false);
-      console.error('Error getting imageUrl: ', error);
-    }
-  }
+  //     formData.append('storeImages', {
+  //       uri: image,
+  //       type: 'image/jpeg',
+  //       name: `photo-${Date.now()}.jpg`
+  //     })
+  //     const config = {
+  //       headers:{
+  //         'Content-Type':'multipart/form-data',
+  //         'Authorization':`Bearer ${accessToken}`,
+  //       }
+  //      }
+  //     console.log('config', config)
+  //     await axios.post(`${baseUrl}/upload`, formData, config)
+  //       .then(res => {
+  //         console.log('imageUrl updated from server', res.data[0]);
+  //         const imgUri = res.data[0];
+  //         if (imgUri) {
+  //           console.log("Image Updated Successfully");
+  //           setImagesLocal(imgUri);
+  //           dispatch(setPanScreenImage(imgUri));
+  //           dispatch(setPanCard(imgUri));
+  //           setPanCardLocal(imgUri);
+  //           setLoading(false);
+  //         }
+  //       })
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error('Error getting imageUrl: ', error);
+  //   }
+  // }
 
 
   const pickDocument = async () => {
@@ -271,7 +271,6 @@ const PanCardScreen = () => {
 
     if (!result?.canceled) {
         // const fileInfo = await RNFS.stat(result.uri.replace('file://', ''));
-
         
         const fileSizeMB = parseFloat(result?.assets[0].size) / (1e6); // Convert bytes to MB
         console.log(fileSizeMB);
@@ -317,32 +316,32 @@ const PanCardScreen = () => {
     }
 
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 4],
-      base64: true,
-      quality: 1,
-    });
+  // const pickImage = async () => {
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [3, 4],
+  //     base64: true,
+  //     quality: 1,
+  //   });
 
-    if (!result.canceled) {
-      const newImageUri = result.assets[0].uri;
-      const compressedImage = await manipulateAsync(
-        newImageUri,
-        [{ resize: { width: 600, height: 800 } }],
-        { compress: 0.5, format: "jpeg", base64: true }
-      );
-      await getImageUrl(compressedImage.uri);
-    }
-  };
+  //   if (!result.canceled) {
+  //     const newImageUri = result.assets[0].uri;
+  //     const compressedImage = await manipulateAsync(
+  //       newImageUri,
+  //       [{ resize: { width: 600, height: 800 } }],
+  //       { compress: 0.5, format: "jpeg", base64: true }
+  //     );
+  //     await getImageUrl(compressedImage.uri);
+  //   }
+  // };
 
-  if (hasCameraPermission === null) {
-    return <View />;
-  }
-  if (hasCameraPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+  // if (hasCameraPermission === null) {
+  //   return <View />;
+  // }
+  // if (hasCameraPermission === false) {
+  //   return <Text>No access to camera</Text>;
+  // }
 
   const deleteImage = () => {
 
@@ -355,7 +354,7 @@ const PanCardScreen = () => {
 
   return (
     <>
-      {!cameraScreen && (<View style={{ flex: 1, backgroundColor: "white" }}>
+    <View style={{ flex: 1, backgroundColor: "white" }}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior="height"
@@ -531,8 +530,8 @@ const PanCardScreen = () => {
             <ActivityIndicator size="large" color="#fb8c00" />
           </View>
         )}
-      </View>)
-      }
+      </View>
+      
     </>
   );
 };

@@ -101,7 +101,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     // socket.emit("setup", currentSpadeRetailer?.users[1]._id);
     const userDetailsData = JSON.parse(await AsyncStorage.getItem('userData'));
     const userId = userDetailsData?._id;
-    const senderId = userDetailsData?._id;
+    const senderId = userDetailsData?._id; 
     if(userId && senderId) 
       socket.emit("setup",{ userId, senderId });
     //  console.log('Request connected with socket with id', spadeId);
@@ -178,11 +178,13 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
+       console.log("hii",userData._id)
       const response = await axiosInstance.get(
         `${baseUrl}/chat/retailer-new-spades?id=${userData?._id}`,config
       );
+      
       if (response.data) {
-        // console.log("hiii verified");
+        // console.log("hiii verified",response.data);
         dispatch(setNewRequests(response.data));
         setLoading(false);
       }
@@ -197,6 +199,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
       // console.error('Error fetching new requests:', error);
     }
+    
   };
 
   const fetchOngoingRequests = async () => {
@@ -253,10 +256,11 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   };
 
   const handleRefresh = () => {
-    setRefreshing(true); // Show the refresh indicator
+   // Show the refresh indicator
     setLoading(true);
     try {
       // Fetch new data from the server
+      console.log("Refreshing")
       fetchNewRequests();
       fetchOngoingRequests();
       fetchRetailerHistory();
@@ -265,10 +269,15 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       console.error("Error fetching data:", error);
     }
     setLoading(false);
-     setRefreshing(false); // Hide the refresh indicator
   };
 
+const refreshHandler=()=>{
+  setRefreshing(true); 
+  connectSocket();
+  handleRefresh();
+  setRefreshing(false); // Hide the refresh indicator
 
+}
 
   // useEffect(() => {
   //   socket.emit("setup", userData?._id);
@@ -282,7 +291,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         const req = {
           requestId: item?._id,
           userId: item?.users[0]?._id,
-          senderId: item?.users[1]?._id
+          senderId: item?.users[1]?._id  
         };
         const requestId = req?.requestId;
         dispatch(setCurrentRequest(req));
@@ -314,7 +323,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     refreshControl={
      <RefreshControl
        refreshing={refreshing}
-       onRefresh={handleRefresh}
+       onRefresh={refreshHandler}
        colors={["#9Bd35A", "#FB8C00"]}
      />
    }
@@ -553,7 +562,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
               </View>
             </View>
           )}
-{networkError && <View style={{ marginTop: 80 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={handleRefresh} setNetworkError={setNetworkError} /></View>}
+{networkError && <View style={{ marginTop: 80 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={refreshHandler} setNetworkError={setNetworkError} /></View>}
 
         {!(
           newRequests?.length > 0 ||

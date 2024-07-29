@@ -13,6 +13,7 @@ import ModalImg from "../assets/acceptRequest.svg";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import {
+  setCurrentRequest,
   setNewRequests,
   setOngoingRequests,
   setRequestInfo,
@@ -36,7 +37,7 @@ const RequestAcceptModal = ({
   setAcceptLocal,
   messages,
   setMessages,
-  type
+  type,
 }) => {
   // const [modalVisible, setModalVisible] = useState(true);
   const navigation = useNavigation();
@@ -50,8 +51,8 @@ const RequestAcceptModal = ({
     (state) => state.requestData.ongoingRequests || []
   );
 
-  const userDetails = useSelector(state => state.storeData.userDetails);
-  const accessToken = useSelector(state => state.storeData.accessToken);
+  const userDetails = useSelector((state) => state.storeData.userDetails);
+  const accessToken = useSelector((state) => state.storeData.accessToken);
   // console.log("userDetails", userDetails,
   //   "request",requestInfo);
 
@@ -71,63 +72,75 @@ const RequestAcceptModal = ({
 
       // console.log("Updating card", requestInfo);
       const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
       if (requestInfo?.requestType === "new") {
         try {
-          await axiosInstance.patch(
-            `${baseUrl}/chat/product-available`,
-            {
-              id: requestInfo?._id,
-
-            },config
-          ).then(async (res) => {
-            socket.emit('new retailer',res.data);
-            updateUserDetails();
-            const requests = newRequests.filter(
-              (request) => request._id ===requestInfo._id
-            );
-            console.log("RequestType new response", res.data, res.data.users[0], res.data.users[1]);
-            let tmp = { ...requests[0],requestType: "ongoing", updatedAt: new Date().toISOString(), users:[res.data.users[0], res.data.users[1]] };
-            // console.log("new requestInfo", tmp)
-
-            dispatch(setRequestInfo(tmp));
-            const filteredRequests = newRequests.filter(
-              (request) => request._id !== requestInfo?._id
-            );
-            dispatch(setNewRequests(filteredRequests));
-            const updatedOngoing = [tmp, ...ongoingRequests];
-            dispatch(setOngoingRequests(updatedOngoing));
-            
-            setAcceptLocal(true);
-            setModalVisible(false);
-            setLoading(false);
-            const token = await axiosInstance.get(
-              `${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,config
-            );
-            console.log("notify token: " + token.data);
-            if (token.data.length > 0) {
-              const notification = {
-                token: token.data,
-                title: user?.storeName,
-                requestInfo: {
-                  requestId: requestInfo?._id,
-                  userId: res.data?.users[1]._id,
-                  senderId:res.data?.users[0]._id
-                },
-                tag: user?._id,
-                image: requestInfo?.requestId?.requestImages[0],
-                redirect_to: "bargain",
-                details: requestInfo?.requestId?.requestDescription
+          await axiosInstance
+            .patch(
+              `${baseUrl}/chat/product-available`,
+              {
+                id: requestInfo?._id,
+              },
+              config
+            )
+            .then(async (res) => {
+              socket.emit("new retailer", res.data);
+              updateUserDetails();
+              const requests = newRequests.filter(
+                (request) => request._id === res.data?._id
+              );
+              const req = {
+                requestId: res.data?._id,
+                userId: res.data?.users[0]?._id,
+                senderId: res.data?.users[1]?._id,
               };
-              NotificationRequestAccepted(notification);
-            }
-                // console.log("after accepting request",requestInfo);
-            
-          })
+              console.log("RequestType new response", req);
+              dispatch(setCurrentRequest(req));
+              let tmp = {
+                ...res?.data,
+                requestType: "ongoing",
+                updatedAt: new Date().toISOString(),
+              };
+              console.log("new requestInfo", tmp);
+
+              dispatch(setRequestInfo(tmp));
+              const filteredRequests = newRequests.filter(
+                (request) => request._id !== res.data?._id
+              );
+              dispatch(setNewRequests(filteredRequests));
+              const updatedOngoing = [tmp, ...ongoingRequests];
+              dispatch(setOngoingRequests(updatedOngoing));
+
+              setAcceptLocal(true);
+              setModalVisible(false);
+              setLoading(false);
+              const token = await axiosInstance.get(
+                `${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,
+                config
+              );
+              console.log("notify token: " + token.data);
+              if (token.data.length > 0) {
+                const notification = {
+                  token: token.data,
+                  title: user?.storeName,
+                  requestInfo: {
+                    requestId: requestInfo?._id,
+                    userId: res.data?.users[1]._id,
+                    senderId: res.data?.users[0]._id,
+                  },
+                  tag: user?._id,
+                  image: requestInfo?.requestId?.requestImages[0],
+                  redirect_to: "bargain",
+                  details: requestInfo?.requestId?.requestDescription,
+                };
+                NotificationRequestAccepted(notification);
+              }
+              // console.log("after accepting request",requestInfo);
+            });
         } catch (error) {
           setLoading(false);
           console.error("Error updating requestType 'new':", error);
@@ -140,7 +153,8 @@ const RequestAcceptModal = ({
             {
               messageId: lastMessage?._id,
               userRequestId: requestInfo?.requestId?._id,
-            },config
+            },
+            config
           );
           console.log("Accept response", accept.data?.message);
 
@@ -149,35 +163,51 @@ const RequestAcceptModal = ({
               socket.emit("new message", accept.data?.message);
               let tmp = {
                 ...requestInfo,
-                requestType: "win", updatedAt: new Date().toISOString()
+                requestType: "win",
+                updatedAt: new Date().toISOString(),
               };
               dispatch(setRequestInfo(tmp));
               const updatedMessages = messages.map((message) => {
                 if (message?._id === lastMessage?._id) {
-                  return { ...message, bidAccepted: "accepted"};
+                  return { ...message, bidAccepted: "accepted" };
                 }
                 return message;
               });
-              setAcceptLocal(true);
+
               setMessages(updatedMessages);
+
+              const filteredRequests = ongoingRequests.filter(
+                (request) => request._id !== tmp?._id
+              );
+              const requests = ongoingRequests.filter(
+                (request) => request._id === tmp?._id
+              );
+             
+              //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
+
+              // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
+              const data = [tmp, ...filteredRequests];
+              dispatch(setOngoingRequests(data));
+              setAcceptLocal(true);
+           
               setLoading(false);
               const token = await axiosInstance.get(
-                `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,config
+                `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,
+                config
               );
-              if (token.data.length > 0){
+              if (token.data.length > 0) {
                 const notification = {
                   token: token.data,
                   title: user?.storeName,
                   requestInfo: {
                     requestId: requestInfo?._id,
                     userId: requestInfo?.users[1]._id,
-                    senderId:requestInfo?.users[0]._id
+                    senderId: requestInfo?.users[0]._id,
                   },
                   tag: user?._id,
                   price: lastMessage?.bidPrice,
-                  image:  lastMessage?.bidImages[0],
-                  details:lastMessage?.message,
-
+                  image: lastMessage?.bidImages[0],
+                  details: lastMessage?.message,
                 };
                 NotificationBidAccepted(notification);
               }
@@ -198,7 +228,6 @@ const RequestAcceptModal = ({
               // setTimeout(() => {
               //   BidAcceptedOtherRetailer(notification)
               // }, 500)
-
             } catch (error) {
               console.error("Error updating chat details:", error);
             }
@@ -215,31 +244,28 @@ const RequestAcceptModal = ({
     }
   };
 
-
-
-
   // Decreasing the count of available spades of retailer //////////////////////////////////////////////////////
   const updateUserDetails = async () => {
-
     const config = {
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':`Bearer ${accessToken}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-    
-     }
-    await axiosInstance.patch(
-      `${baseUrl}/retailer/editretailer`,
-      {
-        _id: userDetails?._id,
-        freeSpades: userDetails.freeSpades - 1,
-      },config)
+    };
+    await axiosInstance
+      .patch(
+        `${baseUrl}/retailer/editretailer`,
+        {
+          _id: userDetails?._id,
+          freeSpades: userDetails.freeSpades - 1,
+        },
+        config
+      )
       .then(async (res) => {
         // console.log("userData updated Successfully after payment ");
         dispatch(setUserDetails(res.data));
         // console.log("res after user update", res.data);
         await AsyncStorage.setItem("userData", JSON.stringify(res.data));
-
       })
       .catch((err) => {
         console.error("error while updating profile", err.message);
@@ -260,23 +286,34 @@ const RequestAcceptModal = ({
       className=" flex justify-center items-center  rounded-lg h-full "
     >
       <View className="flex-1  justify-center items-center">
-        <View className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl" style={{ paddingVertical: 50 }}>
+        <View
+          className="bg-white w-[90%] p-[30px] justify-center items-center mt-[10px] gap-[24px] shadow-gray-600 shadow-2xl"
+          style={{ paddingVertical: 50 }}
+        >
           <ModalImg />
           <View className="mt-[20px]">
-            <Text className="text-[15px]  text-center text-[#001B33]" style={{ fontFamily: "Poppins-Bold" }}>
+            <Text
+              className="text-[15px]  text-center text-[#001B33]"
+              style={{ fontFamily: "Poppins-Bold" }}
+            >
               Are you sure?{" "}
             </Text>
-            {type == "Request" &&
-              <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>
+            {type == "Request" && (
+              <Text
+                className="text-[14px]  text-center  pt-[8px] text-[#001B33]"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
                 You are accepting the customer request
               </Text>
-            }
-            {type == "Offer" &&
-              <Text className="text-[14px]  text-center  pt-[8px] text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>
+            )}
+            {type == "Offer" && (
+              <Text
+                className="text-[14px]  text-center  pt-[8px] text-[#001B33]"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
                 You are accepting the customer offer
               </Text>
-            }
-
+            )}
           </View>
 
           <View className="w-full flex flex-row justify-between">
@@ -286,7 +323,10 @@ const RequestAcceptModal = ({
                   setModalVisible(false);
                 }}
               >
-                <Text className="text-[16px] text-[#FB8C00]  text-center" style={{ fontFamily: "Poppins-Regular" }}>
+                <Text
+                  className="text-[16px] text-[#FB8C00]  text-center"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
                   Close
                 </Text>
               </TouchableOpacity>
@@ -296,7 +336,10 @@ const RequestAcceptModal = ({
                 {loading ? (
                   <ActivityIndicator size="small" color="#FB8C00" />
                 ) : (
-                  <Text className="text-[16px] text-[#FB8C00]  text-center" style={{ fontFamily: "Poppins-Bold" }}>
+                  <Text
+                    className="text-[16px] text-[#FB8C00]  text-center"
+                    style={{ fontFamily: "Poppins-Bold" }}
+                  >
                     Accept
                   </Text>
                 )}
