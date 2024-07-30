@@ -818,7 +818,7 @@ const RequestPage = () => {
       console.log("Stopped listening for 'message received' events");
     };
   }, [requestInfo]);
-
+ 
   const handlePress = (star) => {
     setRating(star);
     console.log("star", star);
@@ -1191,12 +1191,12 @@ const RequestPage = () => {
 {networkError && <View style={{ marginTop: 30 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={fetchRequestData} setNetworkError={setNetworkError} /></View>}
 
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 }}
           ref={scrollViewRef}
           onContentSizeChange={() =>
             scrollViewRef.current.scrollToEnd({ animated: true })
           }
-          style={{ marginBottom: 120 }} 
+          style={{ marginBottom: 140 }} 
         >
           {loading && (
             <View style={{ flex: 1 }}>
@@ -1216,7 +1216,7 @@ const RequestPage = () => {
                 gap: 20,
                 paddingHorizontal: 10,
                 paddingTop: 40,
-                paddingBottom: 150,
+                paddingBottom: 140,
               }}
             >
               {/* <ChatMessage bidDetails={messages[0]} /> */}

@@ -113,13 +113,14 @@ const BidQueryPage = () => {
         //  console.log("messages recieved",response.data);
 
         socket.emit("new message", response.data);
-        let mess = [...messages];
-        //  console.log("query send",mess);
-        mess.push(response.data);
-        //  console.log("query update",mess);
+        // let mess = [...messages];
+        // //  console.log("query send",mess);
+        // mess.push(response.data);
+        // //  console.log("query update",mess);
 
-        //  dispatch(setMessages(mess));
-        setMessages(mess);
+        // //  dispatch(setMessages(mess));
+        // setMessages(mess);
+        setMessages((prevMessages) => [...prevMessages, response.data]);
         const filteredRequests = ongoingRequests.filter(
           (request) => request?._id !==requestInfo?._id
         );
@@ -130,14 +131,11 @@ const BidQueryPage = () => {
         //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
        
         // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
-        const data=[updatedRequest,...filteredRequests];
-         dispatch(setOngoingRequests(data));
-         dispatch(setRequestInfo(updatedRequest));
+       
          const req={
           requestId:updatedRequest?._id,
           userId:updatedRequest?.users[0]._id,
           senderId:updatedRequest?.users[1]._id
-          
         };
         dispatch(setCurrentRequest(req))
         
@@ -145,6 +143,9 @@ const BidQueryPage = () => {
         // console.log("notification", notification.requestInfo);
         const requestId=req?.requestId
         navigation.navigate(`requestPage${requestId}`);
+        const data=[updatedRequest,...filteredRequests];
+        dispatch(setOngoingRequests(data));
+        dispatch(setRequestInfo(updatedRequest));
 
         setLoading(false)
         const config = {

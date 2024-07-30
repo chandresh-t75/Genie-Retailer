@@ -85,11 +85,12 @@ const SendDocument = () => {
                 //   }, 2000);
               }
               if (res.status !== 201) return;
-                    let mess = [...messages];
-                    mess.push(res.data);
-                    //  console.log("query update",mess);
+                    // let mess = [...messages];
+                    // mess.push(res.data);
+                    // //  console.log("query update",mess);
 
-                    setMessages(mess);
+                    // setMessages(mess);
+                    setMessages((prevMessages) => [...prevMessages, response.data]);
                     socket.emit("new message", res.data);
 
                     // setAttachmentScreen(false);

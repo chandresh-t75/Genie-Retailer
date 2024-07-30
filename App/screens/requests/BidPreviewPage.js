@@ -122,14 +122,15 @@ const BidPreviewPage = () => {
         if (response.status !== 201) return;
         // console.log("messages recieved", response.data);
         socket.emit("new message", response.data);
-        let mess = [...messages];
-        // console.log("query send", mess);
-        mess.push(response.data);
-        // console.log("query update", mess);
+        // let mess = [...messages];
+        // // console.log("query send", mess);
+        // mess.push(response.data);
+        // // console.log("query update", mess);
        
 
 
-        setMessages(mess);
+        // setMessages(mess);
+        setMessages((prevMessages) => [...prevMessages, response.data]);
         const filteredRequests = ongoingRequests.filter(
           (request) => request._id !==requestInfo._id
         );
