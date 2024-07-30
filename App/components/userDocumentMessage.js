@@ -26,7 +26,7 @@ const UserDocumentMessage = ({ bidDetails }) => {
     }
 
     return (
-        <View className="flex gap-[19px]  border-[1px] border-gray-200   rounded-3xl w-[297px] h-[max-content] py-[10px] items-center bg-[#ebebeb]">
+        <View className="flex gap-[19px]    rounded-3xl w-[297px] h-[max-content] py-[10px] items-center bg-[#fafafa]">
             <View className="flex-row mx-[25px] ">
                 <View className="flex-row  ">
                     <View className="w-[25%]" >

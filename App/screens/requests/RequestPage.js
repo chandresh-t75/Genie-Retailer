@@ -154,9 +154,9 @@ const RequestPage = () => {
       ) {
         console.log(currentRequest)
         if(currentRequest?.userId && currentRequest?.senderId)
-          SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
+          SocketSetUp();
         else if(currentRequest?.userId && !currentRequest?.senderId){
-          SocketSetUp(currentRequest?.userId, null);
+          SocketSetUp();
         }
         else if(!currentRequest?.userId && !currentRequest?.senderId)
           navigation.navigate('home');
@@ -413,8 +413,10 @@ const RequestPage = () => {
   }
   }
 
-  const  SocketSetUp = async (userId, senderId) => {
-    console.log("setup", userId);
+  const  SocketSetUp = async () => {
+    console.log("setup", currentRequest?.userId,currentRequest?.senderId);
+    const userId=currentRequest?.userId
+    const senderId=currentRequest?.senderId
     socket.emit("setup", { userId, senderId });
     console.log("socket setup for personal user setup successfully");
     // console.log("user connected with userId", requestInfo.users[0]._id);
@@ -428,6 +430,11 @@ const RequestPage = () => {
     
   // },[])
 
+  const networkRefresh=()=>{
+    SocketSetUp();
+    fetchRequestData();
+  }
+
   useEffect(() => {
    
     // console.log("route.params.data", currentRequest);
@@ -436,7 +443,10 @@ const RequestPage = () => {
 
     fetchUserDetails();
     if(currentRequest?.userId && currentRequest?.senderId)
-      SocketSetUp(currentRequest?.userId, currentRequest?.senderId);
+      SocketSetUp();
+    else if(currentRequest?.userId && !currentRequest?.senderId){
+      SocketSetUp();
+    }
    
     fetchRequestData();
     console.log("reqInfo from params", socketConnected);
@@ -1188,7 +1198,7 @@ const RequestPage = () => {
 
 
 
-{networkError && <View style={{ marginTop: 30 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={fetchRequestData} setNetworkError={setNetworkError} /></View>}
+{networkError && <View style={{ marginTop: 30 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={networkRefresh} setNetworkError={setNetworkError} /></View>}
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 }}

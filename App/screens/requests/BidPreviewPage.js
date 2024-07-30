@@ -146,9 +146,9 @@ const BidPreviewPage = () => {
          const req={
           requestId:updatedRequest?._id,
           userId:updatedRequest?.users[0]._id,
-          senderId:updatedRequest?.users[1]._id
+          senderId:updatedRequest?.users[1]._id 
         };
-        dispatch(setCurrentRequest(req))
+        dispatch(setCurrentRequest(req));
   
         const requestId=req?.requestId
         navigation.navigate(`requestPage${requestId}`);
@@ -418,7 +418,7 @@ const BidPreviewPage = () => {
       {/* Typing Area */}
       <View className="absolute bottom-0 left-0 right-0">
         <View className="gap-[20px]">
-          <TouchableOpacity onPress={sendBid}>
+          <TouchableOpacity disabled={loading} onPress={sendBid}>
             <View className="w-full h-[63px] flex items-center justify-center  bg-[#FB8C00] ">
             {loading ? (
                 <ActivityIndicator size="small" color="#ffffff" />

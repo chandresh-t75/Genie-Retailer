@@ -102,7 +102,7 @@ const CameraScreen = () => {
         // //  console.log("query update",mess);
 
         // setMessages(mess);
-        setMessages((prevMessages) => [...prevMessages, response.data]);
+        setMessages((prevMessages) => [...prevMessages, res.data]);
         socket.emit("new message", res.data);
 
         // setAttachmentScreen(false);

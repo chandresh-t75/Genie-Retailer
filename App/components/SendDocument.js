@@ -14,7 +14,7 @@ import Send from "../assets/SendMessage.svg";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { setOngoingRequests, setRequestInfo } from "../redux/reducers/requestDataSlice";
+import { setCurrentRequest, setOngoingRequests, setRequestInfo } from "../redux/reducers/requestDataSlice";
 import { sendCustomNotificationDocument } from "../notification/notificationMessages";
 import { socket } from "../screens/utils/socket.io/socket";
 import { baseUrl } from "../screens/utils/constants";
@@ -90,7 +90,7 @@ const SendDocument = () => {
                     // //  console.log("query update",mess);
 
                     // setMessages(mess);
-                    setMessages((prevMessages) => [...prevMessages, response.data]);
+                    setMessages((prevMessages) => [...prevMessages, res.data]);
                     socket.emit("new message", res.data);
 
                     // setAttachmentScreen(false);
