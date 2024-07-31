@@ -60,7 +60,7 @@ const CustomerReport = () => {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -100}
             >
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                    <View style={{ paddingHorizontal: 30 }}>
+                    <View style={{ paddingHorizontal: 30  ,paddingBottom:100}}>
                        
                         <View className="z-50 absolute top-[10px] left-[20px] ">
                         <TouchableOpacity onPress={() => { navigation.goBack(); }} style={{padding:20,borderRadius:100,zIndex:50}}>

@@ -365,7 +365,8 @@ const PanCardScreen = () => {
           >
             <View
               style={{
-                justifyContent: "center",
+                justifyContent: "center"
+                ,paddingBottom:100
               }}
             >
               <View
@@ -444,7 +445,7 @@ const PanCardScreen = () => {
                     //   </View>
                     // )
                     panCard  && (
-                      <View  className="rounded-[16px] w-[80%] mb-[100px]">
+                      <View  className="rounded-[16px] w-[80%] mb-[50px]">
                         <View className="flex-col items-center">
                       <DocumentIcon size={30} />
                       <Text className=" text-[16px] pt-[10px] w-[70%] text-center">{imagesLocal ?imagesLocal?.assets[0].name:""}</Text>

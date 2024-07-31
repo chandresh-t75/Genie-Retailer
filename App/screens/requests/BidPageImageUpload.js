@@ -390,12 +390,11 @@ const BidPageImageUpload = () => {
                 <Text
                   style={{ fontFamily: "Poppins-Regular" }}
                   className="text-[#2e2c43]"
-                >
-                  Provide product images for better reference to customers for product quality and availability.
+                >Please provide available product images for better reference to customers for product quality and availability.
                 </Text>
               </View>
             </View>
-            <View className="flex-grow">
+            <View className="flex-grow pb-[100px]">
               {images.length === 0 && (
                 <View className="z-0 pb-[40px]">
                   <View>
@@ -495,7 +494,10 @@ const BidPageImageUpload = () => {
                   </TouchableOpacity>
                 </View>
               )}
-              {!addMore ? (
+              
+            </View>
+          </ScrollView>
+          {!addMore ? (
                 images.length > 0 && (
                   <TouchableOpacity
                     onPress={handleNext}
@@ -546,8 +548,6 @@ const BidPageImageUpload = () => {
           </View>
         </View>
               )}
-            </View>
-          </ScrollView>
 
           <ModalCancel
             modalVisible={modalVisible}

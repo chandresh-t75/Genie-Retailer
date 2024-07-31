@@ -172,7 +172,7 @@ const RequestPage = () => {
     };
   }, []);
 
-  // console.log("params", currentRequest);
+  // console.log("params", requestInfo);
 
   //    const navigationState = useNavigationState(state => state);
   // const isChat = navigationState.routes[navigationState.index].name === 'requestPage';

@@ -49,6 +49,7 @@ const PaymentScreen = () => {
     }, []);
 
     const todayDate=getFormattedDate();
+    
      const PayNow = async () => {
         const username = "rzp_live_oz8kr6Ix29mKyC";
         const password = "IADDTICFJ2oXYLX3H2pLjvcx";
@@ -225,11 +226,11 @@ const PaymentScreen = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: "white" }}>
-            <ScrollView contentContainerStyle={{ flex: 1 }}>
-                <View className="flex w-screen mt-[20px]" style={{ flex: 1 }}>
+            <ScrollView >
+                <View className="flex w-screen mt-[20px] pb-[100px]">
                     <View className="flex flex-row items-center pb-[20px] px-[32px]">
                         <Text
-                            className="text-[16px]  flex-1 text-center"
+                            className="text-[16px]  flex-1 text-center text-[#2e2c43]"
                             style={{ fontFamily: "Poppins-Bold" }}
                         >
                             Payment Invoice
@@ -241,12 +242,12 @@ const PaymentScreen = () => {
                     <View className="bg-[rgb(255,231,200)] px-[32px] py-[30px]">
                         <View className="flex-row items-center justify-center gap-2">
                             <Text
-                                className="text-[14px] text-center"
+                                className="text-[14px] text-center text-[#2e2c43]"
                                 style={{ fontFamily: "Poppins-ExtraBold" }}
                             >
                                 Date:
                             </Text>
-                            <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>
+                            <Text className="text-[14px] text-[#2e2c43]" style={{ fontFamily: "Poppins-Regular" }}>
                                 {todayDate}
                             </Text>
                         </View>
@@ -254,12 +255,12 @@ const PaymentScreen = () => {
 
                         <View className="flex-row gap-[10px] items-center justify-center ">
                             <Text
-                                className=" text-[14px] "
+                                className=" text-[14px] text-[#2e2c43]"
                                 style={{ fontFamily: "Poppins-ExtraBold" }}
                             >
                                 Bill To:
                             </Text>
-                            <Text className="text-[14px]" style={{ fontFamily: "Poppins-Regular" }}>{userDetails?.storeOwnerName}</Text>
+                            <Text className="text-[14px] text-[#2e2c43] capitalize" style={{ fontFamily: "Poppins-Regular" }}>{userDetails?.storeOwnerName}</Text>
 
                         </View>
 
@@ -308,16 +309,18 @@ const PaymentScreen = () => {
                     </View>
 
                     <View className="px-[32px] mt-[5px]">
-                        <Text className="text-[16px]" style={{ fontFamily: "Poppins-ExtraBold" }}>Cost for 1000 customers</Text>
-                        <Text className="text-[24px] text-[#558b2F]" style={{ fontFamily: "Poppins-SemiBold" }}>100 Rs</Text>
+                        <Text className="text-[16px] text-[#2e2c43]" style={{ fontFamily: "Poppins-ExtraBold" }}>Cost for 1000 customers</Text>
+                        <Text className="text-[16px] text-[#558b2F]" style={{ fontFamily: "Poppins-SemiBold" }}>100 Rs</Text>
                         <Text className="text-[16px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>Discount - {verifiedCouponCode ? "50" : "0"}</Text>
                         <Text className="text-[16px]" style={{ fontFamily: "Poppins-Regular" }}>Tax - 0 Rs</Text>
-                        <Text className="text-[16px]" style={{ fontFamily: "Poppins-ExtraBold" }}>Total Cost</Text>
-                        <Text className="text-[24px] text-[#558b2F]" style={{ fontFamily: "Poppins-SemiBold" }}>{verifiedCouponCode ? "50" : "100"} Rs</Text>
+                        <Text className="text-[16px] text-[#2e2c43]" style={{ fontFamily: "Poppins-ExtraBold" }}>Total Cost</Text>
+                        <Text className="text-[16px] text-[#558b2F]" style={{ fontFamily: "Poppins-SemiBold" }}>{verifiedCouponCode ? "50" : "100"} Rs</Text>
                     </View>
 
                 </View>
-                <View className="absolute bottom-[0px] left-[0px] right-[0px] gap-[10px]">
+              
+            </ScrollView>
+            <View className="absolute bottom-[0px] left-[0px] right-[0px] gap-[10px]">
                     <TouchableOpacity
                         onPress={() => {
                             userDetails.freeSpades > 0 ? handleFreeSpade() : PayNow();
@@ -337,7 +340,6 @@ const PaymentScreen = () => {
                         </View>
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
             {/* {
                 isVisible && <PaymentSuccessFulModal isVisible={isVisible} setIsVisible={setIsVisible} />
             } */}

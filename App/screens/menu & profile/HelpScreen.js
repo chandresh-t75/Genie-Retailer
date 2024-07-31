@@ -61,13 +61,14 @@ const HelpScreen = () => {
 
     return (
         <View style={{ flex: 1 ,backgroundColor:"white"}}>
+          <ScrollView style={{ flex: 1 ,backgroundColor:"white"}}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -100}
             >
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                    <View style={{ paddingHorizontal: 30 }}>
+                    <View style={{ paddingHorizontal: 30 ,paddingBottom:100}}>
                        
                     <View className="z-50 absolute left-[16px] " style={{marginTop:25}}>
 
@@ -109,7 +110,7 @@ const HelpScreen = () => {
                 </ScrollView>
                 <SuccessConcernModal modalVisible={modalVisible} setModalVisible={setModalVisible}/>
             </KeyboardAvoidingView>
-
+            </ScrollView>
             <TouchableOpacity
            disabled={!query} 
            onPress={handleHelp}

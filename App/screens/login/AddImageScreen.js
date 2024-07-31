@@ -234,8 +234,8 @@ const AddImageScreen = () => {
     <>
       {!cameraScreen && (
         <View style={{ flex: 1 }} className="bg-white">
-          <View style={{ flex: 1, marginTop: 30 }}>
-            <View className="w-full z-40  flex flex-row justify-between items-center px-[32px]">
+          <ScrollView style={{ flex: 1 ,marginBottom:100}}>
+            <View className="w-full z-40 mt-[30px] flex flex-row justify-between items-center px-[32px] ">
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
@@ -360,7 +360,9 @@ const AddImageScreen = () => {
               </View>
             )}
 
-            {!addMore ? (
+           
+          </ScrollView>
+          {!addMore ? (
               imagesLocal.length > 0 && (
                 <View className="w-full h-[68px] bg-[#fb8c00] justify-center absolute bottom-0 left-0 right-0">
                   <TouchableOpacity
@@ -381,7 +383,7 @@ const AddImageScreen = () => {
               )
             ) : (
               <View
-                style={{ flex: 1 }}
+                style={{ flex: 1  }}
                 className="absolute  left-0 right-0 bottom-0 z-50 h-screen shadow-2xl "
               >
                 <TouchableOpacity
@@ -424,7 +426,6 @@ const AddImageScreen = () => {
                 </View>
               </View>
             )}
-          </View>
           <ModalCancel
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}

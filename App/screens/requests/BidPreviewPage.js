@@ -206,7 +206,7 @@ const BidPreviewPage = () => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="relative flex-grow bg-[#ffe7c8]">
+        <View className="relative flex-grow bg-[#ffe7c8] pb-[50px]">
         <View className=" bg-[#ffe7c8] w-full flex flex-row   items-center py-[30px] pt-[20px]">
           <TouchableOpacity
             onPress={() => {

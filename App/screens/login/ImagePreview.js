@@ -96,7 +96,8 @@ const accessToken=useSelector(state=>state.storeData.accessToken)
 
   return (
     <View style={{ flex: 1 }} className="bg-white">
-      <View style={{ flex: 1 }}>
+      <ScrollView>
+        <View className="flex flex-col" style={{paddingBottom:100}}>
         <View className="w-full z-40 mt-[20px]  flex flex-row justify-between items-center  px-[32px]">
         <TouchableOpacity
               onPress={() => {
@@ -125,12 +126,12 @@ const accessToken=useSelector(state=>state.storeData.accessToken)
                 {imagesLocal ? (
                   <Image
                     source={{ uri: imagesLocal[selectedImageIndex] }}
-                    width={271}
-                    height={271}
+                    width={200}
+                    height={200}
                     className="rounded-full border-[1px] border-slate-400 object-contain"
                   />
                 ) : (
-                  <View className="h-[271px] w-[271px] rounded-full border-[1px] border-slate-400 object-contain"></View>
+                  <View className="h-[200px] w-[200px] rounded-full border-[1px] border-slate-400 object-contain"></View>
                 )}
               </View>
             }
@@ -157,6 +158,7 @@ const accessToken=useSelector(state=>state.storeData.accessToken)
         ))}
                     </View>
                 </ScrollView>
+                </View>
        {/* <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.wrapper}>
         <DraggableFlatList showsHorizontalScrollIndicator={false}
@@ -169,7 +171,9 @@ const accessToken=useSelector(state=>state.storeData.accessToken)
         />
       </View>
     </GestureHandlerRootView> */}
-        <View className="w-full h-[68px]  bg-[#fb8c00] justify-center absolute bottom-0 left-0 right-0">
+       
+      </ScrollView>
+      <View className="w-full h-[68px]  bg-[#fb8c00] justify-center absolute bottom-0 left-0 right-0">
           <TouchableOpacity onPress={handleImage}>
             <View className="w-full flex items-center justify-center">
             {loading ? (
@@ -182,7 +186,6 @@ const accessToken=useSelector(state=>state.storeData.accessToken)
             </View>
           </TouchableOpacity>
         </View>
-      </View>
     </View>
   );
 };
