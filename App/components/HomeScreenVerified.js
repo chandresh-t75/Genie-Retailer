@@ -327,6 +327,7 @@ const refreshHandler=()=>{
        colors={["#9Bd35A", "#FB8C00"]}
      />
    }
+   showsVerticalScrollIndicator={false}
     
  >
    <View className="flex flex-col mt-[20px]  gap-[32px] ">

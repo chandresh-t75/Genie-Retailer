@@ -109,7 +109,7 @@ const BidOfferedPrice = () => {
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding:20,zIndex:30,position:"absolute"}}
+            style={{ padding:20,zIndex:100,position:"absolute"}}
           >
             <BackArrow  />
           </TouchableOpacity>

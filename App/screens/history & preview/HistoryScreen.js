@@ -63,7 +63,8 @@ const HistoryScreen = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView contentContainerStyle={{ zIndex: 100 }}>
+   
+   <ScrollView contentContainerStyle={{ zIndex: 100 }} showsVerticalScrollIndicator={false}>
         <View className="flex flex-row z-40 justify-center items-center px-[32px] " style={{}}>
           <TouchableOpacity
             onPress={() => {

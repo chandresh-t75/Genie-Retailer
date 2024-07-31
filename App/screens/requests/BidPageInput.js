@@ -91,7 +91,7 @@ const BidPageInput = () => {
             onPress={() => {
               navigation.goBack();
             }}
-            style={{ padding:20,paddingRight:5,zIndex:30}}
+            style={{ padding:20,paddingRight:5,zIndex:100}}
           >
             <BackArrow  />
           </TouchableOpacity>
