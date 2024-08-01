@@ -27,7 +27,7 @@ const ConfirmPaymentModal = ({modalConfirmVisible,setModalConfirmVisible}) => {
                       <RemainingCustomer width={139} height={115}/>
                         <Text className="text-[16px]  text-center text-[#001B33]" style={{ fontFamily: "Poppins-Black" }}>Your remaining customers{"\n"}are over</Text>
                         <View className="flex gap-[8px]">
-                            <Text className="text-[12px] text-center text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>Please proceed for payment to accept new requests.</Text>
+                            <Text className="text-[12px] text-center text-[#001B33]" style={{ fontFamily: "Poppins-Regular" }}>Please proceed with a payment of 100 Rs to unlock the next 1000 customers.</Text>
                             <Text className="text-[12px] text-center text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>T & C* Applied</Text>
                         </View>
                         

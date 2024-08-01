@@ -152,7 +152,7 @@ const RequestPage = () => {
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        console.log(currentRequest)
+        console.log(currentRequest) 
         if(currentRequest?.userId && currentRequest?.senderId)
           SocketSetUp();
         else if(currentRequest?.userId && !currentRequest?.senderId){

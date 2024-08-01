@@ -15,7 +15,7 @@ import RazorpayCheckout from "react-native-razorpay";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import { encode as btoa } from "base-64";
-import Close from "../../../assets/Cross.svg";
+import Close from "../../../assets/orangeCross.svg";
 // import PaymentImg from "../../assets/PaymentImg.svg";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -62,7 +62,7 @@ const PaymentScreen = () => {
             const response = await axios.post(
                 "https://api.razorpay.com/v1/orders",
                 {
-                    amount: 100,  // INR amount in paisa 1Rs = 100 paisa
+                    amount: 10000,  // INR amount in paisa 1Rs = 100 paisa
                     currency: "INR",
                     receipt: userDetails._id,
                     notes: {
@@ -104,6 +104,7 @@ const PaymentScreen = () => {
                     console.log("Payment Successful");
 
                     updateUserDetails();
+                    navigation.navigate('home');
                     setLoading(false);
                 })
                 .catch((error) => {
@@ -235,11 +236,14 @@ const PaymentScreen = () => {
                         >
                             Payment Invoice
                         </Text>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={{padding:10,zIndex:100}}>
                             <Close />
                         </TouchableOpacity>
                     </View>
                     <View className="bg-[rgb(255,231,200)] px-[32px] py-[30px]">
+                        <Text className="mt-[10px] text-center capitalize" style={{ fontFamily: "Poppins-Bold" ,fontSize:24}} >
+                            {userDetails?.storeName}
+                        </Text>
                         <View className="flex-row items-center justify-center gap-2">
                             <Text
                                 className="text-[14px] text-center text-[#2e2c43]"
@@ -264,12 +268,7 @@ const PaymentScreen = () => {
 
                         </View>
 
-                        <Text
-                            className="mt-[10px] text-center capitalize"
-                            style={{ fontFamily: "Poppins-Bold" ,fontSize:24}}
-                        >
-                            {userDetails?.storeName}
-                        </Text>
+                        
                     </View>
 
 

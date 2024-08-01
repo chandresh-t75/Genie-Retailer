@@ -64,7 +64,7 @@ async function onDisplayNotification(remoteMessage) {
           setTimeout(() => {
           navigationService.navigate(`requestPage${requestId}`);
         }, 200);
-        }, 1200);
+        }, 200);
         break;
     }
   });
@@ -106,7 +106,7 @@ async function onDisplayNotificationHome(remoteMessage) {
         setTimeout(() => {
           // console.log("pressed", remoteMessage?.data);
           navigationService.navigate("home");
-        }, 1200);
+        }, 200);
         break;
     }
   });
@@ -129,7 +129,7 @@ export  function notificationListeners() {
       console.log("Notification caused app to open from background state");
 
       if (!!remoteMessage?.data && remoteMessage?.data?.redirect_to) {
-        setTimeout(() => {
+     
           if (remoteMessage?.data?.userRequest) {
             navigationService.navigate("home");
           } else if (remoteMessage?.data?.requestInfo) {
@@ -142,7 +142,7 @@ export  function notificationListeners() {
           navigationService.navigate(`requestPage${requestId}`);
         }, 200);
           }
-        }, 1200);
+        
       }
       // handleNotification(remoteMessage);
     }
@@ -153,7 +153,7 @@ export  function notificationListeners() {
       console.log("Message handled in the background!");
 
       if (!!remoteMessage?.data && remoteMessage?.data?.redirect_to) {
-        setTimeout(() => {
+       
           if (remoteMessage?.data?.userRequest) {
             navigationService.navigate("home");
           } else if (remoteMessage?.data?.requestInfo) {
@@ -164,7 +164,7 @@ export  function notificationListeners() {
           navigationService.navigate(`requestPage${requestId}`);
         }, 200);
           }
-        }, 1200);
+     
       }
       // handleNotification(remoteMessage);
     }

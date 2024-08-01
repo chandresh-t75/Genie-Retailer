@@ -178,7 +178,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-       console.log("hii",userData._id)
+       console.log("hii",userData._id);
       const response = await axiosInstance.get(
         `${baseUrl}/chat/retailer-new-spades?id=${userData?._id}`,config
       );
