@@ -42,16 +42,16 @@ import RemainingCustomerModal from "./RemainingCustomerModal";
 import { baseUrl } from "../screens/utils/constants";
 import axiosInstance from "../screens/utils/axiosInstance";
 import NetworkError from "./NetworkError";
-import Profile from "../assets/ProfileIcon.svg"
-import GinieIcon from "../assets/GinieBusinessIcon.svg"
-import History from "../assets/HistoryIcon.svg"
+import Profile from "../assets/ProfileIcon.svg";
+import GinieIcon from "../assets/GinieBusinessIcon.svg";
+import History from "../assets/HistoryIcon.svg";
 
 const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
   const isFocused = useIsFocused();
-  const [refreshing, setRefreshing] =useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState("New");
   const [request, setRequest] = useState(true);
 
@@ -70,24 +70,23 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   const userData = useSelector((state) => state.storeData.userDetails);
   const isFirstLoad = useRef(true);
   const [socketConnected, setSocketConnected] = useState(false);
-  const accessToken=useSelector((state) => state.storeData.accessToken)
+  const accessToken = useSelector((state) => state.storeData.accessToken);
   const [networkError, setNetworkError] = useState(false);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-// ////////////////////////////////////Connecting socket from when app goes from backgroun to foreground/////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////Connecting socket from when app goes from backgroun to foreground/////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
+        nextAppState === "active"
       ) {
-        
-          connectSocket();
+        connectSocket();
       }
 
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
-      console.log('AppState at home', appState.current);
+      console.log("AppState at home", appState.current);
     });
 
     return () => {
@@ -95,15 +94,12 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     };
   }, []);
 
-
-
   const connectSocket = useCallback(async () => {
     // socket.emit("setup", currentSpadeRetailer?.users[1]._id);
-    const userDetailsData = JSON.parse(await AsyncStorage.getItem('userData'));
+    const userDetailsData = JSON.parse(await AsyncStorage.getItem("userData"));
     const userId = userDetailsData?._id;
-    const senderId = userDetailsData?._id; 
-    if(userId && senderId) 
-      socket.emit("setup",{ userId, senderId });
+    const senderId = userDetailsData?._id;
+    if (userId && senderId) socket.emit("setup", { userId, senderId });
     //  console.log('Request connected with socket with id', spadeId);
     socket.on("connected", () => setSocketConnected(true));
     console.log("Home Screen socekt connect with id");
@@ -122,15 +118,28 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
         updatedUser?.unreadCount
       );
 
-      // console.log("ongoing requests", ongoingRequests?.length, updatedUser);
+      console.log("ongoing requests", ongoingRequests?.length, updatedUser);
 
-      const filteredRequests = ongoingRequests.filter(
-        (request) => request?._id !== updatedUser?._id
-      );
-      // console.log("ongoing requests", filteredRequests.length);
-  
-      const updatedRequest = [updatedUser, ...filteredRequests];
-      dispatch(setOngoingRequests(updatedRequest));
+      if (
+        updatedUser?.latestMessage?.bidType === "update" &&
+        updatedUser?.requestType === "new"
+      ) {
+        const filteredRequests = newRequests.filter(
+          (request) => request?._id !== updatedUser?._id
+        );
+        // console.log("ongoing requests", filteredRequests.length);
+
+        const updatedRequest = [updatedUser, ...filteredRequests];
+        dispatch(setNewRequests(updatedRequest));
+      } else {
+        const filteredRequests = ongoingRequests.filter(
+          (request) => request?._id !== updatedUser?._id
+        );
+        // console.log("ongoing requests", filteredRequests.length);
+
+        const updatedRequest = [updatedUser, ...filteredRequests];
+        dispatch(setOngoingRequests(updatedRequest));
+      }
     };
 
     socket.on("updated retailer", handleMessageReceived);
@@ -173,62 +182,57 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
-       console.log("hii",userData._id);
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      console.log("hii", userData._id);
       const response = await axiosInstance.get(
-        `${baseUrl}/chat/retailer-new-spades?id=${userData?._id}`,config
+        `${baseUrl}/chat/retailer-new-spades?id=${userData?._id}`,
+        config
       );
-      
+
       if (response.data) {
         // console.log("hiii verified",response.data);
         dispatch(setNewRequests(response.data));
-        setLoading(false);
       }
     } catch (error) {
-      setLoading(false);
       dispatch(setNewRequests([]));
-      
-      if (!error?.response?.status){
+
+      if (!error?.response?.status) {
         // console.log("hii net")
-          setNetworkError(true);
+        setNetworkError(true);
       }
 
       // console.error('Error fetching new requests:', error);
     }
-    
   };
 
   const fetchOngoingRequests = async () => {
-    setIsLoading(true);
-
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
       const ongoingresponse = await axiosInstance.get(
-        `${baseUrl}/chat/retailer-ongoing-spades?id=${userData?._id}`,config
+        `${baseUrl}/chat/retailer-ongoing-spades?id=${userData?._id}`,
+        config
       );
       if (ongoingresponse.data) {
         // console.log("hiiiuu");
         dispatch(setOngoingRequests(ongoingresponse.data));
-        setIsLoading(false);
       }
     } catch (error) {
-      setIsLoading(false);
       dispatch(setOngoingRequests([]));
-      if (!error?.response?.status){
-        console.log("hii net")
-          setNetworkError(true);
+      if (!error?.response?.status) {
+        console.log("hii net");
+        setNetworkError(true);
       }
-    
+
       //console.error('Error fetching ongoing requests:', error);
     }
   };
@@ -237,17 +241,19 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
       const history = await axiosInstance.get(
-        `${baseUrl}/retailer/history?id=${userData?._id}`,config
+        `${baseUrl}/retailer/history?id=${userData?._id}`,
+        config
       );
       if (history.data) {
         dispatch(setRetailerHistory(history.data));
       }
+      setLoading(false);
       // console.log("history", history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
@@ -256,28 +262,32 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   };
 
   const handleRefresh = () => {
-   // Show the refresh indicator
-    setLoading(true);
+    // Show the refresh indicator
+    
     try {
       // Fetch new data from the server
-      console.log("Refreshing")
+      console.log("Refreshing");
       fetchNewRequests();
       fetchOngoingRequests();
       fetchRetailerHistory();
-    } catch (error) {
       
+
+
+    } catch (error) {
       console.error("Error fetching data:", error);
     }
-    setLoading(false);
   };
 
-const refreshHandler=()=>{
-  setRefreshing(true); 
-  connectSocket();
-  handleRefresh();
-  setRefreshing(false); // Hide the refresh indicator
-
-}
+  const refreshHandler = () => {
+    setRefreshing(true);
+    // setLoading(true)
+    connectSocket();
+    handleRefresh();
+    setRefreshing(false)
+      // setLoading(false);
+      // setRefreshing(false);
+  
+  };
 
   // useEffect(() => {
   //   socket.emit("setup", userData?._id);
@@ -291,7 +301,7 @@ const refreshHandler=()=>{
         const req = {
           requestId: item?._id,
           userId: item?.users[0]?._id,
-          senderId: item?.users[1]?._id  
+          senderId: item?.users[1]?._id,
         };
         const requestId = req?.requestId;
         dispatch(setCurrentRequest(req));
@@ -301,16 +311,16 @@ const refreshHandler=()=>{
         }, 200);
       }}
       style={{
-        backgroundColor: '#fff', // Ensure the background is white
+        backgroundColor: "#fff", // Ensure the background is white
         margin: 10, // Add some margin if necessary for better shadow visibility
-        shadowColor: '#bdbdbd',
+        shadowColor: "#bdbdbd",
         shadowOffset: { width: 8, height: 6 },
         shadowOpacity: 0.9,
         shadowRadius: 24,
         elevation: 20,
         borderRadius: 24,
-        borderWidth: .5,
-        borderColor: 'rgba(0, 0, 0, 0.05)'
+        borderWidth: 0.5,
+        borderColor: "rgba(0, 0, 0, 0.05)",
       }}
     >
       <ProductOrderCard product={item} />
@@ -318,41 +328,46 @@ const refreshHandler=()=>{
   );
 
   return (
-    <View className="flex-1 bg-white" >
-    <ScrollView 
-    refreshControl={
-     <RefreshControl
-       refreshing={refreshing}
-       onRefresh={refreshHandler}
-       colors={["#9Bd35A", "#FB8C00"]}
-     />
-   }
-   showsVerticalScrollIndicator={false}
-    
- >
-   <View className="flex flex-col mt-[20px]  gap-[32px] ">
-       <View className="flex flex-row justify-between items-center px-[32px]" style={{zIndex:10}}>
-         
-               <TouchableOpacity onPress={()=>navigation.navigate("menu")} style={{padding:8}}>
-                  <View className="bg-[#FB8C00] p-[4px] rounded-full">
-                   <Profile />
-                   </View>
-               </TouchableOpacity>
-          
-           <GinieIcon/>
-           
-               <TouchableOpacity onPress={()=>navigation.navigate("history")} style={{padding:8}}>
-               <View className="bg-[#FB8C00] p-[4px] rounded-full">
-                   <History height={28} width={28}/>
-                   </View>
-               </TouchableOpacity>
-          
-           
-       </View>
-    
-        {(newRequests?.length > 0 ||
-          ongoingRequests?.length > 0 ||
-          retailerHistory?.length > 0) && (
+    <View className="flex-1 bg-white">
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshHandler}
+            colors={["#9Bd35A", "#FB8C00"]}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex flex-col mt-[20px]  gap-[32px] ">
+          <View
+            className="flex flex-row justify-between items-center px-[32px]"
+            style={{ zIndex: 10 }}
+          >
+            <TouchableOpacity
+              onPress={() => navigation.navigate("menu")}
+              style={{ padding: 8 }}
+            >
+              <View className="bg-[#FB8C00] p-[4px] rounded-full">
+                <Profile />
+              </View>
+            </TouchableOpacity>
+
+            <GinieIcon />
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("history")}
+              style={{ padding: 8 }}
+            >
+              <View className="bg-[#FB8C00] p-[4px] rounded-full">
+                <History height={28} width={28} />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {(newRequests?.length > 0 ||
+            ongoingRequests?.length > 0 ||
+            retailerHistory?.length > 0) && (
             <View className="flex items-center">
               <View>
                 <View className="flex-row justify-center gap-[40px] px-[10px]    mb-[20px]">
@@ -369,14 +384,16 @@ const refreshHandler=()=>{
                       >
                         New Requests
                       </Text>
-                      <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full ">
-                        <Text
-                          className="text-white  "
-                          style={{ fontFamily: "Poppins-Regular" }}
-                        >
-                          {newRequests ? newRequests.length : 0}
-                        </Text>
-                      </View>
+                      {newRequests && newRequests?.length > 0 && (
+                        <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full ">
+                          <Text
+                            className="text-white"
+                            style={{ fontFamily: "Poppins-Regular" }}
+                          >
+                            {newRequests ? newRequests.length : 0}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setTab("Ongoing")}>
@@ -394,30 +411,33 @@ const refreshHandler=()=>{
                       >
                         Ongoing Requests
                       </Text>
-                      <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
-                        <Text
-                          className="text-white  "
-                          style={{ fontFamily: "Poppins-Regular" }}
-                        >
-                          {ongoingRequests ? ongoingRequests.length : 0}
-                        </Text>
-                      </View>
+                      {ongoingRequests && ongoingRequests?.length > 0 && (
+                        <View className="bg-[#E76063] absolute -right-[18px] -top-[8px] h-[22px] flex justify-center items-center w-[22px]  rounded-full">
+                          <Text
+                            className="text-white  "
+                            style={{ fontFamily: "Poppins-Regular" }}
+                          >
+                            {ongoingRequests ? ongoingRequests.length : 0}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </TouchableOpacity>
                 </View>
+                
                 {tab === "New" && (
                   <>
                     {/* customer remaining card */}
                     <View
                       style={{
-                        backgroundColor: '#fff', // Ensure the background is white
+                        backgroundColor: "#fff", // Ensure the background is white
                         margin: 10, // Add some margin if necessary for better shadow visibility
-                        shadowColor: '#bdbdbd',
+                        shadowColor: "#bdbdbd",
                         shadowOffset: { width: 8, height: 6 },
                         shadowOpacity: 0.9,
                         shadowRadius: 24,
                         elevation: 20,
-                        borderRadius: 24
+                        borderRadius: 24,
                       }}
                     >
                       <View className="max-w-[340px] flex flex-row p-[20px] gap-[20px] items-center">
@@ -437,10 +457,11 @@ const refreshHandler=()=>{
                             </TouchableOpacity>
                           </View>
                           <Text
-                            className={`text-[24px]  ${userData?.freeSpades <= 50
-                              ? "text-[#E76063]"
-                              : "text-[#FB8C00]"
-                              }`}
+                            className={`text-[24px]  ${
+                              userData?.freeSpades <= 50
+                                ? "text-[#E76063]"
+                                : "text-[#FB8C00]"
+                            }`}
                             style={{ fontFamily: "Poppins-Black" }}
                           >
                             {userData?.freeSpades} / 1000
@@ -462,14 +483,14 @@ const refreshHandler=()=>{
                     {!userData.documentVerified && (
                       <View
                         style={{
-                          backgroundColor: '#fff', // Ensure the background is white
+                          backgroundColor: "#fff", // Ensure the background is white
                           margin: 10, // Add some margin if necessary for better shadow visibility
-                          shadowColor: '#bdbdbd',
+                          shadowColor: "#bdbdbd",
                           shadowOffset: { width: 8, height: 6 },
                           shadowOpacity: 0.9,
                           shadowRadius: 24,
                           elevation: 20,
-                          borderRadius: 24
+                          borderRadius: 24,
                         }}
                         className="max-w-[340px]"
                       >
@@ -483,9 +504,8 @@ const refreshHandler=()=>{
                               >
                                 Attach your GST/Labor{"\n"}certificate
                               </Text>
-                             
                             </View>
-                           
+
                             {userData.panCard?.length == 0 && (
                               <TouchableOpacity
                                 onPress={() => navigation.navigate("gstVerify")}
@@ -516,7 +536,13 @@ const refreshHandler=()=>{
                         </View>
                       </View>
                     )}
-
+                 {loading ? (
+                  <View className="flex justify-center items-center">
+                <RequestLoader/>
+                       
+                  </View>
+              ) : (
+                <>
                     <FlatList
                       data={newRequests}
                       renderItem={renderItem}
@@ -538,6 +564,18 @@ const refreshHandler=()=>{
                     />
                   </>
                 )}
+                </>
+                )
+              }
+
+
+{loading ? (
+                 
+                <RequestLoader/>
+                       
+            
+              ) : (
+                <>
                 {tab === "Ongoing" && (
                   <FlatList
                     data={ongoingRequests}
@@ -549,7 +587,6 @@ const refreshHandler=()=>{
                       }
                       return item?._id.toString();
                     }}
-                    
                     ListEmptyComponent={
                       <Text
                         className="text-[14px] text-center mb-[20px]"
@@ -560,23 +597,40 @@ const refreshHandler=()=>{
                     }
                   />
                 )}
+                </>)}
               </View>
             </View>
           )}
-{networkError && <View style={{ marginTop: 80 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={refreshHandler} setNetworkError={setNetworkError} /></View>}
+          {networkError && (
+            <View
+              style={{
+                marginTop: 80,
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 120,
+              }}
+            >
+              <NetworkError
+                callFunction={refreshHandler}
+                setNetworkError={setNetworkError}
+              />
+            </View>
+          )}
 
-        {!(
-          newRequests?.length > 0 ||
-          ongoingRequests?.length > 0 ||
-          retailerHistory?.length > 0
-        ) && !networkError && <HomeScreenRequests modalVisible={modalVisible} setModalVisible={setModalVisible} />}
-
-
-      </View>
+          {!(
+            newRequests?.length > 0 ||
+            ongoingRequests?.length > 0 ||
+            retailerHistory?.length > 0
+          ) &&
+            !networkError && (
+              <HomeScreenRequests
+                modalVisible={modalVisible}
+                setModalVisible={setModalVisible}
+              />
+            )}
+        </View>
       </ScrollView>
     </View>
-
-
   );
 };
 

@@ -268,16 +268,32 @@ const RequestPage = () => {
             unreadCount: 0,
             updatedAt: new Date().toISOString(),
           };
-          console.log("mar as read ");
-
           dispatch(setRequestInfo(tmp));
-          const filteredRequests = ongoingRequests.filter(
-            (request) => request._id !== result?._id
-          );
+          console.log("mar as read ");
+          if(result.requestType==="new"){
+            console.log("new request")
+            const filteredRequests = newRequests.filter(
+              (request) => request._id !== result?._id
+            );
+  
+            const data = [tmp, ...filteredRequests];
+            dispatch(setNewRequests(data));
+  
+          }
+          else{
+            console.log("ongoing request")
 
-          const data = [tmp, ...filteredRequests];
-          dispatch(setOngoingRequests(data));
+            const filteredRequests = ongoingRequests.filter(
+              (request) => request._id !== result?._id
+            );
+  
+            const data = [tmp, ...filteredRequests];
+            dispatch(setOngoingRequests(data));
+  
+          }
 
+        
+        
           console.log("mark as read", res?.data?.unreadCount);
         }
         if (
@@ -966,7 +982,7 @@ const RequestPage = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <Pressable style={{ flex: 1, backgroundColor: "white" }} onPress={()=>setModal(false)}>
       {attachmentScreen && (
         <View style={styles.overlay}>
           <Attachment
@@ -1231,7 +1247,7 @@ const RequestPage = () => {
             >
               {/* <ChatMessage bidDetails={messages[0]} /> */}
               {messages &&
-                messages.map((message) => {
+                messages.map((message,index) => {
                   if (message?.bidType === "update") {
                     return (
                       <View key={message?._id} style={{ flex: 1, gap: 6 }}>
@@ -1400,7 +1416,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserBidMessage bidDetails={message} />
+                          <UserBidMessage bidDetails={message} index={index}/>
                         </View>
                       );
                     } else if (message?.bidType === "false") {
@@ -1412,7 +1428,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserMessage bidDetails={message} />
+                          <UserMessage bidDetails={message} index={index}/>
                         </View>
                       );
                     } else if (message?.bidType === "location") {
@@ -1424,7 +1440,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <LocationMessage bidDetails={message} />
+                          <LocationMessage bidDetails={message} index={index} />
                         </View>
                       );
                     } else if (message?.bidType === "document") {
@@ -1436,7 +1452,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserDocumentMessage bidDetails={message} />
+                          <UserDocumentMessage bidDetails={message} index={index} />
                         </View>
                       );
                     } else {
@@ -1448,7 +1464,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserAttachment bidDetails={message} />
+                          <UserAttachment bidDetails={message} index={index}/>
                         </View>
                       );
                     }
@@ -1465,6 +1481,7 @@ const RequestPage = () => {
                           <RetailerBidMessage
                             bidDetails={message}
                             user={user}
+                            index={index}
                           />
                         </View>
                       );
@@ -1477,7 +1494,7 @@ const RequestPage = () => {
                             justifyContent: "flex-end",
                           }}
                         >
-                          <RetailerDocumentMessage bidDetails={message} />
+                          <RetailerDocumentMessage bidDetails={message} index={index} />
                         </View>
                       );
                     } else {
@@ -1489,7 +1506,7 @@ const RequestPage = () => {
                             justifyContent: "flex-end",
                           }}
                         >
-                          <RetailerMessage bidDetails={message} user={user} />
+                          <RetailerMessage bidDetails={message} user={user} index={index}/>
                         </View>
                       );
                     }
@@ -1922,7 +1939,7 @@ const RequestPage = () => {
             available === false &&
             <View style={styles.overlayimg} />
             } */}
-    </View>
+    </Pressable>
   );
 };
 

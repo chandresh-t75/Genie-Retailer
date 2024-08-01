@@ -24,7 +24,7 @@ import * as FileSystem from "expo-file-system";
 import { Feather } from "@expo/vector-icons";
 // import * as MediaLibrary from "expo-media-library";
 
-const UserMessage = ({ bidDetails }) => {
+const UserMessage = ({ bidDetails ,index}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [downloadProgress, setDownloadProgress] = useState({});

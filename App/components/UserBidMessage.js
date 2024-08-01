@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { formatDateTime, handleDownload, handleDownloadPress } from "../screens/utils/lib";
 
 console.log('updateBid Message flow');
-const UserBidMessage = ({ bidDetails }) => {
+const UserBidMessage = ({ bidDetails,index }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [downloadProgress, setDownloadProgress] = useState({});
@@ -232,11 +232,14 @@ const UserBidMessage = ({ bidDetails }) => {
           </Modal>
         </ScrollView>
       )}
-      <View className="gap-[4px] items-center justify-center">
+      <View className="gap-[4px]  justify-center">
         <View className="flex-row gap-[5px]">
           <Text style={{ fontFamily: "Poppins-Medium" }} className="text-[#263238]">Expected Price: </Text>
           <Text className=" text-[#79B649]" style={{ fontFamily: "Poppins-SemiBold" }}>
-            Rs. {bidDetails.bidPrice}
+            {
+              bidDetails.bidPrice>0?`Rs. ${bidDetails.bidPrice}`:"Na"
+            }
+            
           </Text>
         </View>
         {/* <View className="flex-row gap-[5px]">
@@ -247,17 +250,22 @@ const UserBidMessage = ({ bidDetails }) => {
         </View> */}
 
         {bidDetails?.bidAccepted === "rejected" && (
-          <View className="flex-row items-center  gap-2 px-[10px]">
+          <View className="flex-row   gap-2">
             <Entypo name="circle-with-cross" size={20} color="#E76063" />
             <Text className="text-[14px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>Offer Rejected by You</Text>
           </View>
         )}
         {bidDetails?.bidAccepted === "accepted" && (
-          <View className="flex-row items-center  gap-2 px-[10px]">
+          <View className="flex-row   gap-2">
             <Tick width={18} height={18} />
             <Text className="text-[14px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>Offer Accepted by You</Text>
           </View>
         )}
+        {
+          index===0 && requestInfo?.requestType!=="new" && requestInfo?.requestType!=="notParticipated" && <Text style={{fontFamily:"Poppins-Bold",color:"#c837ab",textAlign:"left"}}>
+            Request Accepted
+            </Text>
+        }
       </View>
       <View className="flex-row justify-end items-center gap-[5px]  w-full px-[30px]">
         <Text className="text-[12px] text-[#7c7c7c]" style={{ fontFamily: "Poppins-Regular" }}>{formattedTime},</Text>

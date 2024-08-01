@@ -28,30 +28,30 @@ const RequestLoader = () => {
   return (
     <View style={styles.container}>
       
-      <View style={[styles.messageSkeleton, styles.left]}>
+      <View style={[styles.messageSkeleton]}>
         
         <View style={styles.text}>
           <Animated.View style={[styles.line2, styles.short, { opacity }]} />
         </View>
       </View>
-      <View style={[styles.messageSkeleton, styles.left]}>
+      <View style={[styles.messageSkeleton]}>
         
         <View style={styles.text}>
           <Animated.View style={[styles.line2, styles.short, { opacity }]} />
         </View>
       </View>
-      <View style={[styles.messageSkeleton, styles.left]}>
+      <View style={[styles.messageSkeleton]}>
         
         <View style={styles.text}>
           <Animated.View style={[styles.line2, styles.short, { opacity }]} />
         </View>
       </View>
-      <View style={[styles.messageSkeleton, styles.left]}>
+      <View style={[styles.messageSkeleton]}>
         <View style={styles.text}>
           <Animated.View style={[styles.line2, styles.short, { opacity }]} />
         </View>
       </View>
-      <View style={[styles.messageSkeleton, styles.left]}>
+      <View style={[styles.messageSkeleton]}>
         
         <View style={styles.text}>
           <Animated.View style={[styles.line2, styles.short, { opacity }]} />
@@ -67,23 +67,22 @@ const RequestLoader = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    backgroundColor: '#f0f0f0',
-
+    marginTop:10,
+    width:"95%",
+    // backgroundColor: '#f0f0f0',
     justifyContent: 'center',
+    alignContent:"center"
    
   },
   messageSkeleton: {
     flexDirection: 'row',
     marginBottom: 10,
-    width: '100%',
+    
+    width:"100%",
+     justifyContent: 'center',
+    alignContent:"center"
   },
-  left: {
-    alignSelf: "flex-start",
-  },
-  right: {
-    alignSelf: "flex-end",
-  },
+  
   avatar: {
     width: 40,
     height: 40,
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   line2: {
-    height: 110,
+    height: 120,
     backgroundColor: '#ccc',
     marginBottom: 10,
     borderRadius: 16,

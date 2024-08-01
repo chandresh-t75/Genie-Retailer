@@ -208,11 +208,13 @@ const RetailerBidMessage = ({ bidDetails, user }) => {
           </Modal>
         </ScrollView>
       )}
-      <View className="gap-[4px] px-[10px] items-center justify-center">
+      <View className="w-[60%] gap-[4px] px-[10px]  justify-center">
         <View className="flex-row gap-[5px] ">
           <Text style={{ fontFamily: "Poppins-Medium" }} className="text-[#263238]">Offered Price: </Text>
           <Text className=" text-[#79B649]" style={{ fontFamily: "Poppins-SemiBold" }}>
-            Rs. {bidDetails.bidPrice}
+          {
+              bidDetails.bidPrice>0?`Rs. ${bidDetails.bidPrice}`:"Na"
+            }
           </Text>
         </View>
         <View className="flex-row gap-[5px] ">
@@ -225,13 +227,13 @@ const RetailerBidMessage = ({ bidDetails, user }) => {
         </View>
 
         {bidDetails?.bidAccepted === "rejected" && (
-          <View className="flex-row items-center  gap-2 px-[10px]">
+          <View className="flex-row items-center  gap-2">
             <Entypo name="circle-with-cross" size={20} color="#E76063" />
             <Text className="text-[14px] text-[#E76063]" style={{ fontFamily: "Poppins-Regular" }}>Offer Rejected by {requestInfo?.customerId?.userName}</Text>
           </View>
         )}
         {bidDetails?.bidAccepted === "accepted" && (
-          <View className="flex-row items-center gap-2 px-[10px]">
+          <View className="flex-row items-center gap-2 ">
             <Tick width={18} height={18} />
             <Text className="text-[14px] text-[#79B649]" style={{ fontFamily: "Poppins-Regular" }}>Offer Accepted by {requestInfo?.customerId?.userName}</Text>
           </View>
