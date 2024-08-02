@@ -68,7 +68,7 @@ const HelpScreen = () => {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -100}
             >
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                    <View style={{ paddingHorizontal: 30 ,paddingBottom:100}}>
+                    <View style={{ paddingHorizontal: 30 ,paddingBottom:150}}>
                        
                     <View className="z-50 absolute left-[16px] " style={{marginTop:25}}>
 

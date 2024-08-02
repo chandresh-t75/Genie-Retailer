@@ -1981,7 +1981,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0)",
      position:"absolute",
-     bottom:0
+    //  bottom:0
   },
   overlayimg: {
     zIndex: 100,
