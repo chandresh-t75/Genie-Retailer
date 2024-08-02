@@ -262,7 +262,7 @@ const UserBidMessage = ({ bidDetails,index }) => {
           </View>
         )}
         {
-          index===0 && requestInfo?.requestType!=="new" && requestInfo?.requestType!=="notParticipated" && <Text style={{fontFamily:"Poppins-Bold",color:"#c837ab",textAlign:"left"}}>
+          index===0 && (requestInfo?.requestType!=="new" && requestInfo?.requestType!=="notParticipated" && requestInfo?.requestType!=="rejected") && <Text style={{fontFamily:"Poppins-Bold",color:"#c837ab",textAlign:"left"}}>
             Request Accepted
             </Text>
         }

@@ -581,26 +581,35 @@ useEffect(() => {
                         <Text className="capitalize text-[#2e2c43]  px-[32px]" style={{ fontFamily: 'Poppins-Regular' }}>Store Reviews</Text>
 
                        { feedbackLoading ? (<ActivityIndicator size="small" color="#fb8c00" />):(
+                        
                          <View style={styles.revcontainer}>
-                         <ScrollView>
-                             {feedbacks
-                                 .slice(0, showAllReviews ? feedbacks.length : 3)
-                                 .map((review, index) => (
-                                     <View key={index} className="shadow-2xl bg-white" style={{ marginBottom: 20, paddingBottom: 10,borderRadius: 20 }}>
-                                         <View className="flex-row items-center gap-[20px] mb-[5px] ">
-                                             <Text className="capitalize text-[#2e2c43]  " style={{ fontFamily: 'Poppins-SemiBold' }}>
-                                                 {review?.senderName}
-                                             </Text>
-                                         </View>
-                                         <View className="w-[50%]">
-                                         <StarRating rating={review.rating} />
+                          {
+                          feedbacks.length>0 ?
+                          <>( 
+                          <ScrollView>
+                            {feedbacks
+                                .slice(0, showAllReviews ? feedbacks.length : 3)
+                                .map((review, index) => (
+                                    <View key={index} className="shadow-2xl bg-white" style={{ marginBottom: 20, paddingBottom: 10,borderRadius: 20 }}>
+                                        <View className="flex-row items-center gap-[20px] mb-[5px] ">
+                                            <Text className="capitalize text-[#2e2c43]  " style={{ fontFamily: 'Poppins-SemiBold' }}>
+                                                {review?.senderName}
+                                            </Text>
+                                        </View>
+                                        <View className="w-[50%]">
+                                        <StarRating rating={review.rating} />
 
-                                         </View>
+                                        </View>
 
-                                         <Text style={{ color: '#7c7c7c', marginTop: 5, fontFamily: 'Poppins-Regular' }}>{review.feedback}</Text>
-                                     </View>
-                                 ))}
-                         </ScrollView>
+                                        <Text style={{ color: '#7c7c7c', marginTop: 5, fontFamily: 'Poppins-Regular' }}>{review.feedback}</Text>
+                                    </View>
+                                ))}
+                        </ScrollView>)
+                        </>:(
+                          <Text style={{ color: '#7c7c7c',fontFamily: 'Poppins-Regular' }}>No reviews yet</Text>
+                         )}
+                        
+                        
                          {!showAllReviews && feedbacks.length > 4 && (
                              <Pressable
                                  onPress={() => setShowAllReviews(true)}
@@ -776,7 +785,8 @@ const styles = StyleSheet.create({
 
   revcontainer: {
     flex: 1,
-    padding:32,
+    paddingHorizontal:32,
+    marginTop:10
   },
   reviewContainer: {
     marginBottom: 20,

@@ -1280,6 +1280,7 @@ const RequestPage = () => {
                                 paddingVertical: 10,
                                 backgroundColor: "#ffe7c8",
                                 borderRadius: 24,
+                                marginTop:10
                               }}
                             >
                               <View style={{ marginTop: 19 }}>
@@ -1601,7 +1602,7 @@ const RequestPage = () => {
 
 
 
-                {messages && messages[messages.length - 1]?.bidPrice>0 && (
+     
                   <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
                     <Text style={{ fontFamily: "Poppins-Medium" }}>
                       Expected Price:{" "}
@@ -1610,10 +1611,10 @@ const RequestPage = () => {
                       className=" text-[#79B649]"
                       style={{ fontFamily: "Poppins-SemiBold" }}
                     >
-                      Rs. {messages[messages.length - 1]?.bidPrice}
+                     {messages && messages[messages.length - 1]?.bidPrice>0?`Rs. ${messages[messages.length - 1]?.bidPrice}`:"Na"}
                     </Text>
                   </View>
-                )}
+             
 
                 <Text
                   className="text-[14px] text-center px-[10px] mt-2"
@@ -1799,7 +1800,7 @@ const RequestPage = () => {
                   </ScrollView>
                     )}
                 </View>
-                {messages && messages[messages.length - 1]?.bidPrice && (
+               
                   <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
                     <Text style={{ fontFamily: "Poppins-Medium" }}>
                       Offered Price:{" "}
@@ -1808,10 +1809,10 @@ const RequestPage = () => {
                       className=" text-[#79B649]"
                       style={{ fontFamily: "Poppins-SemiBold" }}
                     >
-                      Rs. {messages[messages.length - 1]?.bidPrice}
+                      {messages && messages[messages.length - 1]?.bidPrice>0 ?`Rs. ${messages[messages.length - 1]?.bidPrice}`:"Na"}
                     </Text>
                   </View>
-                )}
+              
               </View>
 
               <View className="w-full flex-row justify-between">

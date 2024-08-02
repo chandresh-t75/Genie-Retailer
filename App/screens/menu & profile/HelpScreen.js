@@ -108,7 +108,7 @@ const HelpScreen = () => {
                         </View>
                     </View>
                 </ScrollView>
-                <SuccessConcernModal modalVisible={modalVisible} setModalVisible={setModalVisible}/>
+                <SuccessConcernModal modalVisible={modalVisible} setModalVisible={setModalVisible} type={"help"}/>
             </KeyboardAvoidingView>
             </ScrollView>
             <TouchableOpacity

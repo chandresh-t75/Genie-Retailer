@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, Pressable, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity ,ActivityIndicator} from 'react-native';
+import { View, Text, TextInput, Image, Pressable, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity ,ActivityIndicator, StyleSheet} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackArrow from "../../assets/BackArrow.svg";
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import SuccessConcernModal from '../../components/SuccessConcernModal';
 
 
 const CustomerReport = () => {
@@ -15,6 +16,8 @@ const CustomerReport = () => {
     const {requestId}=route.params
    //  navigation.navigate('menu')
     const [loading,setLoading] = useState(false);
+    const [modalVisible,setModalVisible] = useState(false)
+
 
     const handleHelp = async () => {
           
@@ -35,9 +38,14 @@ const CustomerReport = () => {
               );
               console.log("res", res.data);
               if (res) {
+
                 setLoading(false);
-                navigation.navigate('home');
-                setQuery("");
+                setModalVisible(true);
+                setTimeout(() => {
+                setModalVisible(false);
+                navigation.goBack();
+                setQuery(""); 
+                }, 3000);
 
               }
             
@@ -101,6 +109,9 @@ const CustomerReport = () => {
                 </ScrollView>
             </KeyboardAvoidingView>
 
+            <SuccessConcernModal modalVisible={modalVisible} setModalVisible={setModalVisible} type={"report"}/>
+
+
             <TouchableOpacity
            disabled={!query} 
            onPress={handleHelp}
@@ -130,8 +141,21 @@ const CustomerReport = () => {
               Submit
             </Text>)}
           </TouchableOpacity>
+
+          {modalVisible  && (
+                    <View style={styles.overlay} />
+                )}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+ 
+  overlay: {
+    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent greyish background
+  },
+});
 
 export default CustomerReport;

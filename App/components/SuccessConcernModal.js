@@ -4,7 +4,7 @@ import ModalImg from "../assets/Cancel.svg"
 import { useNavigation } from '@react-navigation/native';
 import Success from "../assets/successImg.svg"
 
-const SuccessConcernModal= ({modalVisible,setModalVisible}) => {
+const SuccessConcernModal= ({modalVisible,setModalVisible,type}) => {
   // const [modalVisible, setModalVisible] = useState(true);
   const navigation=useNavigation();
   const handleModal=()=>{
@@ -32,9 +32,19 @@ const SuccessConcernModal= ({modalVisible,setModalVisible}) => {
                          <Success />
                        
                             <View >
-                              
-                                  <Text className="text-[14.5px]   text-center text-[#001B33]" style={{ fontFamily: "Poppins-SemiBold" }}>Help request submitted {"\n"}
+                              {
+                                type==="help" && 
+                                <Text className="text-[14.5px]   text-center text-[#001B33]" style={{ fontFamily: "Poppins-SemiBold" }}>Help request submitted {"\n"}
                                   successfully</Text>
+
+                              }
+                              {
+                                type==="report" && 
+                                <Text className="text-[14.5px]   text-center text-[#001B33]" style={{ fontFamily: "Poppins-SemiBold" }}>Reported the customer {"\n"}
+                                  successfully</Text>
+                              }
+                              
+                                 
                        
                                
                             </View>
