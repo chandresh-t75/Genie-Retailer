@@ -21,7 +21,11 @@ const RequestLoader = () => {
         duration: 800,
         useNativeDriver: true,
       }),
-     
+      Animated.timing(opacity, {
+        toValue: 0.2,
+        duration: 800,
+        useNativeDriver: true,
+      }),
     ])
   ).start();
 
@@ -101,7 +105,7 @@ const styles = StyleSheet.create({
   },
   line2: {
     height: 120,
-    backgroundColor: '#ccc',
+    backgroundColor: '#e7e7e7',
     marginBottom: 10,
     borderRadius: 16,
   },

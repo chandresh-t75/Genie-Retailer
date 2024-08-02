@@ -202,7 +202,7 @@ const RequestPage = () => {
         .get(`${baseUrl}/chat/get-particular-chat`, config)
         .then(async (resu) => {
           const result = resu?.data;
-          // console.log("new requestInfo fetched successfully", result);
+          console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
           fetchMessages(result)
          
@@ -340,7 +340,7 @@ const RequestPage = () => {
           lastMessage &&
           lastMessage?.bidType === "update"
         ) {
-          console.log("update");
+          console.log("update closed");
           const configcl = {
             headers: {
               "Content-Type": "application/json",
@@ -357,6 +357,7 @@ const RequestPage = () => {
               configcl
             )
             .then((res) => {
+              console.log("closed history", res.data)
               const filteredRequests = ongoingRequests.filter(
                 (request) => request._id !== result?._id
               );
@@ -365,7 +366,7 @@ const RequestPage = () => {
                 ...result,
                 unreadCount: 0,
                 requestType: "closedHistory",
-      bidCompleted: true,
+                bidCompleted: true,
                 updatedAt: new Date().toISOString(),
               };
               dispatch(setRequestInfo(tmp));
@@ -379,7 +380,7 @@ const RequestPage = () => {
           lastMessage &&
           lastMessage?.bidType === "update"
         ) {
-          console.log("update");
+          console.log("update new");
           const confign = {
             headers: {
               "Content-Type": "application/json",
