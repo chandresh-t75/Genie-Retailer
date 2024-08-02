@@ -178,7 +178,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   }, []);
 
   const fetchNewRequests = async () => {
-    setLoading(true);
+   
     try {
       // const userData = JSON.parse(await AsyncStorage.getItem("userData"));
       const config = {
@@ -228,11 +228,10 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       }
     } catch (error) {
       dispatch(setOngoingRequests([]));
-      if (!error?.response?.status) {
-        console.log("hii net");
-        setNetworkError(true);
-      }
-
+      // if (!error?.response?.status) {
+      //   console.log("hii net");
+      //   setNetworkError(true);
+      // }
       //console.error('Error fetching ongoing requests:', error);
     }
   };
@@ -253,7 +252,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
       if (history.data) {
         dispatch(setRetailerHistory(history.data));
       }
-      setLoading(false);
+  
       // console.log("history", history.data);
     } catch (error) {
       dispatch(setRetailerHistory([]));
@@ -280,13 +279,12 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
   const refreshHandler = () => {
     setRefreshing(true);
-    // setLoading(true)
     connectSocket();
-    handleRefresh();
-    setRefreshing(false)
-      // setLoading(false);
-      // setRefreshing(false);
-  
+    handleRefresh()
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 300);
+
   };
 
   // useEffect(() => {
@@ -536,13 +534,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                         </View>
                       </View>
                     )}
-                 {loading ? (
-                  <View className="flex justify-center items-center">
-                <RequestLoader/>
-                       
-                  </View>
-              ) : (
-                <>
+                 
                     <FlatList
                       data={newRequests}
                       renderItem={renderItem}
@@ -564,18 +556,9 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                     />
                   </>
                 )}
-                </>
-                )
-              }
+               
 
 
-{loading ? (
-                 
-                <RequestLoader/>
-                       
-            
-              ) : (
-                <>
                 {tab === "Ongoing" && (
                   <FlatList
                     data={ongoingRequests}
@@ -597,7 +580,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                     }
                   />
                 )}
-                </>)}
+                
               </View>
             </View>
           )}

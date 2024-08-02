@@ -202,7 +202,7 @@ const RequestPage = () => {
         .get(`${baseUrl}/chat/get-particular-chat`, config)
         .then(async (resu) => {
           const result = resu?.data;
-          console.log("new requestInfo fetched successfully", result);
+          // console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
           fetchMessages(result)
          
@@ -983,7 +983,7 @@ const RequestPage = () => {
   };
 
   return (
-    <Pressable style={{ flex: 1, backgroundColor: "white" }} onPress={()=>setModal(false)}>
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       {attachmentScreen && (
         <View style={styles.overlay}>
           <Attachment
@@ -997,6 +997,59 @@ const RequestPage = () => {
           />
         </View>
       )}
+       {modal && (
+  <>
+    <Pressable
+      style={styles.overlayModal}
+      onPress={() => {
+        setModal(false);
+        console.log("close");
+      }}
+    />
+    <View
+      className="absolute top-[16px] right-[80px] bg-white rounded-md"
+      style={{ zIndex: 100 }}
+    >
+      <TouchableOpacity
+        onPress={() => {
+          setModal(!modal);
+          navigation.navigate("viewrequest");
+        }}
+        style={{
+          padding: 14,
+          borderBottomColor: "rgba(0, 0, 0, 0.05)",
+          borderBottomWidth: 1,
+          marginHorizontal: 8,
+          zIndex: 120,
+        }}
+      >
+        <Text
+          className="mx-5 text-[#2e2c43]"
+          style={{ fontFamily: "Poppins-Regular" }}
+        >
+          View Request
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          setModal(!modal);
+          const requestId = requestInfo?.requestId?._id;
+          navigation.navigate("customer-report", { requestId });
+        }}
+        style={{ padding: 14 }}
+      >
+        <Text
+          className="mx-5 text-[#2e2c43]"
+          style={{ fontFamily: "Poppins-Regular" }}
+        >
+          Report Customer
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </>
+)}
+      
+
       <View className="relative">
         <View onLayout={handleLayout}>
           <View className="relative bg-[#FFE7C8] pt-[20px] w-full flex flex-row  justify-between items-center py-[30px] pb-[10px]">
@@ -1067,44 +1120,11 @@ const RequestPage = () => {
               </View>
             </TouchableOpacity>
           </View>
-          {modal && (
-            <View className="absolute z-50 top-[16px] right-[80px]  bg-white rounded-md">
-              <TouchableOpacity
-                onPress={() => {
-                  setModal(!modal);
-                  navigation.navigate("viewrequest");
-                }}
-                style={{
-                  padding: 14,
-                  borderBottomColor: "rgba(0, 0, 0, 0.05)",
-                  borderBottomWidth: 1,
-                  marginHorizontal: 8,
-                }}
-              >
-                <Text
-                  className="mx-5 text-[#2e2c43]"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  View Request
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setModal(!modal);
-                  const requestId = requestInfo?.requestId?._id;
-                  navigation.navigate("customer-report", { requestId });
-                }}
-                style={{ padding: 14 }}
-              >
-                <Text
-                  className="mx-5 text-[#2e2c43]"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  Report Customer
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
+         
+         
+
+
+
 
 
           <View className="px-[50px] pb-[20px] flex bg-[#ffe7c8]">
@@ -1941,7 +1961,7 @@ const RequestPage = () => {
             available === false &&
             <View style={styles.overlayimg} />
             } */}
-    </Pressable>
+    </View>
   );
 };
 
@@ -1953,6 +1973,15 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     //  position:"absolute",
     //  bottom:0// Semi-transparent greyish background
+  },
+  overlayModal: {
+  
+    flex: 1,
+    zIndex:10,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0)",
+     position:"absolute",
+     bottom:0
   },
   overlayimg: {
     zIndex: 100,
