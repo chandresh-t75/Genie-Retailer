@@ -232,7 +232,7 @@ const UserBidMessage = ({ bidDetails,index }) => {
           </Modal>
         </ScrollView>
       )}
-      <View className="gap-[4px]  justify-center">
+      <View className="w-[60%] gap-[4px]  justify-center">
         <View className="flex-row gap-[5px]">
           <Text style={{ fontFamily: "Poppins-Medium" }} className="text-[#263238]">Expected Price: </Text>
           <Text className=" text-[#79B649]" style={{ fontFamily: "Poppins-SemiBold" }}>

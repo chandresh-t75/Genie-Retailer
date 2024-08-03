@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Alert, Modal, StyleSheet, Text, Pressable, View, TouchableOpacity} from 'react-native';
-import ModalImg from "../assets/Cancel.svg"
 import { useNavigation } from '@react-navigation/native';
 import Success from "../assets/successImg.svg"
 

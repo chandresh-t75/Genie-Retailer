@@ -115,7 +115,7 @@ const RequestPage = () => {
   const [confirmPaymentModal, setConfirmPaymentModal] = useState(false);
   const [uploadGSTModal, setUploadGSTModal] = useState(false);
   const [type, setType] = useState("");
-  const [requestOpen,setRequestOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
 
   const [rating, setRating] = useState(0);
   // const { req } = route.params;
@@ -145,26 +145,24 @@ const RequestPage = () => {
 
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-// ////////////////////////////////////Connecting socket from when app goes from backgroun to foreground/////////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////Connecting socket from when app goes from backgroun to foreground/////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
+        nextAppState === "active"
       ) {
-        console.log(currentRequest) 
-        if(currentRequest?.userId && currentRequest?.senderId)
+        console.log(currentRequest);
+        if (currentRequest?.userId && currentRequest?.senderId) SocketSetUp();
+        else if (currentRequest?.userId && !currentRequest?.senderId) {
           SocketSetUp();
-        else if(currentRequest?.userId && !currentRequest?.senderId){
-          SocketSetUp();
-        }
-        else if(!currentRequest?.userId && !currentRequest?.senderId)
-          navigation.navigate('home');
+        } else if (!currentRequest?.userId && !currentRequest?.senderId)
+          navigation.navigate("home");
       }
 
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
-      console.log('AppState', appState.current);
+      console.log("AppState", appState.current);
     });
 
     return () => {
@@ -204,22 +202,20 @@ const RequestPage = () => {
           const result = resu?.data;
           // console.log("new requestInfo fetched successfully", result);
           dispatch(setRequestInfo(result));
-          fetchMessages(result)
-         
-      })
+          fetchMessages(result);
+        });
     } catch (error) {
       // dispatch(setMessages(response.data));
 
       // socket.emit("join chat", response?.data[0].chat._id);
       setLoading(false);
-      if (!error?.response?.status)
-          setNetworkError(true);
-    
+      if (!error?.response?.status) setNetworkError(true);
+
       console.error("Error fetching messages:", error);
     }
-  },[]);
+  }, []);
 
-  const fetchMessages=async(result)=>{
+  const fetchMessages = async (result) => {
     const configg = {
       headers: {
         "Content-Type": "application/json",
@@ -230,210 +226,204 @@ const RequestPage = () => {
       },
     };
 
-    try{
+    try {
       await axiosInstance
-      .get(`${baseUrl}/chat/get-spade-messages`, configg)
-      .then(async (response) => {
-        // console.log("fetching messages", response.data);
-        setMessages(response.data);
-        // console.log("Messages found successfully", response.data);
-        // console.log("user joined chat with chatId", response.data[0].chat._id);
-        socket.emit("join chat", response?.data[0]?.chat?._id);
+        .get(`${baseUrl}/chat/get-spade-messages`, configg)
+        .then(async (response) => {
+          // console.log("fetching messages", response.data);
+          setMessages(response.data);
+          // console.log("Messages found successfully", response.data);
+          // console.log("user joined chat with chatId", response.data[0].chat._id);
+          socket.emit("join chat", response?.data[0]?.chat?._id);
 
-        console.log("socket join chat setup successfully");
-        const lastMessage = response?.data[response?.data.length - 1];
-        // console.log("last Mesage: ", lastMessage);
+          console.log("socket join chat setup successfully");
+          const lastMessage = response?.data[response?.data.length - 1];
+          // console.log("last Mesage: ", lastMessage);
 
-        if (
-          result?.unreadCount > 0 &&
-          result?.latestMessage?.sender?.type === "UserRequest"
-        ) {
-          const configh = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          };
+          if (
+            result?.unreadCount > 0 &&
+            result?.latestMessage?.sender?.type === "UserRequest"
+          ) {
+            const configh = {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            };
 
-          const res = await axiosInstance.patch(
-            `${baseUrl}/chat/mark-as-read`,
-            {
-              id: result?._id,
-            },
-            configh
-          );
-
-          let tmp = {
-            ...result,
-            unreadCount: 0,
-            updatedAt: new Date().toISOString(),
-          };
-          dispatch(setRequestInfo(tmp));
-          console.log("mar as read ");
-          if(result.requestType==="new"){
-            console.log("new request")
-            const filteredRequests = newRequests.filter(
-              (request) => request._id !== result?._id
+            const res = await axiosInstance.patch(
+              `${baseUrl}/chat/mark-as-read`,
+              {
+                id: result?._id,
+              },
+              configh
             );
-  
-            const data = [tmp, ...filteredRequests];
-            dispatch(setNewRequests(data));
-  
-          }
-          else{
-            console.log("ongoing request")
 
-            const filteredRequests = ongoingRequests.filter(
-              (request) => request._id !== result?._id
-            );
-  
-            const data = [tmp, ...filteredRequests];
-            dispatch(setOngoingRequests(data));
-  
-          }
-
-        
-        
-          console.log("mark as read", res?.data?.unreadCount);
-        }
-        if (
-          result.requestType === "win" &&
-          lastMessage &&
-          lastMessage?.bidType === "update"
-        ) {
-          console.log("update");
-          const configc = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          };
-          await axiosInstance
-            .patch(
-              `${baseUrl}/chat/update-to-history`,
-              {
-                id: result?._id,
-                type: "completed",
-              },
-              configc
-            )
-            .then((res) => {
-              const filteredRequests = ongoingRequests.filter(
-                (request) => request._id !== result?._id
-              );
-
-              let tmp = {
-                ...result,
-                unreadCount: 0,
-                requestType: "completed",
-           bidCompleted: true,
-                updatedAt: new Date().toISOString(),
-              };
-              dispatch(setRequestInfo(tmp));
-              const data = [...filteredRequests];
-              dispatch(setOngoingRequests(data));
-              const data2 = [tmp, ...retailerHistory];
-              dispatch(setRetailerHistory(data2));
-            });
-        } else if (
-          result.requestType === "closed" &&
-          lastMessage &&
-          lastMessage?.bidType === "update"
-        ) {
-          console.log("update closed");
-          const configcl = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          };
-          await axiosInstance
-            .patch(
-              `${baseUrl}/chat/update-to-history`,
-              {
-                id: result?._id,
-                type: "closedHistory",
-              },
-              configcl
-            )
-            .then((res) => {
-              console.log("closed history", res.data)
-              const filteredRequests = ongoingRequests.filter(
-                (request) => request._id !== result?._id
-              );
-
-              let tmp = {
-                ...result,
-                unreadCount: 0,
-                requestType: "closedHistory",
-                bidCompleted: true,
-                updatedAt: new Date().toISOString(),
-              };
-              dispatch(setRequestInfo(tmp));
-              const data = [...filteredRequests];
-              dispatch(setOngoingRequests(data));
-              const data2 = [tmp, ...retailerHistory];
-              dispatch(setRetailerHistory(data2));
-            });
-        } else if (
-          result.requestType === "new" &&
-          lastMessage &&
-          lastMessage?.bidType === "update"
-        ) {
-          console.log("update new");
-          const confign = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          };
-          await axiosInstance
-            .patch(
-              `${baseUrl}/chat/update-to-history`,
-              {
-                id: result?._id,
-                type: "notParticipated",
-              },
-              confign
-            )
-            .then((res) => {
+            let tmp = {
+              ...result,
+              unreadCount: 0,
+              updatedAt: new Date().toISOString(),
+            };
+            dispatch(setRequestInfo(tmp));
+            console.log("mar as read ");
+            if (result.requestType === "new") {
+              console.log("new request");
               const filteredRequests = newRequests.filter(
                 (request) => request._id !== result?._id
               );
 
-              let tmp = {
-                ...result,
-                unreadCount: 0,
-                requestType: "notParticipated",
-      bidCompleted: true,
-                updatedAt: new Date().toISOString(),
-              };
-              dispatch(setRequestInfo(tmp));
-              const data = [...filteredRequests];
+              const data = [tmp, ...filteredRequests];
               dispatch(setNewRequests(data));
-              const data2 = [tmp, ...retailerHistory];
-              dispatch(setRetailerHistory(data2));
-            });
-        }
+            } else {
+              console.log("ongoing request");
 
-        setLoading(false);
-      })
-    }
-  catch (error) {
-    setLoading(false);
-    console.log("hii")
-    if (!error?.response?.status){
+              const filteredRequests = ongoingRequests.filter(
+                (request) => request._id !== result?._id
+              );
+
+              const data = [tmp, ...filteredRequests];
+              dispatch(setOngoingRequests(data));
+            }
+
+            console.log("mark as read", res?.data?.unreadCount);
+          }
+          if (
+            result.requestType === "win" &&
+            lastMessage &&
+            lastMessage?.bidType === "update"
+          ) {
+            console.log("update");
+            const configc = {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            };
+            await axiosInstance
+              .patch(
+                `${baseUrl}/chat/update-to-history`,
+                {
+                  id: result?._id,
+                  type: "completed",
+                },
+                configc
+              )
+              .then((res) => {
+                const filteredRequests = ongoingRequests.filter(
+                  (request) => request._id !== result?._id
+                );
+
+                let tmp = {
+                  ...result,
+                  unreadCount: 0,
+                  requestType: "completed",
+                  bidCompleted: true,
+                  updatedAt: new Date().toISOString(),
+                };
+                dispatch(setRequestInfo(tmp));
+                const data = [...filteredRequests];
+                dispatch(setOngoingRequests(data));
+                const data2 = [tmp, ...retailerHistory];
+                dispatch(setRetailerHistory(data2));
+              });
+          } else if (
+            result.requestType === "closed" &&
+            lastMessage &&
+            lastMessage?.bidType === "update"
+          ) {
+            console.log("update closed");
+            const configcl = {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            };
+            await axiosInstance
+              .patch(
+                `${baseUrl}/chat/update-to-history`,
+                {
+                  id: result?._id,
+                  type: "closedHistory",
+                },
+                configcl
+              )
+              .then((res) => {
+                console.log("closed history", res.data);
+                const filteredRequests = ongoingRequests.filter(
+                  (request) => request._id !== result?._id
+                );
+
+                let tmp = {
+                  ...result,
+                  unreadCount: 0,
+                  requestType: "closedHistory",
+                  bidCompleted: true,
+                  updatedAt: new Date().toISOString(),
+                };
+                dispatch(setRequestInfo(tmp));
+                const data = [...filteredRequests];
+                dispatch(setOngoingRequests(data));
+                const data2 = [tmp, ...retailerHistory];
+                dispatch(setRetailerHistory(data2));
+              });
+          } else if (
+            result.requestType === "new" &&
+            lastMessage &&
+            lastMessage?.bidType === "update"
+          ) {
+            console.log("update new");
+            const confign = {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            };
+            await axiosInstance
+              .patch(
+                `${baseUrl}/chat/update-to-history`,
+                {
+                  id: result?._id,
+                  type: "notParticipated",
+                },
+                confign
+              )
+              .then((res) => {
+                const filteredRequests = newRequests.filter(
+                  (request) => request._id !== result?._id
+                );
+
+                let tmp = {
+                  ...result,
+                  unreadCount: 0,
+                  requestType: "notParticipated",
+                  bidCompleted: true,
+                  updatedAt: new Date().toISOString(),
+                };
+                dispatch(setRequestInfo(tmp));
+                const data = [...filteredRequests];
+                dispatch(setNewRequests(data));
+                const data2 = [tmp, ...retailerHistory];
+                dispatch(setRetailerHistory(data2));
+              });
+          }
+
+          setLoading(false);
+        });
+    } catch (error) {
+      setLoading(false);
+      console.log("hii");
+      if (!error?.response?.status) {
         setNetworkError(true);
-    }
-  
-    console.error("Error fetching messages:", error);
-  }
-  }
+      }
 
-  const  SocketSetUp = async () => {
-    console.log("setup", currentRequest?.userId,currentRequest?.senderId);
-    const userId=currentRequest?.userId
-    const senderId=currentRequest?.senderId
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  const SocketSetUp = async () => {
+    console.log("setup", currentRequest?.userId, currentRequest?.senderId);
+    const userId = currentRequest?.userId;
+    const senderId = currentRequest?.senderId;
     socket.emit("setup", { userId, senderId });
     console.log("socket setup for personal user setup successfully");
     // console.log("user connected with userId", requestInfo.users[0]._id);
@@ -444,27 +434,25 @@ const RequestPage = () => {
   };
 
   // const memoizeFunctionCalls = useMemo(()=>{
-    
+
   // },[])
 
-  const networkRefresh=()=>{
+  const networkRefresh = () => {
     SocketSetUp();
     fetchRequestData();
-  }
+  };
 
   useEffect(() => {
-   
     // console.log("route.params.data", currentRequest);
-    
+
     console.log("Params data found");
 
     fetchUserDetails();
-    if(currentRequest?.userId && currentRequest?.senderId)
-      SocketSetUp();
-    else if(currentRequest?.userId && !currentRequest?.senderId){
+    if (currentRequest?.userId && currentRequest?.senderId) SocketSetUp();
+    else if (currentRequest?.userId && !currentRequest?.senderId) {
       SocketSetUp();
     }
-   
+
     fetchRequestData();
     console.log("reqInfo from params", socketConnected);
     return () => {
@@ -481,7 +469,7 @@ const RequestPage = () => {
     const handleUserOnline = () => {
       setOnline(true);
       dispatch(setOnlineUser(true));
-    
+
       console.log("user online");
     };
 
@@ -493,19 +481,18 @@ const RequestPage = () => {
     };
 
     const handleConnectUser = (value) => {
-        if(value.value){
-          setOnline(true);
-          dispatch(setOnlineUser(true));
-        }
-        else{
-          setOnline(false);
-          dispatch(setOnlineUser(false));
-        }
+      if (value.value) {
+        setOnline(true);
+        dispatch(setOnlineUser(true));
+      } else {
+        setOnline(false);
+        dispatch(setOnlineUser(false));
+      }
     };
 
     socket.on("online", handleUserOnline);
     socket.on("offline", handleUserOffline);
-    socket.on("connected",handleConnectUser);
+    socket.on("connected", handleConnectUser);
 
     return () => {
       socket.off("online", handleUserOnline);
@@ -578,7 +565,6 @@ const RequestPage = () => {
                   requestId: requestInfo?._id,
                   userId: requestInfo?.users[1]._id,
                   senderId: requestInfo?.users[0]._id,
-
                 },
                 tag: user?._id,
                 image: lastMessage?.bidImages[0],
@@ -735,7 +721,11 @@ const RequestPage = () => {
 
   useEffect(() => {
     const handleMessageReceived = async (newMessageReceived) => {
-      console.log("Message received from socket:",newMessageReceived._id, newMessageReceived.message);  
+      console.log(
+        "Message received from socket:",
+        newMessageReceived._id,
+        newMessageReceived.message
+      );
 
       if (
         requestInfo?.requestType === "win" &&
@@ -784,9 +774,7 @@ const RequestPage = () => {
               dispatch(setOngoingRequests(data));
               // console.log("requestAccepted", requestInfo);
               // console.log("request ongoing",filteredRequests)
-            }
-            else if (newMessageReceived.bidAccepted === "rejected") {
-             
+            } else if (newMessageReceived.bidAccepted === "rejected") {
               let tmp = {
                 ...requestInfo,
                 updatedAt: new Date().toISOString(),
@@ -845,7 +833,7 @@ const RequestPage = () => {
       console.log("Stopped listening for 'message received' events");
     };
   }, [requestInfo]);
- 
+
   const handlePress = (star) => {
     setRating(star);
     console.log("star", star);
@@ -864,7 +852,6 @@ const RequestPage = () => {
     }
   };
 
-
   const handleImagePress = (image) => {
     setSelectedImage(image);
     Animated.timing(scaleAnimation, {
@@ -872,7 +859,7 @@ const RequestPage = () => {
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }; 
+  };
 
   const handleClose = () => {
     Animated.timing(scaleAnimation, {
@@ -997,58 +984,57 @@ const RequestPage = () => {
           />
         </View>
       )}
-       {modal && (
-  <>
-    <Pressable
-      style={styles.overlayModal}
-      onPress={() => {
-        setModal(false);
-        console.log("close");
-      }}
-    />
-    <View
-      className="absolute top-[16px] right-[80px] bg-white rounded-md"
-      style={{ zIndex: 100 }}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          setModal(!modal);
-          navigation.navigate("viewrequest");
-        }}
-        style={{
-          padding: 14,
-          
-          borderBottomWidth: 1,
-          marginHorizontal: 8,
-          zIndex: 120,
-        }}
-      >
-        <Text
-          className="mx-5 text-[#2e2c43]"
-          style={{ fontFamily: "Poppins-Regular" }}
-        >
-          View Request
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          setModal(!modal);
-          const requestId = requestInfo?.requestId?._id;
-          navigation.navigate("customer-report", { requestId });
-        }}
-        style={{ padding: 14 }}
-      >
-        <Text
-          className="mx-5 text-[#2e2c43]"
-          style={{ fontFamily: "Poppins-Regular" }}
-        >
-          Report Customer
-        </Text>
-      </TouchableOpacity>
-    </View>
-  </>
-)}
-      
+      {modal && (
+        <>
+          <Pressable
+            style={styles.overlayModal}
+            onPress={() => {
+              setModal(false);
+              console.log("close");
+            }}
+          />
+          <View
+            className="absolute top-[16px] right-[80px] bg-white rounded-md"
+            style={{ zIndex: 100 }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setModal(!modal);
+                navigation.navigate("viewrequest");
+              }}
+              style={{
+                padding: 14,
+
+                borderBottomWidth: 1,
+                marginHorizontal: 8,
+                zIndex: 120,
+              }}
+            >
+              <Text
+                className="mx-5 text-[#2e2c43]"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
+                View Request
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setModal(!modal);
+                const requestId = requestInfo?.requestId?._id;
+                navigation.navigate("customer-report", { requestId });
+              }}
+              style={{ padding: 14 }}
+            >
+              <Text
+                className="mx-5 text-[#2e2c43]"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
+                Report Customer
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
 
       <View className="relative">
         <View onLayout={handleLayout}>
@@ -1120,12 +1106,6 @@ const RequestPage = () => {
               </View>
             </TouchableOpacity>
           </View>
-         
-         
-
-
-
-
 
           <View className="px-[50px] pb-[20px] flex bg-[#ffe7c8]">
             <View className="gap-[0px] relative ">
@@ -1155,48 +1135,67 @@ const RequestPage = () => {
               </View>
             </View>
             <View className=" gap-2 mt-[10px]">
-              {
-                requestOpen && 
+              {requestOpen && (
                 <Text
-                style={{ fontFamily: "Poppins-Regular" }}
-                className="text-[#2e2c43] flex items-center"
-              >
-                {requestInfo?.requestId?.requestDescription}
-                
-              </Text>
-              }
-              {
-               !requestOpen && 
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  className="text-[#2e2c43] flex items-center"
+                >
+                  {requestInfo?.requestId?.requestDescription}
+                </Text>
+              )}
+              {!requestOpen && (
                 <Text
-                style={{ fontFamily: "Poppins-Regular" }}
-                className="text-[#2e2c43] flex items-center"
-              >
-                {requestInfo?.requestId?.requestDescription
-                  ?.substring(0,50)}...
-                
-              </Text>
-              }
-          
-            {
-              !requestOpen && requestInfo?.requestId?.requestDescription?.length>50 &&  <TouchableOpacity onPress={()=>{setRequestOpen(true)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
-              <Text style={{ fontFamily: "Poppins-SemiBold" }} className="text-[#fc8b00]">View More</Text>
-                  <DropDown width={14} height={16} />
-                 
-            </TouchableOpacity>
-            }
-            {
-              requestOpen &&  requestInfo?.requestId?.requestDescription?.length>50 &&
-              <TouchableOpacity onPress={()=>{setRequestOpen(false)}} style={{flexDirection:"row",gap:4,alignItems:"center"}}>
-                <Text style={{ fontFamily: "Poppins-SemiBold" }}
-                className="text-[#fc8b00]">View Less</Text>
-              <DropDownUp width={14} height={16} />
-              </TouchableOpacity>
-            }
-          
-            
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  className="text-[#2e2c43] flex items-center"
+                >
+                  {requestInfo?.requestId?.requestDescription?.substring(0, 50)}
+                  ...
+                </Text>
+              )}
+
+              {!requestOpen &&
+                requestInfo?.requestId?.requestDescription?.length > 50 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setRequestOpen(true);
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      gap: 4,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{ fontFamily: "Poppins-SemiBold" }}
+                      className="text-[#fc8b00]"
+                    >
+                      View More
+                    </Text>
+                    <DropDown width={14} height={16} />
+                  </TouchableOpacity>
+                )}
+              {requestOpen &&
+                requestInfo?.requestId?.requestDescription?.length > 50 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setRequestOpen(false);
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      gap: 4,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{ fontFamily: "Poppins-SemiBold" }}
+                      className="text-[#fc8b00]"
+                    >
+                      View Less
+                    </Text>
+                    <DropDownUp width={14} height={16} />
+                  </TouchableOpacity>
+                )}
             </View>
-           
-           
           </View>
         </View>
 
@@ -1218,7 +1217,7 @@ const RequestPage = () => {
           )}
 
         {requestInfo?.requestType !== "closed" &&
-        requestInfo?.bidCompleted !==true &&
+          requestInfo?.bidCompleted !== true &&
           requestInfo?.requestType === "new" &&
           available === false && (
             <View
@@ -1233,9 +1232,21 @@ const RequestPage = () => {
             ></View>
           )}
 
-
-
-{networkError && <View style={{ marginTop: 30 ,justifyContent:"center" ,alignItems:"center", zIndex: 120,}}><NetworkError callFunction={networkRefresh} setNetworkError={setNetworkError} /></View>}
+        {networkError && (
+          <View
+            style={{
+              marginTop: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 120,
+            }}
+          >
+            <NetworkError
+              callFunction={networkRefresh}
+              setNetworkError={setNetworkError}
+            />
+          </View>
+        )}
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 }}
@@ -1243,7 +1254,7 @@ const RequestPage = () => {
           onContentSizeChange={() =>
             scrollViewRef.current.scrollToEnd({ animated: true })
           }
-          style={{ marginBottom: 140 }} 
+          style={{ marginBottom: 140 }}
         >
           {loading && (
             <View style={{ flex: 1 }}>
@@ -1268,7 +1279,7 @@ const RequestPage = () => {
             >
               {/* <ChatMessage bidDetails={messages[0]} /> */}
               {messages &&
-                messages.map((message,index) => {
+                messages.map((message, index) => {
                   if (message?.bidType === "update") {
                     return (
                       <View key={message?._id} style={{ flex: 1, gap: 6 }}>
@@ -1301,7 +1312,7 @@ const RequestPage = () => {
                                 paddingVertical: 10,
                                 backgroundColor: "#ffe7c8",
                                 borderRadius: 24,
-                                marginTop:10
+                                marginTop: 10,
                               }}
                             >
                               <View style={{ marginTop: 19 }}>
@@ -1373,7 +1384,7 @@ const RequestPage = () => {
                                     style={{
                                       width: "100%",
                                       height: 100,
-                                  
+
                                       paddingHorizontal: 20,
                                       borderWidth: 0.3,
                                       borderColor: "#2e2c43",
@@ -1438,7 +1449,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserBidMessage bidDetails={message} index={index}/>
+                          <UserBidMessage bidDetails={message} index={index} />
                         </View>
                       );
                     } else if (message?.bidType === "false") {
@@ -1450,7 +1461,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserMessage bidDetails={message} index={index}/>
+                          <UserMessage bidDetails={message} index={index} />
                         </View>
                       );
                     } else if (message?.bidType === "location") {
@@ -1474,7 +1485,10 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserDocumentMessage bidDetails={message} index={index} />
+                          <UserDocumentMessage
+                            bidDetails={message}
+                            index={index}
+                          />
                         </View>
                       );
                     } else {
@@ -1486,7 +1500,7 @@ const RequestPage = () => {
                             justifyContent: "flex-start",
                           }}
                         >
-                          <UserAttachment bidDetails={message} index={index}/>
+                          <UserAttachment bidDetails={message} index={index} />
                         </View>
                       );
                     }
@@ -1516,7 +1530,10 @@ const RequestPage = () => {
                             justifyContent: "flex-end",
                           }}
                         >
-                          <RetailerDocumentMessage bidDetails={message} index={index} />
+                          <RetailerDocumentMessage
+                            bidDetails={message}
+                            index={index}
+                          />
                         </View>
                       );
                     } else {
@@ -1528,12 +1545,40 @@ const RequestPage = () => {
                             justifyContent: "flex-end",
                           }}
                         >
-                          <RetailerMessage bidDetails={message} user={user} index={index}/>
+                          <RetailerMessage
+                            bidDetails={message}
+                            user={user}
+                            index={index}
+                          />
                         </View>
                       );
                     }
                   }
                 })}
+
+              {requestInfo?.requestType === "rejected" && (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    backgroundColor: "#FFE7C8",
+                    borderRadius: 24,
+                    paddingHorizontal: 32,
+                    paddingVertical: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      textAlign: "center",
+                      color: "#FB8C00",
+                      fontFamily: "Poppins-Regular",
+                    }}
+                  >
+                    Product not available
+                  </Text>
+                </View>
+              )}
             </View>
           )}
 
@@ -1548,8 +1593,11 @@ const RequestPage = () => {
         } `}
       >
         {requestInfo?.requestType !== "closed" &&
-        requestInfo?.bidCompleted !==true && !networkError && messages && messages.length > 0 &&
-        messages[messages.length - 1]?.bidType!=="update" &&
+          requestInfo?.bidCompleted !== true &&
+          !networkError &&
+          messages &&
+          messages.length > 0 &&
+          messages[messages.length - 1]?.bidType !== "update" &&
           requestInfo?.requestType === "new" &&
           available === false && (
             <View className="gap-[20px]  items-center bg-white pt-[20px] shadow-2xl">
@@ -1560,82 +1608,87 @@ const RequestPage = () => {
                 >
                   Are you accepting the customer request ?
                 </Text>
-               
 
                 {messages && requestInfo && (
                   <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
-                    <Text style={{ fontFamily: "Poppins-Medium" }} className="text-center">
+                    <Text
+                      style={{ fontFamily: "Poppins-Medium" }}
+                      className="text-center"
+                    >
                       {requestInfo?.requestId?.requestDescription}
                     </Text>
-                    
                   </View>
                 )}
 
                 {messages &&
                   messages[messages.length - 1]?.bidImages &&
                   messages[messages.length - 1]?.bidImages?.length > 0 && (
-                    <ScrollView horizontal  contentContainerStyle={{
-                      paddingHorizontal: 10,
-                      marginTop: 10,
-                      flexDirection: "row",
-                      gap: 4,
-                    }}
-                    showsHorizontalScrollIndicator={false}
-                    style={{ maxHeight: 260 }}>
-                  <View style={styles.container}>
-                    <View style={styles.imageContainer}>
-                      {messages[messages.length - 1]?.bidImages.map((image, index) => (
-                        <Pressable
-                          key={index}
-                          onPress={() => handleImagePress(image)}
-                        >
-                          <View style={styles.imageWrapper}>
-                            <Image
-                              source={{ uri: image }}
-                              style={styles.image}
-                            />
-                           
-                          </View>
-                        </Pressable>
-                      ))}
-                    </View>
-                    <Modal
-                      transparent
-                      visible={!!selectedImage}
-                      onRequestClose={handleClose}
+                    <ScrollView
+                      horizontal
+                      contentContainerStyle={{
+                        paddingHorizontal: 10,
+                        marginTop: 10,
+                        flexDirection: "row",
+                        gap: 4,
+                      }}
+                      showsHorizontalScrollIndicator={false}
+                      style={{ maxHeight: 260 }}
                     >
-                      <Pressable style={styles.modalContainer}  onPress={handleClose}>
-                        <Animated.Image
-                          source={{ uri: selectedImage }}
-                          style={[
-                            styles.modalImage,
-                            {
-                              transform: [{ scale: scaleAnimation }],
-                            },
-                          ]}
-                        />
-                        
-                      </Pressable>
-                    </Modal>
-                  </View>
-                </ScrollView>
+                      <View style={styles.container}>
+                        <View style={styles.imageContainer}>
+                          {messages[messages.length - 1]?.bidImages.map(
+                            (image, index) => (
+                              <Pressable
+                                key={index}
+                                onPress={() => handleImagePress(image)}
+                              >
+                                <View style={styles.imageWrapper}>
+                                  <Image
+                                    source={{ uri: image }}
+                                    style={styles.image}
+                                  />
+                                </View>
+                              </Pressable>
+                            )
+                          )}
+                        </View>
+                        <Modal
+                          transparent
+                          visible={!!selectedImage}
+                          onRequestClose={handleClose}
+                        >
+                          <Pressable
+                            style={styles.modalContainer}
+                            onPress={handleClose}
+                          >
+                            <Animated.Image
+                              source={{ uri: selectedImage }}
+                              style={[
+                                styles.modalImage,
+                                {
+                                  transform: [{ scale: scaleAnimation }],
+                                },
+                              ]}
+                            />
+                          </Pressable>
+                        </Modal>
+                      </View>
+                    </ScrollView>
                   )}
 
-
-
-     
-                  <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
-                    <Text style={{ fontFamily: "Poppins-Medium" }}>
-                      Expected Price:{" "}
-                    </Text>
-                    <Text
-                      className=" text-[#79B649]"
-                      style={{ fontFamily: "Poppins-SemiBold" }}
-                    >
-                     {messages && messages[messages.length - 1]?.bidPrice>0?`Rs. ${messages[messages.length - 1]?.bidPrice}`:"Na"}
-                    </Text>
-                  </View>
-             
+                <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
+                  <Text style={{ fontFamily: "Poppins-Medium" }}>
+                    Expected Price:{" "}
+                  </Text>
+                  <Text
+                    className=" text-[#79B649]"
+                    style={{ fontFamily: "Poppins-SemiBold" }}
+                  >
+                    {messages && messages[messages.length - 1]?.bidPrice > 0
+                      ? `Rs. ${messages[messages.length - 1]?.bidPrice}`
+                      : "Na"}
+                  </Text>
+                </View>
 
                 <Text
                   className="text-[14px] text-center px-[10px] mt-2"
@@ -1646,8 +1699,6 @@ const RequestPage = () => {
                 </Text>
               </View>
 
-
-
               <View className="w-full flex-row justify-between bg-white">
                 <TouchableOpacity
                   onPress={() => {
@@ -1655,7 +1706,10 @@ const RequestPage = () => {
                       ? (() => {
                           setAcceptRequestModal(true);
                           setType("Request");
-                          SocketSetUp(currentRequest?.userId,currentRequest?.senderId)
+                          SocketSetUp(
+                            currentRequest?.userId,
+                            currentRequest?.senderId
+                          );
                         })()
                       : setConfirmPaymentModal(true);
                   }}
@@ -1686,7 +1740,7 @@ const RequestPage = () => {
               </View>
             </View>
           )}
-     
+
         {requestInfo?.requestType !== "closed" &&
           requestInfo?.requestType !== "rejected" &&
           requestInfo?.requestType !== "completed" &&
@@ -1774,66 +1828,73 @@ const RequestPage = () => {
                   {messages &&
                     messages[messages.length - 1]?.bidImages &&
                     messages[messages.length - 1]?.bidImages?.length > 0 && (
-                      <ScrollView horizontal  contentContainerStyle={{
-                        paddingHorizontal: 10,
-                        marginTop: 10,
-                        flexDirection: "row",
-                        gap: 4,
-                      }}
-                      showsHorizontalScrollIndicator={false}
-                      style={{ maxHeight: 260 }}>
-                    <View style={styles.container}>
-                      <View style={styles.imageContainer}>
-                        {messages[messages.length - 1]?.bidImages.map((image, index) => (
-                          <Pressable
-                            key={index}
-                            onPress={() => handleImagePress(image)}
-                          >
-                            <View style={styles.imageWrapper}>
-                              <Image
-                                source={{ uri: image }}
-                                style={styles.image}
-                              />
-                             
-                            </View>
-                          </Pressable>
-                        ))}
-                      </View>
-                      <Modal
-                        transparent
-                        visible={!!selectedImage}
-                        onRequestClose={handleClose}
+                      <ScrollView
+                        horizontal
+                        contentContainerStyle={{
+                          paddingHorizontal: 10,
+                          marginTop: 10,
+                          flexDirection: "row",
+                          gap: 4,
+                        }}
+                        showsHorizontalScrollIndicator={false}
+                        style={{ maxHeight: 260 }}
                       >
-                        <Pressable style={styles.modalContainer}  onPress={handleClose}>
-                          <Animated.Image
-                            source={{ uri: selectedImage }}
-                            style={[
-                              styles.modalImage,
-                              {
-                                transform: [{ scale: scaleAnimation }],
-                              },
-                            ]}
-                          />
-                          
-                        </Pressable>
-                      </Modal>
-                    </View>
-                  </ScrollView>
+                        <View style={styles.container}>
+                          <View style={styles.imageContainer}>
+                            {messages[messages.length - 1]?.bidImages.map(
+                              (image, index) => (
+                                <Pressable
+                                  key={index}
+                                  onPress={() => handleImagePress(image)}
+                                >
+                                  <View style={styles.imageWrapper}>
+                                    <Image
+                                      source={{ uri: image }}
+                                      style={styles.image}
+                                    />
+                                  </View>
+                                </Pressable>
+                              )
+                            )}
+                          </View>
+                          <Modal
+                            transparent
+                            visible={!!selectedImage}
+                            onRequestClose={handleClose}
+                          >
+                            <Pressable
+                              style={styles.modalContainer}
+                              onPress={handleClose}
+                            >
+                              <Animated.Image
+                                source={{ uri: selectedImage }}
+                                style={[
+                                  styles.modalImage,
+                                  {
+                                    transform: [{ scale: scaleAnimation }],
+                                  },
+                                ]}
+                              />
+                            </Pressable>
+                          </Modal>
+                        </View>
+                      </ScrollView>
                     )}
                 </View>
-               
-                  <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
-                    <Text style={{ fontFamily: "Poppins-Medium" }}>
-                      Offered Price:{" "}
-                    </Text>
-                    <Text
-                      className=" text-[#79B649]"
-                      style={{ fontFamily: "Poppins-SemiBold" }}
-                    >
-                      {messages && messages[messages.length - 1]?.bidPrice>0 ?`Rs. ${messages[messages.length - 1]?.bidPrice}`:"Na"}
-                    </Text>
-                  </View>
-              
+
+                <View className="flex-row gap-[5px] mt-[10px] items-center justify-center">
+                  <Text style={{ fontFamily: "Poppins-Medium" }}>
+                    Offered Price:{" "}
+                  </Text>
+                  <Text
+                    className=" text-[#79B649]"
+                    style={{ fontFamily: "Poppins-SemiBold" }}
+                  >
+                    {messages && messages[messages.length - 1]?.bidPrice > 0
+                      ? `Rs. ${messages[messages.length - 1]?.bidPrice}`
+                      : "Na"}
+                  </Text>
+                </View>
               </View>
 
               <View className="w-full flex-row justify-between">
@@ -1922,9 +1983,9 @@ const RequestPage = () => {
       <RequestCancelModal
         modalVisible={cancelRequestModal}
         setModalVisible={setCancelRequestModal}
-        // requestInfo={requestInfo} 
+        // requestInfo={requestInfo}
       />
-     
+
       <RequestAcceptModal
         user={user}
         modalVisible={acceptRequestModal}
@@ -1943,7 +2004,9 @@ const RequestPage = () => {
         modalConfirmVisible={uploadGSTModal}
         setModalConfirmVisible={setUploadGSTModal}
       />
-       {errorModal && <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} />}
+      {errorModal && (
+        <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} />
+      )}
 
       {/* {closeRequestModal && <View style={styles.overlay} />} */}
       {acceptRequestModal && <View style={styles.overlay} />}
@@ -1975,12 +2038,11 @@ const styles = StyleSheet.create({
     //  bottom:0// Semi-transparent greyish background
   },
   overlayModal: {
-  
     flex: 1,
-    zIndex:10,
+    zIndex: 10,
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0)",
-     position:"absolute",
+    position: "absolute",
     //  bottom:0
   },
   overlayimg: {
@@ -2058,7 +2120,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 2,
   },
-  
 });
 
 export default RequestPage;
