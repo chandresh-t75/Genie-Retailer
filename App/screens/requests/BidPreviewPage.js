@@ -428,7 +428,7 @@ const BidPreviewPage = () => {
             </View>
           </TouchableOpacity>
         </View>
-      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The offer can not be sent because the customer sent you the new offer.Please accept or reject the customer offer before sending the new offer" ErrorIcon={ErrorOffer} />}
+      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The offer can not be sent because the customer sent you the new offer.Please accept or reject the customer's offer before sending the new offer" ErrorIcon={ErrorOffer} />}
 
       </View>
     </View>

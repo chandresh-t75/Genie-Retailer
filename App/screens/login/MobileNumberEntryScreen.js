@@ -274,13 +274,13 @@ const MobileNumberEntryScreen = () => {
       else{
         setLoading(false);
         console.log('Invalid otp:');
-        alert('Invalid otp');
+        alert('Invalid OTP');
         return;
       }
     } catch (error) {
-      console.log("Invalid otp:", otp);
-      alert("Invalid otp");
-      console.error("Error checking mobile number:", error);
+      console.log("Error while verififying otp", otp);
+      alert("Error while verifying  OTP");
+      
     } finally {
       setIsLoading(false);
     }

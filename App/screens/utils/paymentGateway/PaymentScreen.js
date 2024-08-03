@@ -180,6 +180,7 @@ const PaymentScreen = () => {
                         setIsVisible(false);
                         navigation.navigate("home");
                     }, 3000);
+                    setLoading(false);
                 })
 
         } catch (error) {
@@ -324,6 +325,7 @@ const PaymentScreen = () => {
                         onPress={() => {
                             userDetails.freeSpades > 0 ? handleFreeSpade() : PayNow();
                         }}
+                        disabled={loading}
                     >
                         <View className="w-full h-[63px]  bg-[#fb8c00] justify-center  bottom-0 left-0 right-0">
                             {loading ? (

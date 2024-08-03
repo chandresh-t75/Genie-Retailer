@@ -1017,7 +1017,7 @@ const RequestPage = () => {
         }}
         style={{
           padding: 14,
-          borderBottomColor: "rgba(0, 0, 0, 0.05)",
+          
           borderBottomWidth: 1,
           marginHorizontal: 8,
           zIndex: 120,

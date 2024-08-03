@@ -392,7 +392,7 @@ const BidQueryPage = () => {
             </Text>)}
           </TouchableOpacity>
 
-      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The message can not be sent because the customer sent you the new offer.Please accept or reject the customer offer before sending the new message" ErrorIcon={ErrorMessage} />}
+      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The message can not be sent because the customer sent you the new offer.Please accept or reject the customer's offer before sending the new message" ErrorIcon={ErrorMessage} />}
 
 
     </View>

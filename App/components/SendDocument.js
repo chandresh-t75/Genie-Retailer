@@ -203,12 +203,12 @@ const SendDocument = () => {
                         onPress={() => {
                             sendDocument();
                         }}
+                        disabled={isLoading}
                     >
                         <Send />
                     </TouchableOpacity>}
                 </View>
-      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The attachment can not be sent because the customer sent you the new offer.Please accept or reject the customer offer before sending the new attachment" ErrorIcon={ErrorAttachment} />}
-
+      {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The attachment can not be sent because the customer sent you the new offer.Please accept or reject the customer's offer before sending the new attachment." ErrorIcon={ErrorAttachment} />}
             </View>
 
         </View>
