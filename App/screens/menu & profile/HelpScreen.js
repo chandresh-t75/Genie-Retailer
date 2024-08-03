@@ -112,7 +112,7 @@ const HelpScreen = () => {
             </KeyboardAvoidingView>
             </ScrollView>
             <TouchableOpacity
-           disabled={!query} 
+           disabled={!query || loading} 
            onPress={handleHelp}
             style={{
               position: "absolute",
