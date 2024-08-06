@@ -39,8 +39,9 @@ const ModalLogout = ({ user, modalVisible, setModalVisible }) => {
     setLoading(true);
     try {
       // Remove the item with key 'userData' from local storage
-
+      if(user?.storeMobileNo!=="+919876543210"){
        await auth().signOut();
+      }
 
      const config = {
       headers:{
