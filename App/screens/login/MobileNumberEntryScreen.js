@@ -43,7 +43,6 @@ import auth from "@react-native-firebase/auth";
 import axios from "axios";
 import messaging from "@react-native-firebase/messaging";
 import BackArrow from "../../assets/BackArrow.svg";
-// import SmsRetriever from 'react-native-sms-retriever';
 import { baseUrl } from "../utils/constants.js";
 import axiosInstance from "../utils/axiosInstance.js";
 
@@ -435,7 +434,7 @@ const MobileNumberEntryScreen = () => {
                       placeholderTextColor={"#dbcdbb"}
                       keyboardType="numeric"
                       onChangeText={handleOtp}
-                      autoComplete="sms-otp"
+                      // autoComplete="sms-otp"
                       value={otp}
                       style={{
                         letterSpacing: 8,

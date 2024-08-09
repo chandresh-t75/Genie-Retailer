@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Genie-App",
+    "name": "CulturTap Genie Business",
     "slug": "Genie-App",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "plugins": [
       "@react-native-firebase/app",
@@ -17,7 +17,7 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout":0
     },
     "assetBundlePatterns": [
       "**/*"
@@ -26,7 +26,9 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location to show the map."
-      }
+      },
+      "name": "CulturTap Genie Business",
+      "buildNumber":"2"
     },
     "android": {
       "permissions": [
@@ -37,6 +39,8 @@
         "foregroundImage": "./App/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "versionCode":2,
+      "name": "CulturTap Genie Business",
       "package": "com.culturtapgenieretailer.GenieApp"
     },
     "web": {
