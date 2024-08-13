@@ -237,7 +237,7 @@ const MobileNumberEntryScreen = () => {
 
 
         setToken("");
-        if (response.data.retailer.storeApproved) {
+        if (response.data.retailer.storeApproved==="approved") {
           navigation.navigate("home", { data: "" });
         }
         else {

@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Linking, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FontAwesome} from '@expo/vector-icons';
@@ -33,6 +33,11 @@ const MenuScreen = () => {
         
     };
 
+    const handlePrivacyPolicy = async () => {
+
+        const url = ``;
+        
+    }
     
   return (
     <View style={{ flex: 1,backgroundColor:"white" }}>
@@ -121,6 +126,17 @@ const MenuScreen = () => {
                         <View className="flex flex-row justify-between items-center">
                         <Text className="text-[15px]" style={{ fontFamily: "Poppins-Regular" }}>
                         Need any Help ? 
+                        </Text>
+                        <RightArrow />
+
+
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>Linking.openURL(`https://culturtap.com/genie/business-privacy-policy`)
+            .catch((err) => console.error('An error occurred', err))}>
+                        <View className="flex flex-row justify-between items-center">
+                        <Text className="text-[15px]" style={{ fontFamily: "Poppins-Regular" }}>
+                        Privacy Policy
                         </Text>
                         <RightArrow />
 

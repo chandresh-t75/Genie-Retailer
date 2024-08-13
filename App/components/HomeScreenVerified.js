@@ -326,7 +326,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
   );
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white min-h-screen">
       <ScrollView
         refreshControl={
           <RefreshControl

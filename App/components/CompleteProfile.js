@@ -106,7 +106,7 @@ const fetchUserData = async () => {
       dispatch(setUserDetails(data));
      
 
-      if (data?.storeApproved) {
+      if (data?.storeApproved==="approved") {
         console.log('Store approved at profile Screen');
         // setVerified(true);
         navigation.navigate("home", { data: "" });

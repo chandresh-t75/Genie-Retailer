@@ -54,10 +54,10 @@ const SplashScreen = () => {
             dispatch(setUserDetails(userData))
             dispatch(setAccessToken(accessToken))
             dispatch(setRefreshToken(refreshToken))
-            if(userData.storeApproved){
+            if(userData.storeApproved==="approved"){
               navigation.navigate("home", { data: "" });
               }
-              else if(!userData.storeApproved){
+              else if(userData.storeApproved!=="approved"){
                 navigation.navigate("completeProfile");
               }
 
