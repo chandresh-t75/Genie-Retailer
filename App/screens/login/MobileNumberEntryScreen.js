@@ -265,7 +265,7 @@ const MobileNumberEntryScreen = () => {
       }
     
     } catch (error) {
-      console.log("Error while verififying otp", otp);
+      console.log("Error while verifying otp", otp);
       alert("Error while verifying  OTP");
       
     } finally {
@@ -434,7 +434,7 @@ const MobileNumberEntryScreen = () => {
                       placeholderTextColor={"#dbcdbb"}
                       keyboardType="numeric"
                       onChangeText={handleOtp}
-                      // autoComplete="sms-otp"
+                      autoComplete="sms-otp"
                       value={otp}
                       style={{
                         letterSpacing: 8,

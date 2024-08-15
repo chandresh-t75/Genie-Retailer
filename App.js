@@ -21,6 +21,7 @@ import * as Location from "expo-location";
 
 
 
+
 export default function App() {
   // const [userId,setUserId] = useState("")
 
@@ -34,6 +35,7 @@ export default function App() {
 
     })();
   }, []);
+
 
 
 
@@ -62,24 +64,11 @@ export default function App() {
 
     }
   )
-  // const ReduxWrapper = () => {
-
-  //   const requestInfo = useSelector(
-  //     (state) => state.requestData?.requestInfo
-  //   );
-  //       const chatUserId =getCurrentUserId(requestInfo);
-  //       console.log("Chat User ID in App.js:", chatUserId);
-  //       useEffect(() => {
-  //         setUserId(chatUserId);
-  //       }, [chatUserId]);
-
-  //       return null; // This component doesn't render anything
-  //     };
-
 
   useEffect(() => {
 
     notificationListeners();
+   
 
   }, []);
 

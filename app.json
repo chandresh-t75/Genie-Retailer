@@ -27,7 +27,7 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location to show the map."
       },
-      "name": "CulturTap Genie Business",
+      
       "buildNumber":"4"
     },
     "android": {
@@ -40,7 +40,7 @@
         "backgroundColor": "#ffffff"
       },
       "versionCode":4,
-      "name": "CulturTap Genie Business",
+     
       "package": "com.culturtapgenieretailer.GenieApp"
     },
     "web": {
