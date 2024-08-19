@@ -39,7 +39,7 @@ import {
 } from "../../redux/reducers/storeDataSlice.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import auth from "@react-native-firebase/auth";
+import auth, {firebase} from "@react-native-firebase/auth";
 import axios from "axios";
 import messaging from "@react-native-firebase/messaging";
 import BackArrow from "../../assets/BackArrow.svg";
@@ -123,6 +123,86 @@ const MobileNumberEntryScreen = () => {
   }, [mobileScreen]);
 
 
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+
+      console.log('user auto login', user, user?.phoneNumber);
+      if (user) {
+        if (user?.phoneNumber)
+          verifyFn(user.phoneNumber);
+      }
+      
+    });
+  }, []);
+
+  const verifyFn = async (phoneNumber) => {
+    try{
+      const response = await axios.get(
+        `${baseUrl}/retailer/`,
+        {
+          params: {
+            storeMobileNo: phoneNumber,
+          },
+        }
+      );
+      console.log("res", response.data);
+     
+      if (response?.data?.retailer?.storeMobileNo) {
+        // If mobile number is registered, navigate to home screen
+        dispatch(setUserDetails(response.data.retailer));
+        dispatch(setAccessToken(response.data.accessToken));
+        dispatch(setRefreshToken(response.data.refreshToken));
+
+        await AsyncStorage.setItem("userData", JSON.stringify(response.data.retailer));
+        await AsyncStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+        await AsyncStorage.setItem("refreshToken", JSON.stringify(response.data.refreshToken));
+        
+        const config = {
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${response.data.accessToken}`,
+          }
+        }
+
+        const result = await axiosInstance.patch(
+          `${baseUrl}/retailer/editretailer`,
+          {
+            _id: response?.data?.retailer._id,
+            uniqueToken: token,
+          },config
+        );
+        console.log('Retailer updated', result.data);
+        
+        dispatch(setUserDetails(result.data));
+        await AsyncStorage.setItem("userData", JSON.stringify(result.data));
+
+
+        setToken("");
+        if (response.data.retailer.storeApproved!=="new") {
+          navigation.navigate("home", { data: "" });
+        }
+        else {
+          navigation.navigate("completeProfile");
+        }
+        setOtp("");
+        setMobileNumberLocal("");
+        setMobileScreen(true);
+      } else if (response.data.status === 404) {
+        // If mobile number is not registered, continue with the registration process
+
+        navigation.navigate("registerUsername");
+        setOtp("");
+        setToken("")
+        setMobileNumberLocal("");
+        setMobileScreen(true);
+      } 
+      
+    }
+    catch(error){
+          console.log("Error while auto verifying otp",error)
+    }
+
+  }
 
 
   const handleMobileNo = (mobileNumber) => {
@@ -148,9 +228,12 @@ const MobileNumberEntryScreen = () => {
       setLoading(true);
       dispatch(setPanCard(""));
       // dispatch(storeClear());
+
       try {
         const phoneNumber = countryCode + mobileNumber;
         console.log(phoneNumber);
+
+  
         if(phoneNumber==="+919876543210"){
           setMobileScreen(false);
         dispatch(setMobileNumber(phoneNumber));
@@ -175,25 +258,23 @@ const MobileNumberEntryScreen = () => {
     }
   };
 
-  //   const ConfirmCode=async()=>{
-  //      const credentials=await confirm.confirm(code);
-  //      const user=credentials.user;
-  //      console.log(user);
-  //   }
 
   const checkMobileNumber = async () => {
     setIsLoading(true);
     try {
-      // Make a request to your backend API to check if the mobile number is registered
+     
       let res=null;
       const phoneNumber = countryCode + mobileNumber;
        if(phoneNumber!=="+919876543210"){ 
+        if (!confirm) {
+          throw new Error("No confirmation object available.");
+        }
          console.log(confirm) 
          res=await confirm.confirm(otp);
          console.log("res",res);
          console.log(otp); 
        }
-      if((phoneNumber==="+919876543210" && otp==="123456") || res.status===200 || res?.user?.phoneNumber?.length>0){
+      if((phoneNumber==="+919876543210" && otp==="123456") || res.status===200 || res?.user?.phoneNumber){
       
       console.log("phone", phoneNumber);
       const response = await axios.get(
@@ -237,7 +318,7 @@ const MobileNumberEntryScreen = () => {
 
 
         setToken("");
-        if (response.data.retailer.storeApproved==="approved") {
+        if (response.data.retailer.storeApproved!=="new") {
           navigation.navigate("home", { data: "" });
         }
         else {
@@ -266,7 +347,7 @@ const MobileNumberEntryScreen = () => {
     
     } catch (error) {
       console.log("Error while verifying otp", otp);
-      alert("Error while verifying  OTP");
+      alert("Error while verifying OTP");
       
     } finally {
       setIsLoading(false);

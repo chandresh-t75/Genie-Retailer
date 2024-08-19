@@ -46,7 +46,10 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
           borderRadius: 24,
         }}
       >
-        <View className="w-[16px] h-[16px] bg-[#70B241] rounded-full"></View>
+        {
+          userData?.storeApproved==="approved" && 
+          <View className="flex flex-row gap-[32px] justify-center items-center ">
+            <View className="w-[16px] h-[16px] bg-[#70B241] rounded-full"></View>
         <View className="flex-col flex-1">
           <Text
             className="text-[16px] text-[#2e2c43] "
@@ -61,6 +64,81 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
             Wait for your first customer request
           </Text>
         </View>
+            </View>
+        }
+
+{
+          userData?.storeApproved==="rejected" && 
+          <View className="flex flex-row gap-[32px] justify-center items-center ">
+            <View className="w-[16px] h-[16px] bg-[#E76063] rounded-full"></View>
+        <View className="flex-col flex-1">
+          <Text
+            className="text-[16px] text-[#E76063] "
+            style={{ fontFamily: "Poppins-Bold" }}
+          >
+            Your account has been rejected.
+          </Text>
+          <Text
+            className="text-[14px] text-[#2e2c43] mb-[10px]"
+            style={{ fontFamily: "Poppins-Regular" }}
+          >
+            {userData?.query}
+          </Text>
+          <TouchableOpacity
+                  onPress={() => navigation.navigate("profile")}
+                >
+                  <View className="flex flex-row items-center gap-[10px]">
+                    <View className="flex flex-row items-center gap-[10px]">
+                      <Text
+                        className="text-[14px] text-[#FB8C00]"
+                        style={{ fontFamily: "Poppins-Regular" }}
+                      >
+                        Update Profile
+                      </Text>
+                      <RightArrow />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+        </View>
+            </View>
+        }
+
+{
+          userData?.storeApproved==="blocked" && 
+          <View className="flex flex-row gap-[32px] justify-center items-center ">
+            <View className="w-[16px] h-[16px] bg-[#E76063] rounded-full"></View>
+        <View className="flex-col flex-1">
+          <Text
+            className="text-[16px] text-[#E76063] "
+            style={{ fontFamily: "Poppins-Bold" }}
+          >
+            Your account has been blocked.
+          </Text>
+          <Text
+            className="text-[14px] text-[#2e2c43] mb-[10px]"
+            style={{ fontFamily: "Poppins-Regular" }}
+          >
+                        {userData?.query}
+          </Text>
+          <TouchableOpacity
+                  onPress={() => navigation.navigate("help")}
+                >
+                  <View className="flex flex-row items-center gap-[10px]">
+                    <View className="flex flex-row items-center gap-[10px]">
+                      <Text
+                        className="text-[14px] text-[#FB8C00]"
+                        style={{ fontFamily: "Poppins-Regular" }}
+                      >
+                        Request for unblocking
+                      </Text>
+                      <RightArrow />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+        </View>
+            </View>
+        }
+        
       </View>
       <View
         style={{
