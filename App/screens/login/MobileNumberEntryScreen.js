@@ -163,6 +163,7 @@ const MobileNumberEntryScreen = () => {
             'Authorization': `Bearer ${response.data.accessToken}`,
           }
         }
+        console.log("token auto verify",token)
 
         const result = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
@@ -187,19 +188,19 @@ const MobileNumberEntryScreen = () => {
         setOtp("");
         setMobileNumberLocal("");
         setMobileScreen(true);
-      } else if (response.data.status === 404) {
+      } else if (response.data.status === 404){
         // If mobile number is not registered, continue with the registration process
 
         navigation.navigate("registerUsername");
         setOtp("");
-        setToken("")
+        // setToken("")
         setMobileNumberLocal("");
         setMobileScreen(true);
       } 
       
     }
     catch(error){
-          console.log("Error while auto verifying otp",error)
+          console.log("Error while auto verifying otp",error);
     }
 
   }
@@ -221,8 +222,6 @@ const MobileNumberEntryScreen = () => {
 
 
   const sendVerification = async () => {
-
-
     if (mobileNumber.length === 10) {
       // Navigate to OTP screen if the phone number is valid
       setLoading(true);
@@ -233,11 +232,9 @@ const MobileNumberEntryScreen = () => {
         const phoneNumber = countryCode + mobileNumber;
         console.log(phoneNumber);
 
-  
         if(phoneNumber==="+919876543210"){
           setMobileScreen(false);
         dispatch(setMobileNumber(phoneNumber));
-
         }
         else{
         const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
@@ -272,7 +269,7 @@ const MobileNumberEntryScreen = () => {
          console.log(confirm) 
          res=await confirm.confirm(otp);
          console.log("res",res);
-         console.log(otp); 
+         console.log(otp);
        }
       if((phoneNumber==="+919876543210" && otp==="123456") || res.status===200 || res?.user?.phoneNumber){
       
@@ -303,7 +300,7 @@ const MobileNumberEntryScreen = () => {
             'Authorization': `Bearer ${response.data.accessToken}`,
           }
         }
-
+        console.log("token verify",token)
         const result = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
@@ -317,7 +314,7 @@ const MobileNumberEntryScreen = () => {
         await AsyncStorage.setItem("userData", JSON.stringify(result.data));
 
 
-        setToken("");
+        // setToken("");
         if (response.data.retailer.storeApproved!=="new") {
           navigation.navigate("home", { data: "" });
         }
@@ -332,7 +329,7 @@ const MobileNumberEntryScreen = () => {
 
         navigation.navigate("registerUsername");
         setOtp("");
-        setToken("")
+        // setToken("")
         setMobileNumberLocal("");
         setMobileScreen(true);
       } 

@@ -65,6 +65,7 @@ const PanCardScreen = () => {
   const uniqueToken = useSelector((state) => state.storeData.uniqueToken);
   const accessToken = useSelector((state) => state.storeData.accessToken)
 
+  console.log("user token",uniqueToken)
 
   const [cameraScreen, setCameraScreen] = useState(false);
   const [imagesLocal, setImagesLocal] = useState("");
@@ -152,6 +153,7 @@ const PanCardScreen = () => {
             'Authorization':`Bearer ${response.data.accessToken}`,
           }
          }
+         console.log("user token",uniqueToken)
         const res = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
