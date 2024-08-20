@@ -78,12 +78,16 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
           >
             Your account has been rejected.
           </Text>
-          <Text
+          {
+            userData?.query &&
+            <Text
             className="text-[14px] text-[#2e2c43] mb-[10px]"
             style={{ fontFamily: "Poppins-Regular" }}
           >
             {userData?.query}
           </Text>
+          }
+         
           <TouchableOpacity
                   onPress={() => navigation.navigate("profile")}
                 >
@@ -114,12 +118,15 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
           >
             Your account has been blocked.
           </Text>
-          <Text
+          {
+            userData?.query &&
+            <Text
             className="text-[14px] text-[#2e2c43] mb-[10px]"
             style={{ fontFamily: "Poppins-Regular" }}
           >
-                        {userData?.query}
+            {userData?.query}
           </Text>
+          }
           <TouchableOpacity
                   onPress={() => navigation.navigate("help")}
                 >

@@ -365,7 +365,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
 
           {(newRequests?.length > 0 ||
             ongoingRequests?.length > 0 ||
-            retailerHistory?.length > 0) && userData.storeApproved==="approved" (
+            retailerHistory?.length > 0) && userData?.storeApproved==="approved" && (
             <View className="flex items-center">
               <View>
                 <View className="flex-row justify-center gap-[40px] px-[10px]    mb-[20px]">
@@ -604,7 +604,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
             newRequests?.length > 0 ||
             ongoingRequests?.length > 0 ||
             retailerHistory?.length > 0
-          ) || userData.storeApproved!=="approved") &&
+          ) || userData?.storeApproved!=="approved") &&
             !networkError && (
               <HomeScreenRequests
                 modalVisible={modalVisible}
