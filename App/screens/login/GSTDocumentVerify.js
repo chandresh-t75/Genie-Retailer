@@ -202,7 +202,7 @@ const  GSTDocumentVerify = () => {
   // }
 
   const pickDocument = async () => {
-    const MAX_FILE_SIZE_MB = 2; // Maximum file size in MB
+    const MAX_FILE_SIZE_MB = 5; // Maximum file size in MB
     const DOCUMENT_MIME_TYPES = [
         'application/pdf',
         'text/plain',
@@ -415,7 +415,7 @@ const  GSTDocumentVerify = () => {
           </View>
         </View>
         )} */}
-       {errorModal && <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal}/>}
+       {errorModal && <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} maxSize={5}/>}
       </KeyboardAvoidingView>
       {loading && (
         <View style={styles.loadingContainer}>

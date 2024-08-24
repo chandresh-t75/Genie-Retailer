@@ -6,7 +6,7 @@ const initialState = {
   storeName:"",
   storeOwnerName:"",
   panCard:"",
-  storeService:"",
+  storeService:false,
   storeLocation:"",
   storeDescription:"",
   storeImage:"",

@@ -2005,7 +2005,7 @@ const RequestPage = () => {
         setModalConfirmVisible={setUploadGSTModal}
       />
       {errorModal && (
-        <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} />
+        <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} maxSize={2}/>
       )}
 
       {/* {closeRequestModal && <View style={styles.overlay} />} */}

@@ -74,6 +74,7 @@ const PanCardScreen = () => {
   const [panCard, setPanCardLocal] = useState("");
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
 
   const { width } = Dimensions.get("window");
   // console.log("User data sent to", uniqueToken);
@@ -121,7 +122,15 @@ const PanCardScreen = () => {
 
       // Send user data to the server\
 
-      
+      console.log(
+        mobileNumber,
+        storeCategory,
+        storeName,
+        storeOwnerName,
+        storeService,
+        panCard,
+        uniqueToken
+      );
       
       const response = await axios.post(
         `${baseUrl}/retailer/`,
@@ -131,7 +140,7 @@ const PanCardScreen = () => {
           storeMobileNo: mobileNumber,
           storeCategory: storeCategory,
           homeDelivery: storeService,
-          panCard: panCard,
+          panCard:panCard,
         }
       );
       console.log("res of creating new retailer", response.data);
@@ -179,7 +188,6 @@ const PanCardScreen = () => {
       // Handle error if request fails
       console.error("Error creating user:", error);
       Alert.alert(
-
         "An unexpected error occurred. Please try again later."
       );
       setLoading(false);
@@ -260,7 +268,7 @@ const PanCardScreen = () => {
 
 
   const pickDocument = async () => {
-    const MAX_FILE_SIZE_MB = 2; // Maximum file size in MB
+    const MAX_FILE_SIZE_MB = 5; // Maximum file size in MB
     const DOCUMENT_MIME_TYPES = [
         'application/pdf',
         'text/plain',
@@ -525,7 +533,7 @@ const PanCardScreen = () => {
             </View>
           )} */}
 
-       {errorModal && <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal}/>}
+       {errorModal && <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} maxSize={5}/>}
 
         </KeyboardAvoidingView>
         {loading && (

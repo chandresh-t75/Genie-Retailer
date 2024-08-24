@@ -152,7 +152,7 @@ const AddImageScreen = () => {
       await axios.post(`${baseUrl}/upload`, formData, config).then((res) => {
         console.log("imageUrl updated from server", res.data[0]);
         const imgUri = res.data[0];
-        if (imgUri) {
+        if (imgUri){
           console.log("Image Updated Successfully");
           setImagesLocal((prevImages) => [...prevImages, imgUri]);
           dispatch(setImages(imgUri));

@@ -163,13 +163,13 @@ const MobileNumberEntryScreen = () => {
             'Authorization': `Bearer ${response.data.accessToken}`,
           }
         }
-        console.log("token auto verify",token)
+        console.log("token auto verify",uniqueToken)
 
         const result = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
             _id: response?.data?.retailer._id,
-            uniqueToken: token,
+            uniqueToken: uniqueToken,
           },config
         );
         console.log('Retailer updated', result.data);
@@ -178,7 +178,7 @@ const MobileNumberEntryScreen = () => {
         await AsyncStorage.setItem("userData", JSON.stringify(result.data));
 
 
-        setToken("");
+        // setToken("");
         if (response.data.retailer.storeApproved!=="new") {
           navigation.navigate("home", { data: "" });
         }
@@ -300,12 +300,12 @@ const MobileNumberEntryScreen = () => {
             'Authorization': `Bearer ${response.data.accessToken}`,
           }
         }
-        console.log("token verify",token)
+        console.log("token verify", uniqueToken)
         const result = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
             _id: response?.data?.retailer._id,
-            uniqueToken: token,
+            uniqueToken:  uniqueToken,
           },config
         );
         console.log('Retailer updated', result.data);
