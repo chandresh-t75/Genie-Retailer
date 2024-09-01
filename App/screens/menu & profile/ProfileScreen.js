@@ -264,16 +264,16 @@ const fetchRetailerFeedbacks = useCallback(async () => {
       }
       await axiosInstance.get(`${baseUrl}/rating/get-retailer-feedbacks`, config)
           .then((res) => {
-              console.log('Feedbacks fetched successfully');
+              console.log('Feedbacks fetched successfully',res.data);
               setFeedbacks(res.data);
               setFeedbackLoading(false);
           })
   } catch (error) {
     setFeedbackLoading(false);
-      console.error('Error while fetching retailer feedbacks');
+      console.error('Error while fetching retailer feedbacks',error);
   }
 })
-
+ 
 useEffect(() => {
   fetchRetailerFeedbacks();
   
@@ -584,13 +584,12 @@ useEffect(() => {
                         
                          <View style={styles.revcontainer}>
                           {
-                          feedbacks.length>0 ?
-                          <>( 
+                          feedbacks.length>0 ?(
                           <ScrollView>
                             {feedbacks
                                 .slice(0, showAllReviews ? feedbacks.length : 3)
                                 .map((review, index) => (
-                                    <View key={index} className="shadow-2xl bg-white" style={{ marginBottom: 20, paddingBottom: 10,borderRadius: 20 }}>
+                                    <View key={index} className="shadow-2xl bg-[#7c7c7c] bg-opacity-5" style={{ marginBottom: 20, padding: 20,borderRadius: 20 }}>
                                         <View className="flex-row items-center gap-[20px] mb-[5px] ">
                                             <Text className="capitalize text-[#2e2c43]  " style={{ fontFamily: 'Poppins-SemiBold' }}>
                                                 {review?.senderName}
@@ -605,7 +604,8 @@ useEffect(() => {
                                     </View>
                                 ))}
                         </ScrollView>)
-                        </>:(
+                          
+                        :(
                           <Text style={{ color: '#7c7c7c',fontFamily: 'Poppins-Regular' }}>No reviews yet</Text>
                          )}
                         
