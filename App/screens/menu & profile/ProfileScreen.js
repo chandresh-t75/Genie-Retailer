@@ -29,10 +29,12 @@ import { FontAwesome, Entypo } from "@expo/vector-icons";
 import BackArrow from "../../assets/BackArrow.svg";
 import { baseUrl } from "../utils/constants";
 import axiosInstance from "../utils/axiosInstance";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import DocumentIcon from '../../assets/DocumentIcon.svg';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import DocumentIcon from "../../assets/DocumentIcon.svg";
 import DeleteImageModal from "../../components/DeleteImageModal";
-
+import DeleteProductImage from "../../components/DeleteProductImage";
+import AddMoreImage from "../../assets/AddMoreImg.svg";
+import { Camera } from "expo-camera";
 
 
 const initialReviews = [
@@ -42,7 +44,6 @@ const initialReviews = [
   { customerName: "Bob Brown", stars: 2, review: "Not satisfied." },
   { customerName: "Mary Davis", stars: 5, review: "Amazing quality!" },
 ];
-
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -66,14 +67,17 @@ const ProfileScreen = () => {
   const [panCard, setPanCard] = useState(user?.panCard || "");
   const [selectedImage, setSelectedImage] = useState(null);
   const [scaleAnimation] = useState(new Animated.Value(0));
-  const [indexImg,setIndexImg] = useState(null);
-  const [modalVisible,setModalVisible] = useState(false);
-  const accessToken = useSelector((state) => state.storeData.accessToken)
-    const [showAllReviews, setShowAllReviews] = useState(false);
-    const [feedbacks, setFeedbacks] = useState([]);
-  const [feedbackLoading,setFeedbackLoading] = useState(false);
-
-
+  const [indexImg, setIndexImg] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [indexDelImg, setIndexDelImg] = useState(null);
+  const [modalDelVisible, setModalDelVisible] = useState(false);
+  const accessToken = useSelector((state) => state.storeData.accessToken);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [cameraScreen, setCameraScreen] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [imagesLocal, setImagesLocal] = useState([]);
 
 
   const handleImagePress = (image) => {
@@ -109,17 +113,18 @@ const ProfileScreen = () => {
     setIsLoading(true);
     try {
       const config = {
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
       const response = await axiosInstance.patch(
         `${baseUrl}/retailer/editretailer`,
         {
           _id: user?._id,
           [field]: fieldMapping[field],
-        },config
+        },
+        config
       );
 
       if (response.status === 200) {
@@ -143,18 +148,75 @@ const ProfileScreen = () => {
     }
   };
 
-  const handleEditIconPress = async (type) => {
+ 
+  const handleImageClick = (index) => {
+    setIndexImg(index);
+    setModalVisible(true);
+  };
+  const handleProductImageClick = (index) => {
+    setIndexDelImg(index);
+    setModalDelVisible(true);
+  };
+
+  const handleDownloadDocument = async () => {
+    // const url = `https://www.google.com/search?q=${encodeURIComponent(bidDetails.bidImages[0])}`
+    const url = `${user?.panCard}`;
+    Linking.openURL(url).catch((err) =>
+      console.error("An error occurred", err)
+    );
+  };
+
+  const fetchRetailerFeedbacks = useCallback(async () => {
+    setFeedbackLoading(true);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          id: user._id,
+        },
+      };
+      await axiosInstance
+        .get(`${baseUrl}/rating/get-retailer-feedbacks`, config)
+        .then((res) => {
+          console.log("Feedbacks fetched successfully", res.data);
+          setFeedbacks(res.data);
+          setFeedbackLoading(false);
+        });
+    } catch (error) {
+      setFeedbackLoading(false);
+      console.error("Error while fetching retailer feedbacks", error);
+    }
+  });
+
+  useEffect(() => {
+    fetchRetailerFeedbacks();
+  }, []);
+
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(status === "granted");
+    })();
+  }, [cameraScreen]);
+
+
+  const takePicture = async () => {
+   
     const options = {
-      mediaType: "photo",
+      mediaType:"photo",
       saveToPhotos: true,
     };
-    console.log("type", type);
-
+    setLoading(true)
     launchCamera(options, async (response) => {
+      
       if (response.didCancel) {
         console.log("User cancelled image picker");
       } else if (response.error) {
-        console.log("ImagePicker Error: ", response.error);
+        console.log("ImagePicker Error: ");
       } else {
         try {
           const newImageUri = response.assets[0].uri;
@@ -163,18 +225,16 @@ const ProfileScreen = () => {
             [{ resize: { width: 600, height: 800 } }],
             { compress: 0.5, format: "jpeg", base64: true }
           );
-
-          await getImageUrl({ image: compressedImage.uri, type: type });
-
-          // Update user or perform other operations here
+          await getImageUrl(compressedImage.uri);
         } catch (error) {
+          setLoading(false);
           console.error("Error processing image: ", error);
         }
       }
     });
   };
 
-  const getImageUrl = async ({ image, type }) => {
+  const getImageUrl = async (image) => {
     setLoading(true);
     try {
       const formData = new FormData();
@@ -184,100 +244,71 @@ const ProfileScreen = () => {
         type: "image/jpeg",
         name: `photo-${Date.now()}.jpg`,
       });
-
       const config = {
         headers:{
           'Content-Type':'multipart/form-data',
           'Authorization':`Bearer ${accessToken}`,
         }
        }
-
       await axios
-        .post(`${baseUrl}/upload`, formData, config)
-        .then(async (res) => {
-          // console.log("imageUrl updated from server", res.data[0]);
+        .post(`${baseUrl}/upload`, formData,config)
+        .then(async(res) => {
+          console.log("imageUrl updated from server", res.data[0]);
           const imgUri = res.data[0];
-          let updatedUser;
-          if (type === "main") {
-            updatedUser = {
-              ...user,
-              storeImages: [imgUri, ...user.storeImages.slice(1)],
-            };
-          } else {
-            updatedUser = {
-              ...user,
-              storeImages: [...user.storeImages, imgUri],
-            };
-          }
-          dispatch(setUserDetails(updatedUser));
-          await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
-          const config = {
-            headers:{
-              'Content-Type':'application/json',
-              'Authorization':`Bearer ${accessToken}`,
+          if (imgUri) {
+            console.log("Image Updated Successfully");
+            // setImagesLocal([imgUri, ...imagesLocal]);
+            const newImages = [imgUri,...user?.productImages];
+
+            try {
+              // Update location on server
+              const configg = {
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization':`Bearer ${accessToken}`,
+                }
+               }
+              const response = await axiosInstance.patch(
+                `${baseUrl}/retailer/editretailer`,
+                {
+                  _id: user?._id,
+                  productImages: newImages,
+                },configg
+              );
+        
+              console.log('Image updated successfully:', response.data);
+        
+              // Update user data in AsyncStorage
+              dispatch(setUserDetails(response.data));
+              await AsyncStorage.setItem("userData", JSON.stringify(response.data));
+        
+              setLoading(false);
+              // navigation.navigate("profile");
+            } catch (error) {
+              setLoading(false);
+              console.error("Failed to update product images:", error);
+              
             }
-           }
-          const response = await axiosInstance.patch(
-            `${baseUrl}/retailer/editretailer`,
-            {
-              _id: user?._id,
-              storeImages: updatedUser.storeImages,
-            },config
-          );
-          setLoading(false);
+          
+          }
         });
     } catch (error) {
       setLoading(false);
-      console.log(error);
+      console.error("Error getting product imageUrl: ", error);
     }
   };
 
- 
-
-  const handleImageClick = (index) => {
-    setIndexImg(index);
-    setModalVisible(true);
-  };
-
-
-
-
-  const handleDownloadDocument = async () => {
-    // const url = `https://www.google.com/search?q=${encodeURIComponent(bidDetails.bidImages[0])}`
-    const url = `${user?.panCard}`;
-    Linking.openURL(url)
-        .catch((err) => console.error('An error occurred', err));
-}
-
-
-const fetchRetailerFeedbacks = useCallback(async () => {
-  setFeedbackLoading(true)
-  try {
-      const config = {
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-          },
-          params: {
-              id:user._id,
-          }
-      }
-      await axiosInstance.get(`${baseUrl}/rating/get-retailer-feedbacks`, config)
-          .then((res) => {
-              console.log('Feedbacks fetched successfully',res.data);
-              setFeedbacks(res.data);
-              setFeedbackLoading(false);
-          })
-  } catch (error) {
-    setFeedbackLoading(false);
-      console.error('Error while fetching retailer feedbacks',error);
-  }
-})
- 
-useEffect(() => {
-  fetchRetailerFeedbacks();
   
-}, []);
+
+  // if (hasCameraPermission === null) {
+  //   return <View/>;
+  // }
+  if (hasCameraPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+
+
 
   return (
     <View className="bg-white">
@@ -367,7 +398,12 @@ useEffect(() => {
             </View>
           </View>
           <View className="flex-row items-center justify-between px-[32px] my-[10px]">
-            <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2E2C43]">Store Images</Text>
+            <Text
+              style={{ fontFamily: "Poppins-Regular" }}
+              className="text-[#2E2C43]"
+            >
+              Store Images
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate("update-profile-image", {
@@ -384,13 +420,20 @@ useEffect(() => {
               </Text>
             </TouchableOpacity>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{
-        alignSelf: "flex-start",
-      }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              alignSelf: "flex-start",
+            }}
+          >
             <View className="px-[32px] flex flex-row gap-[11px] mb-[60px] w-max">
               {user?.storeImages?.map((image, index) => (
                 <Pressable key={index} onPress={() => handleImagePress(image)}>
-                  <View key={index} className="rounded-[16px] w-[119px] h-[164px]">
+                  <View
+                    key={index}
+                    className="rounded-[16px] w-[119px] h-[164px]"
+                  >
                     <Image
                       source={{ uri: image }}
                       width={119}
@@ -448,8 +491,7 @@ useEffect(() => {
                   onPress={() => {
                     navigation.navigate("update-location");
                   }}
-                  style={{paddingHorizontal:20}}
-
+                  style={{ paddingHorizontal: 20 }}
                 >
                   <EditIcon className="px-[10px]" />
                 </TouchableOpacity>
@@ -483,8 +525,12 @@ useEffect(() => {
                 Store Category
               </Text>
               <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-
-                <Text className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize" style={{ fontFamily: "Poppins-Regular" }}>{storeCategory}</Text>
+                <Text
+                  className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  {storeCategory}
+                </Text>
               </View>
             </View>
             <View className="px-[20px] mb-[10px]">
@@ -495,15 +541,19 @@ useEffect(() => {
                 Store Description
               </Text>
               <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-
-                <Text className="w-[200px] text-[14px]  text-[#2E2C43]" style={{ fontFamily: "Poppins-Regular" }}>{user?.storeDescription}</Text>
+                <Text
+                  className="w-[200px] text-[14px]  text-[#2E2C43]"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  {user?.storeDescription}
+                </Text>
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate("update-store-description");
                   }}
-                  style={{paddingHorizontal:20}}
+                  style={{ paddingHorizontal: 20 }}
                 >
-                  <EditIcon className="px-[10px]"/>
+                  <EditIcon className="px-[10px]" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -516,9 +566,9 @@ useEffect(() => {
                 Home Delivery
               </Text>
               <View className="flex flex-row items-center justify-between w-[300px] py-[10px]  px-[20px] bg-[#F9F9F9] rounded-[16px]">
-              <TextInput
-                  value={user?.homeDelivery===true?"Yes":"No"}
-                  placeholder={user?.homeDelivery===true?"Yes":"No"}
+                <TextInput
+                  value={user?.homeDelivery === true ? "Yes" : "No"}
+                  placeholder={user?.homeDelivery === true ? "Yes" : "No"}
                   placeholderTextColor={"#dbcdbb"}
                   className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
                   style={{ fontFamily: "Poppins-Regular" }}
@@ -550,19 +600,32 @@ useEffect(() => {
 
           <View className="px-[32px] flex  gap-[26px] mb-[40px] ">
             <View className="flex-row items-center justify-between  my-[10px]">
-              <Text style={{ fontFamily: "Poppins-Regular" }} className="text-[#2E2C43]">
+              <Text
+                style={{ fontFamily: "Poppins-Regular" }}
+                className="text-[#2E2C43]"
+              >
                 GST/Labor certificate
               </Text>
             </View>
-            {user?.panCard  && 
-                      <View  className="rounded-[16px] ">
-                        <TouchableOpacity className="flex-col" onPress={()=>{handleDownloadDocument()}}>
-                      <DocumentIcon  size={90} />
-                      <Text className=" text-[16px] pt-[10px] text-[#fb8c00]" style={{ fontFamily: "Poppins-Medium" }}>View Document</Text>
-                      {/* <Text className="pt-[5px]">{fileSize < 1 ? `${(parseFloat(fileSize).toFixed(3) * 1000)} kb` : `${parseFloat(fileSize).toFixed(1)}Mb`}</Text> */}
-                  </TouchableOpacity>
-                  </View>
-            }
+            {user?.panCard && (
+              <View className="rounded-[16px] ">
+                <TouchableOpacity
+                  className="flex-col"
+                  onPress={() => {
+                    handleDownloadDocument();
+                  }}
+                >
+                  <DocumentIcon size={90} />
+                  <Text
+                    className=" text-[16px] pt-[10px] text-[#fb8c00]"
+                    style={{ fontFamily: "Poppins-Medium" }}
+                  >
+                    View Document
+                  </Text>
+                  {/* <Text className="pt-[5px]">{fileSize < 1 ? `${(parseFloat(fileSize).toFixed(3) * 1000)} kb` : `${parseFloat(fileSize).toFixed(1)}Mb`}</Text> */}
+                </TouchableOpacity>
+              </View>
+            )}
             {!user?.panCard && (
               <View>
                 <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
@@ -577,60 +640,167 @@ useEffect(() => {
             )}
           </View>
 
-          <View className="mb-[40px]">
-                        <Text className="capitalize text-[#2e2c43]  px-[32px]" style={{ fontFamily: 'Poppins-Regular' }}>Store Reviews</Text>
-
-                       { feedbackLoading ? (<ActivityIndicator size="small" color="#fb8c00" />):(
-                        
-                         <View style={styles.revcontainer}>
-                          {
-                          feedbacks.length>0 ?(
-                          <ScrollView>
-                            {feedbacks
-                                .slice(0, showAllReviews ? feedbacks.length : 3)
-                                .map((review, index) => (
-                                    <View key={index} className="shadow-2xl bg-[#7c7c7c] bg-opacity-5" style={{ marginBottom: 20, padding: 20,borderRadius: 20 }}>
-                                        <View className="flex-row items-center gap-[20px] mb-[5px] ">
-                                            <Text className="capitalize text-[#2e2c43]  " style={{ fontFamily: 'Poppins-SemiBold' }}>
-                                                {review?.senderName}
-                                            </Text>
-                                        </View>
-                                        <View className="w-[50%]">
-                                        <StarRating rating={review.rating} />
-
-                                        </View>
-
-                                        <Text style={{ color: '#7c7c7c', marginTop: 5, fontFamily: 'Poppins-Regular' }}>{review.feedback}</Text>
-                                    </View>
-                                ))}
-                        </ScrollView>)
-                          
-                        :(
-                          <Text style={{ color: '#7c7c7c',fontFamily: 'Poppins-Regular' }}>No reviews yet</Text>
-                         )}
-                        
-                        
-                         {!showAllReviews && feedbacks.length > 4 && (
-                             <Pressable
-                                 onPress={() => setShowAllReviews(true)}
-                                 className=""
-                             >
-                                 <Text className="text-[#fb8c00] text-center">View All</Text>
-                             </Pressable>
-                         )
-                         }
-                         {showAllReviews && feedbacks.length > 4 && (
-                             <Pressable
-                                 onPress={() => setShowAllReviews(false)}
-                                 className=""
-                             >
-                                 <Text className="text-[#fb8c00] text-center">View Less</Text>
-                             </Pressable>
-                         )
-                         }
-                     </View>)
-                       } 
+          <View className="flex-row items-center justify-between px-[32px]  mb-[15px]">
+            <Text
+              style={{ fontFamily: "Poppins-Regular" }}
+              className="text-[#2E2C43]"
+            >
+              Product Images
+            </Text>
+            {/* <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("add-product-images", {
+                  data: user?.productImages,
+                });
+              }}
+            >
+            
+              <Text
+                style={{ fontFamily: "Poppins-Bold" }}
+                className="text-[#fb8c00]"
+              >
+                + Add
+              </Text>
+            </TouchableOpacity> */}
+          </View>
+          <View className="pl-[32px] flex flex-row items-center gap-[11px] mb-[60px]">
+            <TouchableOpacity onPress={() => {takePicture()}}>
+              <View>
+                <AddMoreImage />
+              </View>
+            </TouchableOpacity>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{
+                alignSelf: "flex-start",
+              }}
+            >
+              <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
+                {user?.productImages?.map((image, index) => (
+                  <Pressable
+                    key={index}
+                    onPress={() => handleImagePress(image)}
+                  >
+                    <View
+                      key={index}
+                      className="rounded-[16px] w-[119px] h-[164px]"
+                    >
+                      <Image
+                        source={{ uri: image }}
+                        width={119}
+                        height={164}
+                        className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                      />
+                      <Pressable
+                        onPress={() => handleProductImageClick(index)}
+                        style={styles.deleteIcon}
+                      >
+                        <DelImg width={24} height={24} />
+                      </Pressable>
                     </View>
+                  </Pressable>
+                ))}
+              </View>
+              <Modal
+                transparent
+                visible={!!selectedImage}
+                onRequestClose={handleClose}
+              >
+                <Pressable style={styles.modalContainer} onPress={handleClose}>
+                  <Animated.Image
+                    source={{ uri: selectedImage }}
+                    style={[
+                      styles.modalImage,
+                      {
+                        transform: [{ scale: scaleAnimation }],
+                      },
+                    ]}
+                  />
+                </Pressable>
+              </Modal>
+            </ScrollView>
+          </View>
+
+          <View className="mb-[40px]">
+            <Text
+              className="capitalize text-[#2e2c43]  px-[32px]"
+              style={{ fontFamily: "Poppins-Regular" }}
+            >
+              Store Reviews
+            </Text>
+
+            {feedbackLoading ? (
+              <ActivityIndicator size="small" color="#fb8c00" />
+            ) : (
+              <View style={styles.revcontainer}>
+                {feedbacks.length > 0 ? (
+                  <ScrollView>
+                    {feedbacks
+                      .slice(0, showAllReviews ? feedbacks.length : 3)
+                      .map((review, index) => (
+                        <View
+                          key={index}
+                          className="shadow-2xl bg-[#7c7c7c] bg-opacity-5"
+                          style={{
+                            marginBottom: 20,
+                            padding: 20,
+                            borderRadius: 20,
+                          }}
+                        >
+                          <View className="flex-row items-center gap-[20px] mb-[5px] ">
+                            <Text
+                              className="capitalize text-[#2e2c43]  "
+                              style={{ fontFamily: "Poppins-SemiBold" }}
+                            >
+                              {review?.senderName}
+                            </Text>
+                          </View>
+                          <View className="w-[50%]">
+                            <StarRating rating={review.rating} />
+                          </View>
+
+                          <Text
+                            style={{
+                              color: "#7c7c7c",
+                              marginTop: 5,
+                              fontFamily: "Poppins-Regular",
+                            }}
+                          >
+                            {review.feedback}
+                          </Text>
+                        </View>
+                      ))}
+                  </ScrollView>
+                ) : (
+                  <Text
+                    style={{ color: "#7c7c7c", fontFamily: "Poppins-Regular" }}
+                  >
+                    No reviews yet
+                  </Text>
+                )}
+
+                {!showAllReviews && feedbacks.length > 4 && (
+                  <Pressable
+                    onPress={() => setShowAllReviews(true)}
+                    className=""
+                  >
+                    <Text className="text-[#fb8c00] text-center">View All</Text>
+                  </Pressable>
+                )}
+                {showAllReviews && feedbacks.length > 4 && (
+                  <Pressable
+                    onPress={() => setShowAllReviews(false)}
+                    className=""
+                  >
+                    <Text className="text-[#fb8c00] text-center">
+                      View Less
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+          </View>
         </View>
       </ScrollView>
       {loading && (
@@ -639,12 +809,18 @@ useEffect(() => {
         </View>
       )}
 
-<DeleteImageModal
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}
-            index={indexImg}
-          />
-          {modalVisible && <View style={styles.overlay} />}
+      <DeleteImageModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        index={indexImg}
+      />
+      <DeleteProductImage
+        modalVisible={modalDelVisible}
+        setModalVisible={setModalDelVisible}
+        index={indexDelImg}
+      />
+      {modalVisible && <View style={styles.overlay} />}
+      {modalDelVisible && <View style={styles.overlay} />}
     </View>
   );
 };
@@ -678,21 +854,26 @@ const EditableField = ({
     </View>
 
     <KeyboardAvoidingView className="flex ">
-      <View className={`flex flex-row items-center justify-between w-[300px]  px-[20px] bg-[#F9F9F9] rounded-[16px]`} style={{ backgroundColor: editable ? '#ffe7c8' : '#F9F9F9', }}>
+      <View
+        className={`flex flex-row items-center justify-between w-[300px]  px-[20px] bg-[#F9F9F9] rounded-[16px]`}
+        style={{ backgroundColor: editable ? "#ffe7c8" : "#F9F9F9" }}
+      >
         <TextInput
           value={value}
           onChangeText={onChangeText}
           editable={editable}
           placeholder={label}
           placeholderTextColor={"#dbcdbb"}
-          multiline={true}  
-          className={`w-[200px] text-[14px] py-[10px] text-[#2E2C43] ${editable?"":"capitalize"}`}
+          multiline={true}
+          className={`w-[200px] text-[14px] py-[10px] text-[#2E2C43] ${
+            editable ? "" : "capitalize"
+          }`}
           style={{ fontFamily: "Poppins-Regular" }}
         />
         {label != "Mobile Number" && (
-          <TouchableOpacity onPress={editable ? onSavePress : onEditPress} 
-          style={{paddingHorizontal:20}}
-          
+          <TouchableOpacity
+            onPress={editable ? onSavePress : onEditPress}
+            style={{ paddingHorizontal: 20 }}
           >
             {editable ? (
               isLoading ? (
@@ -710,31 +891,26 @@ const EditableField = ({
             ) : (
               <EditIcon className="" />
             )}
-                  
-
           </TouchableOpacity>
         )}
       </View>
-
-      
     </KeyboardAvoidingView>
   </View>
 );
 
-
 const StarRating = ({ rating }) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
-      stars.push(
-          <FontAwesome
-              key={i}
-              name={i <= rating ? "star" : "star-o"}
-              size={18}
-              color="#fb8c00"
-          />
-      );
+    stars.push(
+      <FontAwesome
+        key={i}
+        name={i <= rating ? "star" : "star-o"}
+        size={18}
+        color="#fb8c00"
+      />
+    );
   }
-  return <View style={{ flexDirection: 'row',gap:2 }}>{stars}</View>;
+  return <View style={{ flexDirection: "row", gap: 2 }}>{stars}</View>;
 };
 export default ProfileScreen;
 
@@ -785,15 +961,15 @@ const styles = StyleSheet.create({
 
   revcontainer: {
     flex: 1,
-    paddingHorizontal:32,
-    marginTop:10
+    paddingHorizontal: 32,
+    marginTop: 10,
   },
   reviewContainer: {
     marginBottom: 20,
     paddingBottom: 10,
   },
   customerName: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14,
   },
   reviewText: {

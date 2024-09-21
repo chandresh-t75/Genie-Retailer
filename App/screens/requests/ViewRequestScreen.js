@@ -72,6 +72,7 @@ const ViewRequestScreen = () => {
                 <ScrollView horizontal  contentContainerStyle={{
                       paddingRight: 10,
                     //   marginTop: 10,
+                    alignSelf:"flex-start",
                       flexDirection: "row",
                       gap: 4,
                     }}

@@ -194,9 +194,9 @@ const ProfileImageUpdate = () => {
     }
   };
 
-  if (hasCameraPermission === null) {
-    return <View />;
-  }
+  // if (hasCameraPermission === null) {
+  //   return <View />;
+  // }
   if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
   }

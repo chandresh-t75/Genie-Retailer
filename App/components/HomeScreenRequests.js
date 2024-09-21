@@ -1,12 +1,13 @@
 import {
   Dimensions,
   Image,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import BucketImg from "../assets/BucketImg.svg";
 import Card from "../assets/requestCard.svg";
 import Home2 from "../assets/Home2.svg";
@@ -15,6 +16,7 @@ import Home4 from "../assets/Home4.svg";
 import Home5 from "../assets/Home5.svg";
 import Home6 from "../assets/Home6.svg";
 import Home7 from "../assets/Home7.svg";
+import UpdateImg from "../assets/updateImg.svg";
 import CustomerRemain from "../assets/CustomerRemainImg.svg";
 import GSTVerify from "../assets/GSTVerifyImg.svg";
 import QueIcon from "../assets/QuestionIcon.svg";
@@ -25,14 +27,35 @@ import RemainingCustomerModal from "./RemainingCustomerModal";
 import ThumbIcon from "../assets/ThumbIcon.svg";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import DeviceInfo from "react-native-device-info";
+import YoutubeIframe from "react-native-youtube-iframe";
 
-const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
+const HomeScreenRequests = ({
+  modalVisible,
+  setModalVisible,
+  currentVersion,
+}) => {
   const userData = useSelector((state) => state.storeData.userDetails);
   const { width } = Dimensions.get("window");
-  const navigation=useNavigation();
+  const navigation = useNavigation();
+
+  const [playing, setPlaying] = useState(false);
+
+  const onStateChange = useCallback((state) => {
+    if (state === "ended") {
+      setPlaying(false);
+      // alert('Video has finished playing!');
+    }
+  }, []);
+
+  const togglePlaying = useCallback(() => {
+    setPlaying((prev) => !prev);
+  }, []);
 
   return (
-    <View className="flex items-center flex-col gap-[0px] bg-white">
+    <View className="flex items-center flex-col ">
+      
+      
       <View
         className="flex flex-row gap-[32px] bg-white py-[30px] max-w-[340px] justify-center items-center rounded-3xl shadow-md px-[20px]"
         style={{
@@ -46,107 +69,145 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
           borderRadius: 24,
         }}
       >
-        {
-          userData?.storeApproved==="approved" && 
+        {userData?.storeApproved === "approved" && (
           <View className="flex flex-row gap-[32px] justify-center items-center ">
             <View className="w-[16px] h-[16px] bg-[#70B241] rounded-full"></View>
-        <View className="flex-col flex-1">
-          <Text
-            className="text-[16px] text-[#2e2c43] "
-            style={{ fontFamily: "Poppins-Bold" }}
-          >
-            You are live now
-          </Text>
-          <Text
-            className="text-[14px] text-[#2e2c43]"
-            style={{ fontFamily: "Poppins-Regular" }}
-          >
-            Wait for your first customer request
-          </Text>
-        </View>
+            <View className="flex-col flex-1">
+              <Text
+                className="text-[16px] text-[#2e2c43] "
+                style={{ fontFamily: "Poppins-Bold" }}
+              >
+                You are live now
+              </Text>
+              <Text
+                className="text-[14px] text-[#2e2c43]"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
+                Wait for your first customer request
+              </Text>
             </View>
-        }
+          </View>
+        )}
 
-{
-          userData?.storeApproved==="rejected" && 
+        {userData?.storeApproved === "rejected" && (
           <View className="flex flex-row gap-[32px] justify-center items-center ">
             <View className="w-[16px] h-[16px] bg-[#E76063] rounded-full"></View>
-        <View className="flex-col flex-1">
-          <Text
-            className="text-[16px] text-[#E76063] "
-            style={{ fontFamily: "Poppins-Bold" }}
-          >
-            Your account has been rejected.
-          </Text>
-          {
-            userData?.query &&
-            <Text
-            className="text-[14px] text-[#2e2c43] mb-[10px]"
-            style={{ fontFamily: "Poppins-Regular" }}
-          >
-            {userData?.query}
-          </Text>
-          }
-         
-          <TouchableOpacity
-                  onPress={() => navigation.navigate("profile")}
+            <View className="flex-col flex-1">
+              <Text
+                className="text-[16px] text-[#E76063] "
+                style={{ fontFamily: "Poppins-Bold" }}
+              >
+                Your account has been rejected.
+              </Text>
+              {userData?.query && (
+                <Text
+                  className="text-[14px] text-[#2e2c43] mb-[10px]"
+                  style={{ fontFamily: "Poppins-Regular" }}
                 >
-                  <View className="flex flex-row items-center gap-[10px]">
-                    <View className="flex flex-row items-center gap-[10px]">
-                      <Text
-                        className="text-[14px] text-[#FB8C00]"
-                        style={{ fontFamily: "Poppins-Regular" }}
-                      >
-                        Update Profile
-                      </Text>
-                      <RightArrow />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-        </View>
-            </View>
-        }
+                  {userData?.query}
+                </Text>
+              )}
 
-{
-          userData?.storeApproved==="blocked" && 
+              <TouchableOpacity onPress={() => navigation.navigate("profile")}>
+                <View className="flex flex-row items-center gap-[10px]">
+                  <View className="flex flex-row items-center gap-[10px]">
+                    <Text
+                      className="text-[14px] text-[#FB8C00]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Update Profile
+                    </Text>
+                    <RightArrow />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {userData?.storeApproved === "blocked" && (
           <View className="flex flex-row gap-[32px] justify-center items-center ">
             <View className="w-[16px] h-[16px] bg-[#E76063] rounded-full"></View>
-        <View className="flex-col flex-1">
-          <Text
-            className="text-[16px] text-[#E76063] "
-            style={{ fontFamily: "Poppins-Bold" }}
-          >
-            Your account has been blocked.
-          </Text>
-          {
-            userData?.query &&
-            <Text
-            className="text-[14px] text-[#2e2c43] mb-[10px]"
-            style={{ fontFamily: "Poppins-Regular" }}
-          >
-            {userData?.query}
-          </Text>
-          }
-          <TouchableOpacity
-                  onPress={() => navigation.navigate("help")}
+            <View className="flex-col flex-1">
+              <Text
+                className="text-[16px] text-[#E76063] "
+                style={{ fontFamily: "Poppins-Bold" }}
+              >
+                Your account has been blocked.
+              </Text>
+              {userData?.query && (
+                <Text
+                  className="text-[14px] text-[#2e2c43] mb-[10px]"
+                  style={{ fontFamily: "Poppins-Regular" }}
                 >
+                  {userData?.query}
+                </Text>
+              )}
+              <TouchableOpacity onPress={() => navigation.navigate("help")}>
+                <View className="flex flex-row items-center gap-[10px]">
                   <View className="flex flex-row items-center gap-[10px]">
-                    <View className="flex flex-row items-center gap-[10px]">
-                      <Text
-                        className="text-[14px] text-[#FB8C00]"
-                        style={{ fontFamily: "Poppins-Regular" }}
-                      >
-                        Request for unblocking
-                      </Text>
-                      <RightArrow />
-                    </View>
+                    <Text
+                      className="text-[14px] text-[#FB8C00]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      Request for unblocking
+                    </Text>
+                    <RightArrow />
                   </View>
-                </TouchableOpacity>
-        </View>
+                </View>
+              </TouchableOpacity>
             </View>
-        }
-        
+          </View>
+        )}
       </View>
+
+      {currentVersion &&
+        currentVersion !== DeviceInfo.getVersion().toString() && (
+          <View
+            style={{
+              backgroundColor: "#fff", // Ensure the background is white
+              margin: 10, // Add some margin if necessary for better shadow visibility
+              shadowColor: "#bdbdbd",
+              shadowOffset: { width: 8, height: 6 },
+              shadowOpacity: 0.9,
+              shadowRadius: 24,
+              elevation: 20,
+              borderRadius: 24,
+            }}
+          >
+            <View className="max-w-[340px] flex flex-row p-[20px] gap-[20px] items-center">
+              <UpdateImg width={92} height={76} />
+              <View className="w-10/12 flex-col gap-[5px]">
+                <View className="flex-row gap-[10px]">
+                  <Text
+                    className="text-[14px] w-[75%]"
+                    style={{ fontFamily: "Poppins-Regular" }}
+                  >
+                    New update available! Enjoy the new release features.
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    Linking.openURL(
+                      "https://play.google.com/store/apps/details?id=com.culturtapgenieretailer.GenieApp"
+                    );
+                  }}
+                >
+                  <View className="flex flex-row items-center gap-[10px]">
+                    <Text
+                      className="text-[14px] text-[#FB8C00]"
+                      style={{ fontFamily: "Poppins-Bold" }}
+                    >
+                      Update Now
+                    </Text>
+                    <RightArrow />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
       <View
         style={{
           backgroundColor: "#fff", // Ensure the background is white
@@ -278,6 +339,19 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
           your products or services.
         </Text>
       </View>
+      <View className="flex items-center mt-[30px]">
+        <View className="max-w-[95%]">
+      
+          <YoutubeIframe
+            width={300}
+            height={200}
+            videoId={"Km1Wg0F3q4w"}
+            play={playing}
+            onChangeState={onStateChange}
+          />
+        </View>
+      </View>
+
       <View className="flex flex-col mt-[20px] justify-center items-center gap-2 ">
         <Text
           className="text-[14px] mb-[10px] px-[32px] text-center"
@@ -300,7 +374,10 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
         >
           {/* <Card width={340}  className=""/> */}
           <View className="flex  justify-center items-center">
-            <Image source={require("../assets/requestCard.png")} className="w-[320px] h-[120px] rounded-md" />
+            <Image
+              source={require("../assets/requestCard.png")}
+              className="w-[320px] h-[120px] rounded-md"
+            />
           </View>
         </View>
       </View>
@@ -326,7 +403,10 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
         >
           {/* <Home2 width={350} className=""/> */}
           <View>
-            <Image source={require("../assets/Home2.png")} className="w-[320px] h-[340px] rounded-md"/>
+            <Image
+              source={require("../assets/Home2.png")}
+              className="w-[320px] h-[340px] rounded-md"
+            />
           </View>
         </View>
       </View>
@@ -358,7 +438,10 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
         >
           {/* <Home3 width={350}  className=" "/> */}
           <View>
-            <Image source={require("../assets/Home3.png")} className="w-[320px] h-[340px] rounded-md"/>
+            <Image
+              source={require("../assets/Home3.png")}
+              className="w-[320px] h-[340px] rounded-md"
+            />
           </View>
         </View>
       </View>
@@ -456,6 +539,7 @@ const HomeScreenRequests = ({ modalVisible, setModalVisible }) => {
       <View className="flex flex-col gap-[32px] px-[32px] my-[40px]">
         {/* image */}
       </View>
+      
     </View>
   );
 };

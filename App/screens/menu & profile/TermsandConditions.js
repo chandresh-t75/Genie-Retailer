@@ -7,7 +7,7 @@ import {
   View,
   Image
 } from "react-native";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import BucketImg from "../../assets/BucketImg.svg";
 import Card from "../../assets/requestCard.svg";
 import Home2 from "../../assets/Home2.svg";
@@ -21,17 +21,29 @@ import BackArrow from "../../assets/BackArrow.svg";
 
 import ThumbIcon from "../../assets/ThumbIcon.svg";
 import { useNavigation } from "@react-navigation/native";
+import YoutubeIframe from 'react-native-youtube-iframe';
 
 const TermsandConditions = () => {
   const navigation = useNavigation();
 
   const { width } = Dimensions.get("window");
 
+  const [playing, setPlaying] = useState(false);
+
+  const onStateChange = useCallback((state) => {
+    if (state === 'ended') {
+      setPlaying(false);
+      // alert('Video has finished playing!');
+    }
+  }, []);
+
+  const togglePlaying = useCallback(() => {
+    setPlaying((prev) => !prev);
+  }, []);
+
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1 }}>
-        <View className="flex items-center gap-[32px] bg-white">
-        <View className="z-50 absolute left-[16px] " style={{marginTop:25}}>
+    <ScrollView style={{ flex: 1 }}>
+       <View className="z-50 absolute left-[16px] " style={{marginTop:25}}>
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -48,13 +60,16 @@ const TermsandConditions = () => {
           >
             Terms & Conditions
           </Text>
-          <Text
+           
+           <View className="flex flex-col items-center gap-[30px] mb-[30px]">
+           <Text
             className="text-[14px]  text-[#2E2C43] mt-[20px] px-[32px]"
             style={{ fontFamily: "Poppins-Bold" }}
           >
             How it works?
           </Text>
           <BucketImg />
+          
 
           <View className="flex flex-col  px-[32px]">
             <Text
@@ -67,6 +82,30 @@ const TermsandConditions = () => {
               best price for your products or services.
             </Text>
           </View>
+
+           </View>
+          
+        <View className="flex items-center">
+          <View className="w-[95%]">
+          <YoutubeIframe
+                  height={200}
+                  videoId={'Km1Wg0F3q4w'}
+                  play={playing}
+                  onChangeState={onStateChange}
+                />
+
+          </View>
+          
+          </View>
+      <View>
+      
+        <View className="flex items-center gap-[32px] bg-white pt-[30px]">
+          
+       
+        
+         
+          
+          
           <View className="flex flex-col justify-center items-center gap-2 ">
             <Text
               className="text-[14px]   px-[32px] text-center"
@@ -235,6 +274,7 @@ const TermsandConditions = () => {
             >
               Preview & Send your offer
             </Text>
+           
 
             <View style={styles.container}>
               <Text style={styles.title}>Terms for requests 
@@ -290,8 +330,9 @@ const TermsandConditions = () => {
              
           </View>
         </View>
-      </ScrollView>
-    </View>
+      </View>
+      
+    </ScrollView>
   );
 };
 

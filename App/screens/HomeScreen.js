@@ -14,6 +14,8 @@ import { setAccessToken, setUserDetails } from '../redux/reducers/storeDataSlice
 import RemainingCustomerModal from '../components/RemainingCustomerModal'
 import { baseUrl } from './utils/constants'
 import NetworkError from '../components/NetworkError'
+import axiosInstance from './utils/axiosInstance'
+import DeviceInfo from 'react-native-device-info';
 
 
 
@@ -25,7 +27,7 @@ const HomeScreen = () => {
   const [modalVisible,setModalVisible]=useState(false);
   const [networkError, setNetworkError] = useState(false);
   const [refreshing, setRefreshing] =useState(false);
-
+ const [currentVersion,setCurrentVersion]=useState(null);
 
  
 
@@ -61,7 +63,19 @@ const navigationState = useNavigationState(state => state);
     return () => backHandler.remove(); // Clean up the event listener
   }, [isHomeScreen]);
 
-  
+  const getAppVersion = async () => {
+    try {
+      await axiosInstance.get(`${baseUrl}/retailer/current-version`)
+        .then(res => {
+          if (res.status === 200) {
+            console.log(DeviceInfo.getVersion(), res.data);
+            setCurrentVersion(res.data);
+          }
+        })
+    } catch (error) {
+      console.error("Error getting app version ",error);
+    }
+  }
 
 const fetchUserData = async () => {
 
@@ -113,6 +127,7 @@ const fetchUserData = async () => {
 
 useEffect(()=>{
   // if(isFocused) {
+   getAppVersion();
    fetchUserData();
   }, [])
 
@@ -120,12 +135,7 @@ useEffect(()=>{
 
     return (
         <View className="flex-1 bg-white " >
-           
-                
-                     <HomeScreenVerified modalVisible={modalVisible} setModalVisible={setModalVisible} />
-                
-               
-    
+                     <HomeScreenVerified modalVisible={modalVisible} setModalVisible={setModalVisible} currentVersion={currentVersion}/>
             {modalVisible && (
           <>
             <RemainingCustomerModal

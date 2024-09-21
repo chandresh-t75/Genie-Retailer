@@ -9,6 +9,7 @@ import {
   FlatList,
   StyleSheet,
   AppState,
+  Linking,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,6 +35,8 @@ import RequestLoader from "../screens/utils/RequestLoader";
 import { socket } from "../screens/utils/socket.io/socket";
 import { daysDifference, formatDateTime } from "../screens/utils/lib";
 import CustomerRemain from "../assets/CustomerRemainImg.svg";
+import UpdateImg from "../assets/updateImg.svg";
+
 import GSTVerify from "../assets/GSTVerifyImg.svg";
 import QueIcon from "../assets/QuestionIcon.svg";
 import RightArrow from "../assets/RightArrowGold.svg";
@@ -45,8 +48,9 @@ import NetworkError from "./NetworkError";
 import Profile from "../assets/ProfileIcon.svg";
 import GinieIcon from "../assets/GinieBusinessIcon.svg";
 import History from "../assets/HistoryIcon.svg";
+import DeviceInfo from "react-native-device-info";
 
-const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
+const HomeScreenVerified = ({ modalVisible, setModalVisible ,currentVersion}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
@@ -425,6 +429,48 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
                 
                 {tab === "New" && (
                   <>
+                  {  currentVersion && currentVersion !== DeviceInfo.getVersion().toString() &&
+
+                    <View
+                    style={{
+                      backgroundColor: "#fff", // Ensure the background is white
+                      margin: 10, // Add some margin if necessary for better shadow visibility
+                      shadowColor: "#bdbdbd",
+                      shadowOffset: { width: 8, height: 6 },
+                      shadowOpacity: 0.9,
+                      shadowRadius: 24,
+                      elevation: 20,
+                      borderRadius: 24,
+                    }}
+                  >
+                    <View className="max-w-[340px] flex flex-row p-[20px] gap-[20px] items-center">
+                      <UpdateImg width={92} height={76} />
+                      <View className="w-10/12 flex-col gap-[5px]">
+                        <View className="flex-row gap-[10px]">
+                          <Text
+                            className="text-[14px] w-[75%]"
+                            style={{ fontFamily: "Poppins-Regular" }}
+                          >
+                            New update available! Enjoy
+                            the new release features.
+                          </Text>
+                        
+                        </View>
+                      
+                        <TouchableOpacity onPress={() => { Linking.openURL("https://play.google.com/store/apps/details?id=com.culturtapgenieretailer.GenieApp") }}>
+                          <View className="flex flex-row items-center gap-[10px]">
+                          <Text className="text-[14px] text-[#FB8C00]" style={{ fontFamily: "Poppins-Bold" }}>
+                              Update Now
+                            </Text>
+                          <RightArrow/>
+
+                          </View>
+
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                  }
                     {/* customer remaining card */}
                     <View
                       style={{
@@ -609,6 +655,7 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible }) => {
               <HomeScreenRequests
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
+                currentVersion={currentVersion}
               />
             )}
         </View>
