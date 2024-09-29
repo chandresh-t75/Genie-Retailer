@@ -35,7 +35,7 @@ import DeleteImageModal from "../../components/DeleteImageModal";
 import DeleteProductImage from "../../components/DeleteProductImage";
 import AddMoreImage from "../../assets/AddMoreImg.svg";
 import { Camera } from "expo-camera";
-
+import AddProductImages from "../login/AddProductImages";
 
 const initialReviews = [
   { customerName: "John Doe", stars: 3.3, review: "Great product!" },
@@ -66,6 +66,10 @@ const ProfileScreen = () => {
   const [storeMobileNo, setStoreMobileNo] = useState(user?.storeMobileNo || "");
   const [panCard, setPanCard] = useState(user?.panCard || "");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImageProd, setSelectedImageProd] = useState(null);
+
+  const [selectedPrice, setSelectedPrice] = useState(null);
+
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [indexImg, setIndexImg] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,10 +82,24 @@ const ProfileScreen = () => {
   const [cameraScreen, setCameraScreen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [imagesLocal, setImagesLocal] = useState([]);
-
+  const [addProduct, setAddProduct] = useState(false);
+  const [imgUri, setImgUri] = useState("");
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
+
+    // console.log("Image",image);
+    Animated.timing(scaleAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleImagePressProduct = (image, price) => {
+    setSelectedImageProd(image);
+    setSelectedPrice(price);
+    // console.log("Image",image);
     Animated.timing(scaleAnimation, {
       toValue: 1,
       duration: 300,
@@ -94,7 +112,11 @@ const ProfileScreen = () => {
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
-    }).start(() => setSelectedImage(null));
+    }).start(() => {
+      setSelectedImage(null);
+      setSelectedImageProd(null);
+      setSelectedPrice(null);
+    });
   };
 
   const handleEditPress = (field) => {
@@ -148,7 +170,6 @@ const ProfileScreen = () => {
     }
   };
 
- 
   const handleImageClick = (index) => {
     setIndexImg(index);
     setModalVisible(true);
@@ -195,7 +216,6 @@ const ProfileScreen = () => {
     fetchRetailerFeedbacks();
   }, []);
 
-
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
@@ -203,16 +223,13 @@ const ProfileScreen = () => {
     })();
   }, [cameraScreen]);
 
-
   const takePicture = async () => {
-   
     const options = {
-      mediaType:"photo",
+      mediaType: "photo",
       saveToPhotos: true,
     };
-    setLoading(true)
+    setLoading(true);
     launchCamera(options, async (response) => {
-      
       if (response.didCancel) {
         console.log("User cancelled image picker");
       } else if (response.error) {
@@ -225,7 +242,10 @@ const ProfileScreen = () => {
             [{ resize: { width: 600, height: 800 } }],
             { compress: 0.5, format: "jpeg", base64: true }
           );
-          await getImageUrl(compressedImage.uri);
+          setImgUri(compressedImage.uri);
+          if (compressedImage.uri) {
+            getImageUrl(compressedImage.uri);
+          }
         } catch (error) {
           setLoading(false);
           console.error("Error processing image: ", error);
@@ -245,51 +265,19 @@ const ProfileScreen = () => {
         name: `photo-${Date.now()}.jpg`,
       });
       const config = {
-        headers:{
-          'Content-Type':'multipart/form-data',
-          'Authorization':`Bearer ${accessToken}`,
-        }
-       }
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
       await axios
-        .post(`${baseUrl}/upload`, formData,config)
-        .then(async(res) => {
+        .post(`${baseUrl}/upload`, formData, config)
+        .then(async (res) => {
           console.log("imageUrl updated from server", res.data[0]);
-          const imgUri = res.data[0];
-          if (imgUri) {
-            console.log("Image Updated Successfully");
-            // setImagesLocal([imgUri, ...imagesLocal]);
-            const newImages = [imgUri,...user?.productImages];
-
-            try {
-              // Update location on server
-              const configg = {
-                headers:{
-                  'Content-Type':'application/json',
-                  'Authorization':`Bearer ${accessToken}`,
-                }
-               }
-              const response = await axiosInstance.patch(
-                `${baseUrl}/retailer/editretailer`,
-                {
-                  _id: user?._id,
-                  productImages: newImages,
-                },configg
-              );
-        
-              console.log('Image updated successfully:', response.data);
-        
-              // Update user data in AsyncStorage
-              dispatch(setUserDetails(response.data));
-              await AsyncStorage.setItem("userData", JSON.stringify(response.data));
-        
-              setLoading(false);
-              // navigation.navigate("profile");
-            } catch (error) {
-              setLoading(false);
-              console.error("Failed to update product images:", error);
-              
-            }
-          
+          const img = res.data[0];
+          if (img) {
+            setLoading(false);
+            navigation.navigate("add-product-images", { imgUri: img});
           }
         });
     } catch (error) {
@@ -298,8 +286,6 @@ const ProfileScreen = () => {
     }
   };
 
-  
-
   // if (hasCameraPermission === null) {
   //   return <View/>;
   // }
@@ -307,276 +293,395 @@ const ProfileScreen = () => {
     return <Text>No access to camera</Text>;
   }
 
-
-
-
   return (
-    <View className="bg-white">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-          className="flex "
-          style={{
-            position: "absolute",
-            left: 10,
-            top: 0,
-            zIndex: 40,
-            padding: 20,
-            paddingTop: 40,
-          }}
-        >
-          <View className="p-2 rounded-full">
-            <BackArrow />
-          </View>
-        </TouchableOpacity>
-        <View className="mt-[40px] flex">
-          <View className="flex  relative flex-row px-[32px] items-center">
-            <Text
-              className="text-[16px] flex-1 text-center"
-              style={{ fontFamily: "Poppins-Bold" }}
+    <>
+      {!addProduct && (
+        <View className="bg-white">
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+              className="flex "
+              style={{
+                position: "absolute",
+                left: 10,
+                top: 0,
+                zIndex: 40,
+                padding: 20,
+                paddingTop: 40,
+              }}
             >
-              Store Profile
-            </Text>
-          </View>
-          <Text
-            className="text-center mb-[20px] capitalize px-[32px] text-[#2E2C43]"
-            style={{ fontFamily: "Poppins-Regular" }}
-          >
-            {user?.storeName}
-          </Text>
-          <View className="flex items-center relative justify-center mb-[40px]">
-            <View>
-              {user?.storeImages.length > 0 && (
+              <View className="p-2 rounded-full">
+                <BackArrow />
+              </View>
+            </TouchableOpacity>
+            <View className="mt-[40px] flex">
+              <View className="flex  relative flex-row px-[32px] items-center">
+                <Text
+                  className="text-[16px] flex-1 text-center"
+                  style={{ fontFamily: "Poppins-Bold" }}
+                >
+                  Store Profile
+                </Text>
+              </View>
+              <Text
+                className="text-center mb-[20px] capitalize px-[32px] text-[#2E2C43]"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
+                {user?.storeName}
+              </Text>
+              <View className="flex items-center relative justify-center mb-[40px]">
                 <View>
-                  <Pressable
-                    onPress={() => handleImagePress(user?.storeImages[0])}
+                  {user?.storeImages.length > 0 && (
+                    <View>
+                      <Pressable
+                        onPress={() => handleImagePress(user?.storeImages[0])}
+                      >
+                        <Image
+                          source={{ uri: user?.storeImages[0] }}
+                          className="w-[130px] h-[130px] rounded-full object-cover"
+                        />
+                      </Pressable>
+
+                      <Modal
+                        transparent
+                        visible={!!selectedImage}
+                        onRequestClose={handleClose}
+                      >
+                        <Pressable
+                          style={styles.modalContainer}
+                          onPress={handleClose}
+                        >
+                          <Animated.Image
+                            source={{ uri: selectedImage }}
+                            style={[
+                              styles.modalImage,
+                              {
+                                transform: [{ scale: scaleAnimation }],
+                              },
+                            ]}
+                          />
+                        </Pressable>
+                      </Modal>
+                    </View>
+                  )}
+                  {user?.storeImages.length === 0 && (
+                    <View className="w-[130px] h-[130px] rounded-full bg-gray-300 border-[1px] border-gray-500"></View>
+                  )}
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("update-profile-image", {
+                        data: user?.storeImages,
+                      });
+                    }}
                   >
-                    <Image
-                      source={{ uri: user?.storeImages[0] }}
-                      className="w-[130px] h-[130px] rounded-full object-cover"
+                    <View className="absolute right-[2px] bottom-[7px] w-[36px] h-[36px] bg-[#fb8c00] flex justify-center items-center rounded-full">
+                      <EditIconWhite className="px-[10px]" />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View className="flex-row items-center justify-between px-[32px] my-[10px]">
+                <Text
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  className="text-[#2E2C43]"
+                >
+                  Store Images
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("update-profile-image", {
+                      data: user?.storeImages,
+                    });
+                  }}
+                >
+                  {/* <EditIcon className="p-[10px]" /> */}
+                  <Text
+                    style={{ fontFamily: "Poppins-Bold" }}
+                    className="text-[#fb8c00]"
+                  >
+                    + Add
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{
+                  alignSelf: "flex-start",
+                }}
+              >
+                <View className="px-[32px] flex flex-row gap-[11px] mb-[30px] w-max">
+                  {user?.storeImages?.map((image, index) => (
+                    <Pressable
+                      key={index}
+                      onPress={() => handleImagePress(image)}
+                    >
+                      <View
+                        key={index}
+                        className="rounded-[16px] w-[119px] h-[164px]"
+                      >
+                        <Image
+                          source={{ uri: image }}
+                          width={119}
+                          height={164}
+                          className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                        />
+                        <Pressable
+                          onPress={() => handleImageClick(index)}
+                          style={styles.deleteIcon}
+                        >
+                          <DelImg width={24} height={24} />
+                        </Pressable>
+                      </View>
+                    </Pressable>
+                  ))}
+                </View>
+                <Modal
+                  transparent
+                  visible={!!selectedImage}
+                  onRequestClose={handleClose}
+                >
+                  <Pressable
+                    style={styles.modalContainer}
+                    onPress={handleClose}
+                  >
+                    <Animated.Image
+                      source={{ uri: selectedImage }}
+                      style={[
+                        styles.modalImage,
+                        {
+                          transform: [{ scale: scaleAnimation }],
+                        },
+                      ]}
                     />
                   </Pressable>
+                </Modal>
+              </ScrollView>
 
+              <View className="flex-row items-center justify-between px-[32px]  mb-[15px]">
+                <Text
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  className="text-[#2E2C43]"
+                >
+                  Add Your Stocks
+                </Text>
+              </View>
+              <View className="pl-[32px] flex flex-row items-center gap-[11px] mb-[60px]">
+                <TouchableOpacity
+                  onPress={() => {
+                    takePicture();
+                  }}
+                >
+                  <View>
+                    <AddMoreImage />
+                  </View>
+                </TouchableOpacity>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
+                    {user?.productImages?.map((image, index) => (
+                      <Pressable
+                        key={index}
+                        onPress={() =>
+                          handleImagePressProduct(image?.uri, image?.price)
+                        }
+                      >
+                        <View
+                          key={index}
+                          className="rounded-[16px] w-[119px] h-[164px] relative"
+                        >
+                          <Image
+                            source={{ uri: image?.uri }}
+                            width={119}
+                            height={164}
+                            className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                          />
+                          <Pressable
+                            onPress={() => handleProductImageClick(index)}
+                            style={styles.deleteIcon}
+                          >
+                            <DelImg width={24} height={24} />
+                          </Pressable>
+                        </View>
+                        <View className="absolute bottom-0 bg-black bg-opacity-50 border-x-[1px] border-b-[1px] border-[#cbcbce] w-full flex justify-center rounded-b-[16px]">
+                          <View className="flex justify-center items-center p-1">
+                            <Text
+                              style={{ fontFamily: "Poppins-Regular" }}
+                              className="text-white  text-[8px]"
+                            >
+                              Expected Price:
+                            </Text>
+                            <Text
+                              style={{ fontFamily: "Poppins-SemiBold" }}
+                              className="text-green-500  text-[14px]"
+                            >
+                              {image?.price>0?`Rs. ${image?.price}`:"-"}
+                            </Text>
+                          </View>
+                        </View>
+                      </Pressable>
+                    ))}
+                  </View>
                   <Modal
                     transparent
-                    visible={!!selectedImage}
+                    visible={!!selectedImageProd}
                     onRequestClose={handleClose}
                   >
                     <Pressable
                       style={styles.modalContainer}
                       onPress={handleClose}
                     >
-                      <Animated.Image
-                        source={{ uri: selectedImage }}
-                        style={[
-                          styles.modalImage,
-                          {
-                            transform: [{ scale: scaleAnimation }],
-                          },
-                        ]}
-                      />
+                      <Animated.View
+                      
+                      style={[
+                        styles.modalImg,
+                        {
+                          transform: [{ scale: scaleAnimation }],
+                        },
+                      ]}
+                    >
+                      <Image
+                            source={{ uri:selectedImageProd }}
+                           style={styles.modalImage}
+                          />
+                      <View className="absolute bottom-0 bg-black bg-opacity-50 w-full flex justify-center rounded-b-[16px]">
+                          <View className="flex justify-center items-center p-1">
+                            <Text
+                              style={{ fontFamily: "Poppins-Regular" }}
+                              className="text-white  text-[12px]"
+                            >
+                              Expected Price:
+                            </Text>
+                            <Text
+                              style={{ fontFamily: "Poppins-SemiBold" }}
+                              className="text-green-500  text-[18px]"
+                            >
+                              {selectedPrice>0?`Rs. ${selectedPrice}`:"-"}
+
+                            </Text>
+                          </View>
+                        </View>
+                        </Animated.View>
                     </Pressable>
                   </Modal>
-                </View>
-              )}
-              {user?.storeImages.length === 0 && (
-                <View className="w-[130px] h-[130px] rounded-full bg-gray-300 border-[1px] border-gray-500"></View>
-              )}
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("update-profile-image", {
-                    data: user?.storeImages,
-                  });
-                }}
-              >
-                <View className="absolute right-[2px] bottom-[7px] w-[36px] h-[36px] bg-[#fb8c00] flex justify-center items-center rounded-full">
-                  <EditIconWhite className="px-[10px]" />
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View className="flex-row items-center justify-between px-[32px] my-[10px]">
-            <Text
-              style={{ fontFamily: "Poppins-Regular" }}
-              className="text-[#2E2C43]"
-            >
-              Store Images
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("update-profile-image", {
-                  data: user?.storeImages,
-                });
-              }}
-            >
-              {/* <EditIcon className="p-[10px]" /> */}
-              <Text
-                style={{ fontFamily: "Poppins-Bold" }}
-                className="text-[#fb8c00]"
-              >
-                + Add
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{
-              alignSelf: "flex-start",
-            }}
-          >
-            <View className="px-[32px] flex flex-row gap-[11px] mb-[60px] w-max">
-              {user?.storeImages?.map((image, index) => (
-                <Pressable key={index} onPress={() => handleImagePress(image)}>
-                  <View
-                    key={index}
-                    className="rounded-[16px] w-[119px] h-[164px]"
+                </ScrollView>
+              </View>
+              <View className="px-[32px] flex flex-col gap-[26px] mb-[20px] items-center">
+                <View className="px-[32px] mb-[10px]">
+                  <Text
+                    style={{ fontFamily: "Poppins-Regular" }}
+                    className="mb-[10px] text-[#2E2C43] "
                   >
-                    <Image
-                      source={{ uri: image }}
-                      width={119}
-                      height={164}
-                      className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                    Store Address
+                  </Text>
+                  <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+                    <TextInput
+                      value={user?.location}
+                      placeholder={user?.location}
+                      placeholderTextColor={"#dbcdbb"}
+                      className="w-[200px] text-[14px]  text-[#2E2C43]  capitalize"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                      multiline={true}
+                      scrollEnabled={true}
+                      editable={false}
                     />
-                    <Pressable
-                      onPress={() => handleImageClick(index)}
-                      style={styles.deleteIcon}
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate("update-location");
+                      }}
+                      style={{ paddingHorizontal: 20 }}
                     >
-                      <DelImg width={24} height={24} />
-                    </Pressable>
+                      <EditIcon className="px-[10px]" />
+                    </TouchableOpacity>
                   </View>
-                </Pressable>
-              ))}
-            </View>
-            <Modal
-              transparent
-              visible={!!selectedImage}
-              onRequestClose={handleClose}
-            >
-              <Pressable style={styles.modalContainer} onPress={handleClose}>
-                <Animated.Image
-                  source={{ uri: selectedImage }}
-                  style={[
-                    styles.modalImage,
-                    {
-                      transform: [{ scale: scaleAnimation }],
-                    },
-                  ]}
-                />
-              </Pressable>
-            </Modal>
-          </ScrollView>
-          <View className="px-[32px] flex flex-col gap-[26px] mb-[20px] items-center">
-            <View className="px-[32px] mb-[10px]">
-              <Text
-                style={{ fontFamily: "Poppins-Regular" }}
-                className="mb-[10px] text-[#2E2C43] "
-              >
-                Store Address
-              </Text>
-              <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-                <TextInput
-                  value={user?.location}
-                  placeholder={user?.location}
-                  placeholderTextColor={"#dbcdbb"}
-                  className="w-[200px] text-[14px]  text-[#2E2C43]  capitalize"
-                  style={{ fontFamily: "Poppins-Regular" }}
+                </View>
+                <EditableField
+                  label="Store Name"
+                  value={storeName}
+                  editable={editableField === "storeName"}
+                  onChangeText={setStoreName}
+                  onEditPress={() => handleEditPress("storeName")}
+                  onSavePress={() => handleSavePress("storeName")}
+                  isLoading={isLoading}
                   multiline={true}
                   scrollEnabled={true}
-                  editable={false}
                 />
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("update-location");
-                  }}
-                  style={{ paddingHorizontal: 20 }}
-                >
-                  <EditIcon className="px-[10px]" />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <EditableField
-              label="Store Name"
-              value={storeName}
-              editable={editableField === "storeName"}
-              onChangeText={setStoreName}
-              onEditPress={() => handleEditPress("storeName")}
-              onSavePress={() => handleSavePress("storeName")}
-              isLoading={isLoading}
-              multiline={true}
-              scrollEnabled={true}
-            />
-            <EditableField
-              label="Store Owner Name"
-              value={storeOwnerName}
-              editable={editableField === "storeOwnerName"}
-              onChangeText={setStoreOwnerName}
-              onEditPress={() => handleEditPress("storeOwnerName")}
-              onSavePress={() => handleSavePress("storeOwnerName")}
-              isLoading={isLoading}
-            />
-            <View className="px-[20px] mb-[10px]">
-              <Text
-                style={{ fontFamily: "Poppins-Regular" }}
-                className="mb-[10px] text-[#2E2C43]"
-              >
-                Store Category
-              </Text>
-              <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-                <Text
-                  className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  {storeCategory}
-                </Text>
-              </View>
-            </View>
-            <View className="px-[20px] mb-[10px]">
-              <Text
-                style={{ fontFamily: "Poppins-Regular" }}
-                className="mb-[10px] text-[#2E2C43]"
-              >
-                Store Description
-              </Text>
-              <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
-                <Text
-                  className="w-[200px] text-[14px]  text-[#2E2C43]"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                >
-                  {user?.storeDescription}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("update-store-description");
-                  }}
-                  style={{ paddingHorizontal: 20 }}
-                >
-                  <EditIcon className="px-[10px]" />
-                </TouchableOpacity>
-              </View>
-            </View>
+                <EditableField
+                  label="Store Owner Name"
+                  value={storeOwnerName}
+                  editable={editableField === "storeOwnerName"}
+                  onChangeText={setStoreOwnerName}
+                  onEditPress={() => handleEditPress("storeOwnerName")}
+                  onSavePress={() => handleSavePress("storeOwnerName")}
+                  isLoading={isLoading}
+                />
+                <View className="px-[20px] mb-[10px]">
+                  <Text
+                    style={{ fontFamily: "Poppins-Regular" }}
+                    className="mb-[10px] text-[#2E2C43]"
+                  >
+                    Store Category
+                  </Text>
+                  <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+                    <Text
+                      className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      {storeCategory}
+                    </Text>
+                  </View>
+                </View>
+                <View className="px-[20px] mb-[10px]">
+                  <Text
+                    style={{ fontFamily: "Poppins-Regular" }}
+                    className="mb-[10px] text-[#2E2C43]"
+                  >
+                    Store Description
+                  </Text>
+                  <View className="flex flex-row items-center justify-between w-[300px] py-[10px] px-[20px] bg-[#F9F9F9] rounded-[16px]">
+                    <Text
+                      className="w-[200px] text-[14px]  text-[#2E2C43]"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                    >
+                      {user?.storeDescription}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate("update-store-description");
+                      }}
+                      style={{ paddingHorizontal: 20 }}
+                    >
+                      <EditIcon className="px-[10px]" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
 
-            <View className="px-[32px] mb-[10px]">
-              <Text
-                style={{ fontFamily: "Poppins-Regular" }}
-                className="mb-[10px] text-[#2E2C43] "
-              >
-                Home Delivery
-              </Text>
-              <View className="flex flex-row items-center justify-between w-[300px] py-[10px]  px-[20px] bg-[#F9F9F9] rounded-[16px]">
-                <TextInput
-                  value={user?.homeDelivery === true ? "Yes" : "No"}
-                  placeholder={user?.homeDelivery === true ? "Yes" : "No"}
-                  placeholderTextColor={"#dbcdbb"}
-                  className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
-                  style={{ fontFamily: "Poppins-Regular" }}
-                  multiline={true}
-                  scrollEnabled={true}
-                  editable={false}
-                />
-                {/* <TouchableOpacity
+                <View className="px-[32px] mb-[10px]">
+                  <Text
+                    style={{ fontFamily: "Poppins-Regular" }}
+                    className="mb-[10px] text-[#2E2C43] "
+                  >
+                    Home Delivery
+                  </Text>
+                  <View className="flex flex-row items-center justify-between w-[300px] py-[10px]  px-[20px] bg-[#F9F9F9] rounded-[16px]">
+                    <TextInput
+                      value={user?.homeDelivery === true ? "Yes" : "No"}
+                      placeholder={user?.homeDelivery === true ? "Yes" : "No"}
+                      placeholderTextColor={"#dbcdbb"}
+                      className="w-[240px] text-[14px]  text-[#2E2C43]  capitalize"
+                      style={{ fontFamily: "Poppins-Regular" }}
+                      multiline={true}
+                      scrollEnabled={true}
+                      editable={false}
+                    />
+                    {/* <TouchableOpacity
                   onPress={() => {
                     navigation.navigate("update-service-delivery");
                   }}
@@ -584,244 +689,172 @@ const ProfileScreen = () => {
                 >
                   <EditIcon className="px-[10px]"/>
                 </TouchableOpacity> */}
-              </View>
-            </View>
+                  </View>
+                </View>
 
-            <EditableField
-              label="Mobile Number"
-              value={user.storeMobileNo}
-              editable={false}
-              onChangeText={setStoreMobileNo}
-              onEditPress={() => handleEditPress("storeMobileNo")}
-              onSavePress={() => handleSavePress("storeMobileNo")}
-              isLoading={isLoading}
-            />
-          </View>
-
-          <View className="px-[32px] flex  gap-[26px] mb-[40px] ">
-            <View className="flex-row items-center justify-between  my-[10px]">
-              <Text
-                style={{ fontFamily: "Poppins-Regular" }}
-                className="text-[#2E2C43]"
-              >
-                GST/Labor certificate
-              </Text>
-            </View>
-            {user?.panCard && (
-              <View className="rounded-[16px] ">
-                <TouchableOpacity
-                  className="flex-col"
-                  onPress={() => {
-                    handleDownloadDocument();
-                  }}
-                >
-                  <DocumentIcon size={90} />
-                  <Text
-                    className=" text-[16px] pt-[10px] text-[#fb8c00]"
-                    style={{ fontFamily: "Poppins-Medium" }}
-                  >
-                    View Document
-                  </Text>
-                  {/* <Text className="pt-[5px]">{fileSize < 1 ? `${(parseFloat(fileSize).toFixed(3) * 1000)} kb` : `${parseFloat(fileSize).toFixed(1)}Mb`}</Text> */}
-                </TouchableOpacity>
+                <EditableField
+                  label="Mobile Number"
+                  value={user.storeMobileNo}
+                  editable={false}
+                  onChangeText={setStoreMobileNo}
+                  onEditPress={() => handleEditPress("storeMobileNo")}
+                  onSavePress={() => handleSavePress("storeMobileNo")}
+                  isLoading={isLoading}
+                />
               </View>
-            )}
-            {!user?.panCard && (
-              <View>
-                <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
+
+              <View className="px-[32px] flex  gap-[26px] mb-[40px] ">
+                <View className="flex-row items-center justify-between  my-[10px]">
                   <Text
-                    className="text-center text-[14px] text-[#2E2C43]"
                     style={{ fontFamily: "Poppins-Regular" }}
+                    className="text-[#2E2C43]"
                   >
-                    No Certificates Uploaded
+                    GST/Labor certificate
                   </Text>
                 </View>
-              </View>
-            )}
-          </View>
-
-          <View className="flex-row items-center justify-between px-[32px]  mb-[15px]">
-            <Text
-              style={{ fontFamily: "Poppins-Regular" }}
-              className="text-[#2E2C43]"
-            >
-              Product Images
-            </Text>
-            {/* <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("add-product-images", {
-                  data: user?.productImages,
-                });
-              }}
-            >
-            
-              <Text
-                style={{ fontFamily: "Poppins-Bold" }}
-                className="text-[#fb8c00]"
-              >
-                + Add
-              </Text>
-            </TouchableOpacity> */}
-          </View>
-          <View className="pl-[32px] flex flex-row items-center gap-[11px] mb-[60px]">
-            <TouchableOpacity onPress={() => {takePicture()}}>
-              <View>
-                <AddMoreImage />
-              </View>
-            </TouchableOpacity>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{
-                alignSelf: "flex-start",
-              }}
-            >
-              <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
-                {user?.productImages?.map((image, index) => (
-                  <Pressable
-                    key={index}
-                    onPress={() => handleImagePress(image)}
-                  >
-                    <View
-                      key={index}
-                      className="rounded-[16px] w-[119px] h-[164px]"
+                {user?.panCard && (
+                  <View className="rounded-[16px] ">
+                    <TouchableOpacity
+                      className="flex-col"
+                      onPress={() => {
+                        handleDownloadDocument();
+                      }}
                     >
-                      <Image
-                        source={{ uri: image }}
-                        width={119}
-                        height={164}
-                        className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
-                      />
-                      <Pressable
-                        onPress={() => handleProductImageClick(index)}
-                        style={styles.deleteIcon}
+                      <DocumentIcon size={90} />
+                      <Text
+                        className=" text-[16px] pt-[10px] text-[#fb8c00]"
+                        style={{ fontFamily: "Poppins-Medium" }}
                       >
-                        <DelImg width={24} height={24} />
-                      </Pressable>
+                        View Document
+                      </Text>
+                      {/* <Text className="pt-[5px]">{fileSize < 1 ? `${(parseFloat(fileSize).toFixed(3) * 1000)} kb` : `${parseFloat(fileSize).toFixed(1)}Mb`}</Text> */}
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {!user?.panCard && (
+                  <View>
+                    <View className="w-[119px] relative h-[164px] flex justify-center items-center rounded-xl bg-gray-300 border-[1px] border-gray-500">
+                      <Text
+                        className="text-center text-[14px] text-[#2E2C43]"
+                        style={{ fontFamily: "Poppins-Regular" }}
+                      >
+                        No Certificates Uploaded
+                      </Text>
                     </View>
-                  </Pressable>
-                ))}
+                  </View>
+                )}
               </View>
-              <Modal
-                transparent
-                visible={!!selectedImage}
-                onRequestClose={handleClose}
-              >
-                <Pressable style={styles.modalContainer} onPress={handleClose}>
-                  <Animated.Image
-                    source={{ uri: selectedImage }}
-                    style={[
-                      styles.modalImage,
-                      {
-                        transform: [{ scale: scaleAnimation }],
-                      },
-                    ]}
-                  />
-                </Pressable>
-              </Modal>
-            </ScrollView>
-          </View>
 
-          <View className="mb-[40px]">
-            <Text
-              className="capitalize text-[#2e2c43]  px-[32px]"
-              style={{ fontFamily: "Poppins-Regular" }}
-            >
-              Store Reviews
-            </Text>
+              <View className="mb-[40px]">
+                <Text
+                  className="capitalize text-[#2e2c43]  px-[32px]"
+                  style={{ fontFamily: "Poppins-Regular" }}
+                >
+                  Store Reviews
+                </Text>
 
-            {feedbackLoading ? (
-              <ActivityIndicator size="small" color="#fb8c00" />
-            ) : (
-              <View style={styles.revcontainer}>
-                {feedbacks.length > 0 ? (
-                  <ScrollView>
-                    {feedbacks
-                      .slice(0, showAllReviews ? feedbacks.length : 3)
-                      .map((review, index) => (
-                        <View
-                          key={index}
-                          className="shadow-2xl bg-[#7c7c7c] bg-opacity-5"
-                          style={{
-                            marginBottom: 20,
-                            padding: 20,
-                            borderRadius: 20,
-                          }}
-                        >
-                          <View className="flex-row items-center gap-[20px] mb-[5px] ">
-                            <Text
-                              className="capitalize text-[#2e2c43]  "
-                              style={{ fontFamily: "Poppins-SemiBold" }}
-                            >
-                              {review?.senderName}
-                            </Text>
-                          </View>
-                          <View className="w-[50%]">
-                            <StarRating rating={review.rating} />
-                          </View>
-
-                          <Text
-                            style={{
-                              color: "#7c7c7c",
-                              marginTop: 5,
-                              fontFamily: "Poppins-Regular",
-                            }}
-                          >
-                            {review.feedback}
-                          </Text>
-                        </View>
-                      ))}
-                  </ScrollView>
+                {feedbackLoading ? (
+                  <ActivityIndicator size="small" color="#fb8c00" />
                 ) : (
-                  <Text
-                    style={{ color: "#7c7c7c", fontFamily: "Poppins-Regular" }}
-                  >
-                    No reviews yet
-                  </Text>
-                )}
+                  <View style={styles.revcontainer}>
+                    {feedbacks.length > 0 ? (
+                      <ScrollView>
+                        {feedbacks
+                          .slice(0, showAllReviews ? feedbacks.length : 3)
+                          .map((review, index) => (
+                            <View
+                              key={index}
+                              className="shadow-2xl bg-[#7c7c7c] bg-opacity-5"
+                              style={{
+                                marginBottom: 20,
+                                padding: 20,
+                                borderRadius: 20,
+                              }}
+                            >
+                              <View className="flex-row items-center gap-[20px] mb-[5px] ">
+                                <Text
+                                  className="capitalize text-[#2e2c43]  "
+                                  style={{ fontFamily: "Poppins-SemiBold" }}
+                                >
+                                  {review?.senderName}
+                                </Text>
+                              </View>
+                              <View className="w-[50%]">
+                                <StarRating rating={review.rating} />
+                              </View>
 
-                {!showAllReviews && feedbacks.length > 4 && (
-                  <Pressable
-                    onPress={() => setShowAllReviews(true)}
-                    className=""
-                  >
-                    <Text className="text-[#fb8c00] text-center">View All</Text>
-                  </Pressable>
-                )}
-                {showAllReviews && feedbacks.length > 4 && (
-                  <Pressable
-                    onPress={() => setShowAllReviews(false)}
-                    className=""
-                  >
-                    <Text className="text-[#fb8c00] text-center">
-                      View Less
-                    </Text>
-                  </Pressable>
+                              <Text
+                                style={{
+                                  color: "#7c7c7c",
+                                  marginTop: 5,
+                                  fontFamily: "Poppins-Regular",
+                                }}
+                              >
+                                {review.feedback}
+                              </Text>
+                            </View>
+                          ))}
+                      </ScrollView>
+                    ) : (
+                      <Text
+                        style={{
+                          color: "#7c7c7c",
+                          fontFamily: "Poppins-Regular",
+                        }}
+                      >
+                        No reviews yet
+                      </Text>
+                    )}
+
+                    {!showAllReviews && feedbacks.length > 4 && (
+                      <Pressable
+                        onPress={() => setShowAllReviews(true)}
+                        className=""
+                      >
+                        <Text className="text-[#fb8c00] text-center">
+                          View All
+                        </Text>
+                      </Pressable>
+                    )}
+                    {showAllReviews && feedbacks.length > 4 && (
+                      <Pressable
+                        onPress={() => setShowAllReviews(false)}
+                        className=""
+                      >
+                        <Text className="text-[#fb8c00] text-center">
+                          View Less
+                        </Text>
+                      </Pressable>
+                    )}
+                  </View>
                 )}
               </View>
-            )}
-          </View>
-        </View>
-      </ScrollView>
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#fb8c00" />
+            </View>
+          </ScrollView>
+
+          {loading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#fb8c00" />
+            </View>
+          )}
+
+          <DeleteImageModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            index={indexImg}
+          />
+          <DeleteProductImage
+            modalVisible={modalDelVisible}
+            setModalVisible={setModalDelVisible}
+            index={indexDelImg}
+          />
+          {modalVisible && <View style={styles.overlay} />}
+          {modalDelVisible && <View style={styles.overlay} />}
         </View>
       )}
 
-      <DeleteImageModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        index={indexImg}
-      />
-      <DeleteProductImage
-        modalVisible={modalDelVisible}
-        setModalVisible={setModalDelVisible}
-        index={indexDelImg}
-      />
-      {modalVisible && <View style={styles.overlay} />}
-      {modalDelVisible && <View style={styles.overlay} />}
-    </View>
+      {addProduct && <AddProductImages />}
+    </>
   );
 };
 
@@ -931,6 +964,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
+    position: "relative",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
@@ -943,7 +977,14 @@ const styles = StyleSheet.create({
   modalImage: {
     width: 300,
     height: 400,
-    borderRadius: 10,
+    borderRadius: 16,
+  },
+  modalImg: {
+    width: 300,
+    height: 400,
+    borderRadius: 16,
+    position: "relative",
+
   },
   closeButton: {
     position: "absolute",

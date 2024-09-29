@@ -98,7 +98,7 @@ const fetchUserData = async () => {
     
           }
         );
-        console.log("res at compltete profile", response.data.retailer);
+        // console.log("res at compltete profile", response.data.retailer);
         if (response.status === 200) {
           const data = response.data.retailer;
           const accessToken =response.data.accessToken;
