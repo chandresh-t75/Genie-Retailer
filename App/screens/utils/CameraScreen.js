@@ -170,30 +170,34 @@ const CameraScreen = () => {
   
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 ,backgroundColor:"black"}}>
       {imageUri && (
         <View style={{ flex: 1 }}>
           <Image
             source={{ uri: imageUri }}
             style={{
-              width: "100%",
-              height: "100%",
+              // width: "100%",
+              // height: "100%",
               position: "absolute",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
+              objectFit:"contain",
+
             }}
           />
+          <View style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}>
           <KeyboardAvoidingView
             behavior={"height"}
-            style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 20 }}
+            style={{flexDirection:"row",gap:1 }}
           >
             <TextInput
               placeholder="Add response..."
               placeholderTextColor="white"
               style={{
                 height: 64,
+                width:"70%",
                 backgroundColor: "#001b33",
                 marginBottom: 0,
                 marginHorizontal: 15,
@@ -209,11 +213,8 @@ const CameraScreen = () => {
               }}
               value={query}
             />
-          </KeyboardAvoidingView>
-          <View className=" flex-row justify-between items-center mx-[25px] pb-[10px]">
-            <Text className="text-white  pl-[40px] capitalize" style={{ fontFamily: "Poppins-SemiBold" }}>
-              {requestInfo?.customerId?.userName}
-            </Text>
+            <View className="flex-row justify-between items-center">
+           
             <TouchableOpacity
               onPress={() => {
                 sendAttachment();
@@ -228,8 +229,16 @@ const CameraScreen = () => {
                 <Send />)}
             </TouchableOpacity>
           </View>
+          
+          </KeyboardAvoidingView>
+          <Text className="text-white  pl-[32px] mt-[10px] capitalize" style={{ fontFamily: "Poppins-SemiBold" }}>
+              {requestInfo?.customerId?.userName}
+            </Text>
+          
+          </View>
       {openModal && <UnableToSendMessage openModal={openModal} setOpenModal={setOpenModal} errorContent="The attachment can not be sent because the customer sent you the new offer.Please accept or reject the customer's offer before sending the new attachment" ErrorIcon={ErrorAttachment} />}
 
+       
         </View>
       )}
       {loading && (

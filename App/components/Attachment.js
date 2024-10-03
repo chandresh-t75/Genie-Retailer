@@ -125,7 +125,7 @@ const Attachment = ({ setAttachmentScreen, setCameraScreen, user, messages, setM
       const compressedImage = await manipulateAsync(
         newImageUri,
         [{ resize: { width: 600, height: 800 } }],
-        { compress: 0.5, format: "jpeg", base64: true }
+        { compress: 0.8, format: "jpeg", base64: true }
       );
       // await getImageUrl(compressedImage);
       setImageUri(compressedImage.uri);

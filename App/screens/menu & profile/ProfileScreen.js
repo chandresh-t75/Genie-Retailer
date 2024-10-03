@@ -240,7 +240,7 @@ const ProfileScreen = () => {
           const compressedImage = await manipulateAsync(
             newImageUri,
             [{ resize: { width: 600, height: 800 } }],
-            { compress: 0.5, format: "jpeg", base64: true }
+            { compress: 0.8, format: "jpeg", base64: true }
           );
           setImgUri(compressedImage.uri);
           if (compressedImage.uri) {
@@ -420,13 +420,13 @@ const ProfileScreen = () => {
                     >
                       <View
                         key={index}
-                        className="rounded-[16px] w-[119px] h-[164px]"
+                        className="rounded-[16px] w-[129px] h-[172px]"
                       >
                         <Image
                           source={{ uri: image }}
-                          width={119}
-                          height={164}
-                          className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                          width={129}
+                          height={172}
+                          className="rounded-[16px] border-[1px] border-[#cbcbce]"
                         />
                         <Pressable
                           onPress={() => handleImageClick(index)}
@@ -495,13 +495,13 @@ const ProfileScreen = () => {
                       >
                         <View
                           key={index}
-                          className="rounded-[16px] w-[119px] h-[164px] relative"
+                          className="rounded-[16px] w-[129px] h-[172px] relative"
                         >
                           <Image
                             source={{ uri: image?.uri }}
-                            width={119}
-                            height={164}
-                            className="rounded-[16px] border-[1px] border-[#cbcbce] object-cover"
+                            width={129}
+                            height={172}
+                            className="rounded-[16px] border-[1px] border-[#cbcbce] object-fill"
                           />
                           <Pressable
                             onPress={() => handleProductImageClick(index)}
@@ -978,12 +978,15 @@ const styles = StyleSheet.create({
     width: 300,
     height: 400,
     borderRadius: 16,
+    objectFit:"contain"
   },
   modalImg: {
     width: 300,
     height: 400,
     borderRadius: 16,
     position: "relative",
+    objectFit:"contain"
+
 
   },
   closeButton: {
