@@ -78,6 +78,7 @@ import DropDownUp from "../../assets/dropDownUp.svg";
 import ErrorModal from "../../components/ErrorModal";
 import axiosInstance from "../utils/axiosInstance";
 import NetworkError from "../../components/NetworkError";
+import CallCustomerModal from "../../components/CallCustomerModal";
 
 // import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -116,6 +117,7 @@ const RequestPage = () => {
   const [uploadGSTModal, setUploadGSTModal] = useState(false);
   const [type, setType] = useState("");
   const [requestOpen, setRequestOpen] = useState(false);
+  const [callModal,setCallModal] = useState(false);
 
   const [rating, setRating] = useState(0);
   // const { req } = route.params;
@@ -1006,12 +1008,13 @@ const RequestPage = () => {
                 padding: 14,
 
                 borderBottomWidth: 1,
+                borderBottomColor:'#f7f7f7',
                 marginHorizontal: 8,
                 zIndex: 120,
               }}
             >
               <Text
-                className="mx-5 text-[#2e2c43]"
+                className="mx-5 text-[#2e2c43] text-center"
                 style={{ fontFamily: "Poppins-Regular" }}
               >
                 View Request
@@ -1023,15 +1026,42 @@ const RequestPage = () => {
                 const requestId = requestInfo?.requestId?._id;
                 navigation.navigate("customer-report", { requestId });
               }}
-              style={{ padding: 14 }}
+              style={{
+                padding: 14,
+
+               
+                marginHorizontal: 8,
+                zIndex: 120,
+              }}
             >
               <Text
-                className="mx-5 text-[#2e2c43]"
+                className="mx-5 text-[#2e2c43] text-center"
                 style={{ fontFamily: "Poppins-Regular" }}
               >
                 Report Customer
               </Text>
             </TouchableOpacity>
+            {
+               (requestInfo?.requestType ==="completed" || requestInfo?.requestType ==="win") &&
+              <TouchableOpacity
+              onPress={() => {
+                setCallModal(!callModal);
+                setModal(!modal);
+              }}
+              style={{ padding: 14,
+                borderTopWidth: 1,
+                borderTopColor:'#f7f7f7',
+               }}
+            >
+              <Text
+                className="mx-5 text-[#2e2c43] text-center"
+                style={{ fontFamily: "Poppins-Regular" }}
+              >
+                Call Customer
+              </Text>
+            </TouchableOpacity>
+            }
+          
           </View>
         </>
       )}
@@ -1384,10 +1414,9 @@ const RequestPage = () => {
                                     style={{
                                       width: "100%",
                                       height: 100,
-
                                       paddingHorizontal: 20,
                                       borderWidth: 0.3,
-                                      borderColor: "#2e2c43",
+                                      borderColor: "#f7f7f7",
                                       borderRadius: 10,
                                       padding: 20,
                                       textAlignVertical: "top",
@@ -1963,6 +1992,27 @@ const RequestPage = () => {
               </TouchableOpacity>
             </View>
           )}
+
+{ (requestInfo?.requestType === "win" || requestInfo?.requestType === "completed") && messages &&
+          messages.length > 0 &&
+           (
+            <View className="gap-[20px] bg-white pt-2">
+              <TouchableOpacity
+                onPress={() =>
+                  setCallModal(true)
+                }
+              >
+                <View className="h-[63px] flex items-center justify-center bg-[#FB8C00]">
+                  <Text
+                    className=" text-[16px] text-white"
+                    style={{ fontFamily: "Poppins-Black" }}
+                  >
+                    Call Customer
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
         {messages &&
           messages.length > 0 &&
           messages[messages.length - 1]?.bidType === "true" &&
@@ -2004,6 +2054,7 @@ const RequestPage = () => {
         modalConfirmVisible={uploadGSTModal}
         setModalConfirmVisible={setUploadGSTModal}
       />
+     {callModal &&  <CallCustomerModal callModal={callModal} setCallModal={setCallModal}/> }
       {errorModal && (
         <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} maxSize={2}/>
       )}
@@ -2013,6 +2064,8 @@ const RequestPage = () => {
       {cancelRequestModal && <View style={styles.overlay} />}
       {confirmPaymentModal && <View style={styles.overlay} />}
       {uploadGSTModal && <View style={styles.overlay} />}
+      {callModal && <View style={styles.overlay} />}
+
       {isLoading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#fb8c00" />
