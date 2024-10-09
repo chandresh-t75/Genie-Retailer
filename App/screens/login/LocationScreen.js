@@ -71,13 +71,8 @@ const LocationScreen = () => {
       // console.log("location", data);
       if (!data.error) {
         // return data.display_name;
-        if(data?.display_name.length>60){
-          setAddress(data?.display_name.substring(0,60));
-          }
-          else{
+       
           setAddress(data?.display_name);
-  
-          }
 
       } else {
         return null;
@@ -103,7 +98,7 @@ const LocationScreen = () => {
         timeInterval: 10000, // 10 seconds
         distanceInterval: 1,
       });
-      console.log(location);
+      // console.log(location);
       const { latitude, longitude } = location.coords;
       setLatitude(Number(latitude)); // Ensure values are stored as numbers
       setLongitude(Number(longitude));
@@ -127,7 +122,7 @@ const LocationScreen = () => {
     try {
       for (let i = 0; i < 3; i++) {
         try {
-          console.log("Refreshing location", i)
+          // console.log("Refreshing location", i)
           await fetchLocation();
 
 
@@ -151,13 +146,13 @@ const LocationScreen = () => {
     // Update the mobile number state
     setStoreLocationLocal(storeLocation);
     // Log the mobile number value
-    console.log(storeLocation);
+    // console.log(storeLocation);
   };
   const handleLocationChange = (location) => {
     // Update the mobile number state
     setLocation(location);
     // Log the mobile number value
-    console.log(location);
+    // console.log(location);
   };
 
   const handleLocationFetching = async () => {
@@ -166,7 +161,7 @@ const LocationScreen = () => {
     const userId = userData._id;
 
     try {
-      console.log("Location:", storeLocation, "user", userId);
+      console.log("Location:", address);
 
       // Update location in Redux store
       dispatch(setStoreLocation(location));
@@ -185,6 +180,7 @@ const LocationScreen = () => {
           lattitude: latitude,
           longitude: longitude,
           serviceProvider: data === "service" ? "true" : "false",
+          fetchedLocation:address,
           coords: {
             type: "Point",
             coordinates: [longitude, latitude]
@@ -198,7 +194,7 @@ const LocationScreen = () => {
       await AsyncStorage.setItem("userData", JSON.stringify(response.data));
 
       // Navigate to home only after successfully updating the location
-      console.log("data", data);
+      // console.log("data", data);
       if (data === "service") {
         dispatch(setServiceProvider("true"));
       }
@@ -246,7 +242,7 @@ const LocationScreen = () => {
                   <TextInput
                     placeholder="189/2, Out Side Datia Gate ,Jhansi, 28402"
                     placeholderTextColor="#dbcdbb"
-                    value={address}
+                    value={address?.substring(0,60)}
                     onChangeText={()=>{setAddress(address)}}
                     editable={false} // if you want to make it read-only
                     multiline={true}

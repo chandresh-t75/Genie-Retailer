@@ -511,7 +511,7 @@ const ProfileScreen = () => {
                           </Pressable>
                         </View>
                         <View className="absolute bottom-0 bg-black bg-opacity-50 border-x-[1px] border-b-[1px] border-[#cbcbce] w-full flex justify-center rounded-b-[16px]">
-                          <View className="flex justify-center items-center p-1">
+                          <View className="flex justify-center  items-center p-1">
                             <Text
                               style={{ fontFamily: "Poppins-Regular" }}
                               className="text-white  text-[8px]"

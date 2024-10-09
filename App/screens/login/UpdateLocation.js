@@ -74,13 +74,9 @@ const UpdateLocation = () => {
       // console.log("location", data);
       if (!data.error) {
         // return data.display_name;
-        if(data?.display_name.length>60){
-        setAddress(data?.display_name.substring(0,60));
-        }
-        else{
+    
         setAddress(data?.display_name);
 
-        }
       } else {
         return null;
       }
@@ -106,7 +102,7 @@ const UpdateLocation = () => {
         timeInterval: 5000, // Set time interval to 5 seconds
         distanceInterval: 0.1,
       });
-      console.log(location);
+      // console.log(location);
       const { latitude, longitude } = location.coords;
       setLatitude(Number(latitude)); // Ensure values are stored as numbers
       setLongitude(Number(longitude));
@@ -130,7 +126,7 @@ const UpdateLocation = () => {
     try {
       for (let i = 0; i < 3; i++) {
         try {
-          console.log("Refreshing location", i)
+          // console.log("Refreshing location", i)
           await fetchLocation();
 
 
@@ -155,20 +151,20 @@ const UpdateLocation = () => {
     // Update the mobile number state
     setStoreLocationLocal(storeLocation);
     // Log the mobile number value
-    console.log(storeLocation);
+    // console.log(storeLocation);
   };
   const handleLocationChange = (location) => {
     // Update the mobile number state
     setLocation(location);
     // Log the mobile number value
-    console.log(location);
+    // console.log(location);
   };
 
   const handleLocationFetching = async () => {
     setLoading(true);
 
     try {
-      console.log("Location:", storeLocation, "user", user);
+      console.log("Location:",address);
 
       // Update location in Redux store
       dispatch(setStoreLocation(location));
@@ -186,6 +182,7 @@ const UpdateLocation = () => {
           location: location,
           lattitude: latitude,
           longitude: longitude,
+          fetchedLocation:address,
           coords: {
             type: "Point",
             coordinates: [longitude, latitude]
@@ -244,7 +241,7 @@ const UpdateLocation = () => {
                   <TextInput
                     placeholder="189/2, Out Side Datia Gate ,Jhansi, 28402"
                     placeholderTextColor="#dbcdbb"
-                    value={address}
+                    value={address?.substring(0,60)}
                     onChangeText={()=>{setAddress(address)}}
                     editable={false} // if you want to make it read-only
                     multiline={true}
