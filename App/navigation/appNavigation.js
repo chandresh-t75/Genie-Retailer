@@ -42,6 +42,7 @@ import SendDocument from '../components/SendDocument';
 import UpdateServiceDelivery from '../screens/login/UpdateServiceDelivery';
 import UpdateStoreDescription from '../screens/login/UpdateStoreDescription';
 import AddProductImages from '../screens/login/AddProductImages';
+import SendOffer from '../screens/requests/SendOffer';
 
 const Stack = createNativeStackNavigator();
 const GlobalNavigation = () => {
@@ -104,6 +105,8 @@ const GlobalNavigation = () => {
       <Stack.Screen name="bidPageImageUpload" component={BidPageImageUpload} />
       <Stack.Screen name="bidOfferedPrice" component={BidOfferedPrice} />
       <Stack.Screen name="bidPreviewPage" component={BidPreviewPage} />
+      <Stack.Screen name="send-offer" component={SendOffer} />
+
       <Stack.Screen name="bidQuery" component={BidQueryPage} />
       <Stack.Screen name="history" component={HistoryScreen} />
       <Stack.Screen name="about" component={AboutScreen} />

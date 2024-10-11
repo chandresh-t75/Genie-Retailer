@@ -85,27 +85,71 @@ const AddImageScreen = () => {
       setHasCameraPermission(status === "granted");
     })();
   }, [cameraScreen]);
+  // const takePicture = async () => {
+  //   const options = {
+  //     mediaType: "photo",
+  //     saveToPhotos: true,
+  //   };
+
+  //   launchCamera(options, async (response) => {
+  //     if (response.didCancel) {
+  //       console.log("User cancelled image picker");
+  //     } else if (response.error) {
+  //       console.log("ImagePicker Error: ");
+  //     } else {
+  //       try {
+  //         const newImageUri = response.assets[0].uri;
+  //         const compressedImage = await manipulateAsync(
+  //           newImageUri,
+  //           [{ resize: { width: 600, height: 800 } }],
+  //           { compress: 0.5, format: "jpeg", base64: true }
+  //         );
+  //         await getImageUrl(compressedImage.uri);
+  //       } catch (error) {
+  //         console.error("Error processing image: ", error);
+  //       }
+  //     }
+  //   });
+  // };
+
   const takePicture = async () => {
     const options = {
       mediaType: "photo",
       saveToPhotos: true,
     };
-
+   
     launchCamera(options, async (response) => {
       if (response.didCancel) {
         console.log("User cancelled image picker");
+       
       } else if (response.error) {
+     
         console.log("ImagePicker Error: ");
       } else {
         try {
           const newImageUri = response.assets[0].uri;
+  
+          // Get the original image dimensions from the response
+          const originalWidth = response.assets[0].width;
+          const originalHeight = response.assets[0].height;
+  
+          // Calculate the new dimensions while keeping the aspect ratio
+          const targetWidth = 600;
+          const aspectRatio = originalHeight / originalWidth;
+          const targetHeight = targetWidth * aspectRatio;
+          console.log(targetHeight,targetWidth)
           const compressedImage = await manipulateAsync(
             newImageUri,
-            [{ resize: { width: 600, height: 800 } }],
-            { compress: 0.5, format: "jpeg", base64: true }
+            [{ resize: { width: targetWidth, height: targetHeight } }],
+            { compress: 0.8, format: "jpeg", base64: true }
           );
-          await getImageUrl(compressedImage.uri);
+          
+       
+          if (compressedImage.uri) {
+            getImageUrl(compressedImage.uri);
+          }
         } catch (error) {
+          setLoading(false);
           console.error("Error processing image: ", error);
         }
       }

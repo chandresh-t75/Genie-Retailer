@@ -69,6 +69,8 @@ const ProfileScreen = () => {
   const [selectedImageProd, setSelectedImageProd] = useState(null);
 
   const [selectedPrice, setSelectedPrice] = useState(null);
+  const [selectedDesc, setSelectedDesc] = useState("");
+
 
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [indexImg, setIndexImg] = useState(null);
@@ -96,9 +98,11 @@ const ProfileScreen = () => {
     }).start();
   };
 
-  const handleImagePressProduct = (image, price) => {
+  const handleImagePressProduct = (image, price,desc) => {
     setSelectedImageProd(image);
     setSelectedPrice(price);
+    setSelectedDesc(desc);
+
     // console.log("Image",image);
     Animated.timing(scaleAnimation, {
       toValue: 1,
@@ -116,6 +120,7 @@ const ProfileScreen = () => {
       setSelectedImage(null);
       setSelectedImageProd(null);
       setSelectedPrice(null);
+      setSelectedDesc("");
     });
   };
 
@@ -223,6 +228,37 @@ const ProfileScreen = () => {
     })();
   }, [cameraScreen]);
 
+  // const takePicture = async () => {
+  //   const options = {
+  //     mediaType: "photo",
+  //     saveToPhotos: true,
+  //   };
+  //   setLoading(true);
+  //   launchCamera(options, async (response) => {
+  //     if (response.didCancel) {
+  //       console.log("User cancelled image picker");
+  //     } else if (response.error) {
+  //       console.log("ImagePicker Error: ");
+  //     } else {
+  //       try {
+  //         const newImageUri = response.assets[0].uri;
+  //         const compressedImage = await manipulateAsync(
+  //           newImageUri,
+  //           [{ resize: { width: 600, height: 800 } }],
+  //           { compress: 0.8, format: "jpeg", base64: true }
+  //         );
+  //         setImgUri(compressedImage.uri);
+  //         if (compressedImage.uri) {
+  //           getImageUrl(compressedImage.uri);
+  //         }
+  //       } catch (error) {
+  //         setLoading(false);
+  //         console.error("Error processing image: ", error);
+  //       }
+  //     }
+  //   });
+  // };
+
   const takePicture = async () => {
     const options = {
       mediaType: "photo",
@@ -232,16 +268,29 @@ const ProfileScreen = () => {
     launchCamera(options, async (response) => {
       if (response.didCancel) {
         console.log("User cancelled image picker");
+        setLoading(false);
       } else if (response.error) {
+        setLoading(false);
         console.log("ImagePicker Error: ");
       } else {
         try {
           const newImageUri = response.assets[0].uri;
+
+          // Get the original image dimensions from the response
+          const originalWidth = response.assets[0].width;
+          const originalHeight = response.assets[0].height;
+
+          // Calculate the new dimensions while keeping the aspect ratio
+          const targetWidth = 600;
+          const aspectRatio = originalHeight / originalWidth;
+          const targetHeight = targetWidth * aspectRatio;
+          console.log(targetHeight, targetWidth);
           const compressedImage = await manipulateAsync(
             newImageUri,
-            [{ resize: { width: 600, height: 800 } }],
+            [{ resize: { width: targetWidth, height: targetHeight } }],
             { compress: 0.8, format: "jpeg", base64: true }
           );
+
           setImgUri(compressedImage.uri);
           if (compressedImage.uri) {
             getImageUrl(compressedImage.uri);
@@ -277,7 +326,7 @@ const ProfileScreen = () => {
           const img = res.data[0];
           if (img) {
             setLoading(false);
-            navigation.navigate("add-product-images", { imgUri: img});
+            navigation.navigate("add-product-images", { imgUri: img });
           }
         });
     } catch (error) {
@@ -490,7 +539,7 @@ const ProfileScreen = () => {
                       <Pressable
                         key={index}
                         onPress={() =>
-                          handleImagePressProduct(image?.uri, image?.price)
+                          handleImagePressProduct(image?.uri, image?.price,image?.description)
                         }
                       >
                         <View
@@ -510,8 +559,18 @@ const ProfileScreen = () => {
                             <DelImg width={24} height={24} />
                           </Pressable>
                         </View>
-                        <View className="absolute bottom-0 bg-black bg-opacity-50 border-x-[1px] border-b-[1px] border-[#cbcbce] w-full flex justify-center rounded-b-[16px]">
-                          <View className="flex justify-center  items-center p-1">
+                        <View className="absolute bottom-0 bg-black bg-opacity-50 border-x-[1px] border-b-[1px] border-[#cbcbce] w-full flex justify-center items-center pt-1 rounded-b-[16px]">
+                          {
+                            image?.description &&<View className="flex justify-center  items-center ">
+                            <Text
+                              style={{ fontFamily: "Poppins-Regular" }}
+                              className="text-white  text-[12px]"
+                            >
+                              {image?.description?.substring(0, 18)}...
+                            </Text>
+                          </View>
+                          }
+                          <View className="flex justify-center  items-center ">
                             <Text
                               style={{ fontFamily: "Poppins-Regular" }}
                               className="text-white  text-[8px]"
@@ -522,7 +581,7 @@ const ProfileScreen = () => {
                               style={{ fontFamily: "Poppins-SemiBold" }}
                               className="text-green-500  text-[14px]"
                             >
-                              {image?.price>0?`Rs. ${image?.price}`:"-"}
+                              {image?.price > 0 ? `Rs. ${image?.price}` : "-"}
                             </Text>
                           </View>
                         </View>
@@ -539,19 +598,28 @@ const ProfileScreen = () => {
                       onPress={handleClose}
                     >
                       <Animated.View
-                      
-                      style={[
-                        styles.modalImg,
+                        style={[
+                          styles.modalImg,
+                          {
+                            transform: [{ scale: scaleAnimation }],
+                          },
+                        ]}
+                      >
+                        <Image
+                          source={{ uri: selectedImageProd }}
+                          style={styles.modalImage}
+                        />
+                        <View className="absolute bottom-0 bg-black bg-opacity-50 w-full flex justify-center items-center rounded-b-[16px]">
                         {
-                          transform: [{ scale: scaleAnimation }],
-                        },
-                      ]}
-                    >
-                      <Image
-                            source={{ uri:selectedImageProd }}
-                           style={styles.modalImage}
-                          />
-                      <View className="absolute bottom-0 bg-black bg-opacity-50 w-full flex justify-center rounded-b-[16px]">
+                            selectedDesc &&<View className="flex justify-center  items-center pt-2">
+                            <Text
+                              style={{ fontFamily: "Poppins-Regular" }}
+                              className="text-white  text-[14px]"
+                            >
+                              {selectedDesc?.substring(0, 30)}...
+                            </Text>
+                          </View>
+                          }
                           <View className="flex justify-center items-center p-1">
                             <Text
                               style={{ fontFamily: "Poppins-Regular" }}
@@ -563,12 +631,11 @@ const ProfileScreen = () => {
                               style={{ fontFamily: "Poppins-SemiBold" }}
                               className="text-green-500  text-[18px]"
                             >
-                              {selectedPrice>0?`Rs. ${selectedPrice}`:"-"}
-
+                              {selectedPrice > 0 ? `Rs. ${selectedPrice}` : "-"}
                             </Text>
                           </View>
                         </View>
-                        </Animated.View>
+                      </Animated.View>
                     </Pressable>
                   </Modal>
                 </ScrollView>
@@ -978,16 +1045,14 @@ const styles = StyleSheet.create({
     width: 300,
     height: 400,
     borderRadius: 16,
-    objectFit:"contain"
+    objectFit: "contain",
   },
   modalImg: {
     width: 300,
     height: 400,
     borderRadius: 16,
     position: "relative",
-    objectFit:"contain"
-
-
+    objectFit: "contain",
   },
   closeButton: {
     position: "absolute",

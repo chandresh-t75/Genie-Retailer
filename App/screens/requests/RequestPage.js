@@ -1973,7 +1973,7 @@ const RequestPage = () => {
             <View className="gap-[20px] bg-white pt-2">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("bidPageInput", {
+                  navigation.navigate("send-offer", {
                     user,
                     // requestInfo: requestInfo,
                     messages,
