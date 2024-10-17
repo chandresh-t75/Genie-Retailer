@@ -28,7 +28,7 @@ import { launchCamera } from "react-native-image-picker";
 import ErrorAttachment from "../../assets/ErrorAttachment.svg";
 import { baseUrl } from "../utils/constants";
 import axiosInstance from "../utils/axiosInstance";
-import { setUserDetails } from "../../redux/reducers/storeDataSlice";
+import { setProductImages, setUserDetails } from "../../redux/reducers/storeDataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import UnableToSendMessage from "../../components/UnableToSendMessage";
 
@@ -38,7 +38,7 @@ const AddProductImages = () => {
   // const [imageUri, setImageUri] = useState("");
   const navigation = useNavigation();
   const route = useRoute();
-  const { imgUri } = route.params;
+  const { imgUri ,productImages,setProductImagesLocal} = route.params;
   const [camScreen, setCamScreen] = useState(true);
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
@@ -52,33 +52,39 @@ const AddProductImages = () => {
   const addProductDetails = async () => {
     setIsLoading(true);
     const numberQuery = query?.length > 0 ? Number(query) : 0;
-    const newImages = [
-      { uri: imgUri, price: numberQuery,description:desc},
-      ...user?.productImages,
-    ];
-    console.log("product images",newImages);
+    // console.log("product images",newImages);
     try {
       // Update location on server
-      const configg = {
+      const formData = new FormData();
+
+      formData.append("productImage", {
+        uri: imgUri,
+        type: "image/jpeg",
+        name: `photo-${Date.now()}.jpg`,
+      });
+
+      formData.append('vendorId',user?._id);
+      formData.append('productDescription',desc);
+      formData.append('productPrice',numberQuery);
+      formData.append('productCategory', user?.storeCategory);
+      const config = {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${accessToken}`,
         },
       };
-      const response = await axiosInstance.patch(
-        `${baseUrl}/retailer/editretailer`,
-        {
-          _id: user?._id,
-          productImages: newImages,
-        },
-        configg
-      );
-
-      dispatch(setUserDetails(response.data));
-      await AsyncStorage.setItem("userData", JSON.stringify(response.data));
-
+      await axiosInstance.post(
+        `${baseUrl}/product/add-product`,formData,
+        config
+      ).then((response)=>{
+        // console.log("added product",response.data);
+       const newProductImg=[response.data,...productImages]
+      //  console.log("total product",newProductImg);
+       setProductImagesLocal(newProductImg);
+      dispatch(setProductImages(newProductImg));
       setIsLoading(false);
       navigation.navigate("profile");
+      })
     } catch (error) {
       setIsLoading(false);
       console.error("Failed to update product images:", error);

@@ -4,11 +4,11 @@ import ModalImg from "../assets/Cancel.svg"
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setUserDetails } from '../redux/reducers/storeDataSlice';
+import { setProductImages, setUserDetails } from '../redux/reducers/storeDataSlice';
 import axiosInstance from '../screens/utils/axiosInstance';
 import { baseUrl } from '../screens/utils/constants';
 
-const DeleteProductImage= ({modalVisible,setModalVisible,index}) => {
+const DeleteProductImage= ({modalVisible,setModalVisible,index,productImages,setProductImagesLocal}) => {
   // const [modalVisible, setModalVisible] = useState(true);
   const navigation=useNavigation();
   const user = useSelector((state) => state.storeData.userDetails);
@@ -32,41 +32,39 @@ const DeleteProductImage= ({modalVisible,setModalVisible,index}) => {
 //   }
 
   const handleModal = async () => {
+     console.log(index)
+    try{
     setLoading(true);
-    if (index >= 0 && index < user?.productImages?.length) {
-      const updatedProductImages = [
-        ...user.productImages.slice(0, index),
-        ...user.productImages.slice(index + 1),
-      ];
-      const updatedUser = {
-        ...user,
-        productImages: updatedProductImages,
-      };
-      dispatch(setUserDetails(updatedUser));
-      await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
+   
+     
 
       const config = {
         headers:{
           'Content-Type':'application/json',
           'Authorization':`Bearer ${accessToken}`,
+        },
+        params:{
+          productId:index,
         }
        }
       await axiosInstance
-        .patch(`${baseUrl}/retailer/editretailer`, {
-          _id: user?._id,
-          productImages: updatedUser.productImages,
-        },config
+        .delete(`${baseUrl}/product/remove-product`, config
       )
-        .then(async (res) => {
-          dispatch(setUserDetails(res.data));
-          await AsyncStorage.setItem("userData", JSON.stringify(res.data));
+        .then(async(res) => {
+          //  console.log(res?.message);
+          const newProductImages=productImages.filter((product)=>product._id!==index);
+          setProductImagesLocal(newProductImages);
+          dispatch(setProductImages(newProductImages));
+          
           setModalVisible(false);
           setLoading(false)
         });
-    } else {
-          setLoading(false)
-      console.error("Invalid index for deleting image");
-    }
+      }
+      catch(error){
+        console.error("Error deleting product", error);
+        setLoading(false)
+      }
+   
   };
 
 

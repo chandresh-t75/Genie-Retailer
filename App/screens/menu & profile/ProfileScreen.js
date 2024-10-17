@@ -21,7 +21,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserDetails } from "../../redux/reducers/storeDataSlice";
+import { setProductImages, setUserDetails } from "../../redux/reducers/storeDataSlice";
 import { launchCamera } from "react-native-image-picker";
 import { manipulateAsync } from "expo-image-manipulator";
 import DelImg from "../../assets/delImgOrange.svg";
@@ -86,6 +86,10 @@ const ProfileScreen = () => {
   const [imagesLocal, setImagesLocal] = useState([]);
   const [addProduct, setAddProduct] = useState(false);
   const [imgUri, setImgUri] = useState("");
+  const [productImages,setProductImagesLocal]=useState([]);
+  const [productLoading,setProductLoading]=useState(false);
+
+
 
   const handleImagePress = (image) => {
     setSelectedImage(image);
@@ -184,6 +188,7 @@ const ProfileScreen = () => {
     setModalDelVisible(true);
   };
 
+
   const handleDownloadDocument = async () => {
     // const url = `https://www.google.com/search?q=${encodeURIComponent(bidDetails.bidImages[0])}`
     const url = `${user?.panCard}`;
@@ -207,7 +212,7 @@ const ProfileScreen = () => {
       await axiosInstance
         .get(`${baseUrl}/rating/get-retailer-feedbacks`, config)
         .then((res) => {
-          console.log("Feedbacks fetched successfully", res.data);
+          // console.log("Feedbacks fetched successfully", res.data);
           setFeedbacks(res.data);
           setFeedbackLoading(false);
         });
@@ -217,7 +222,39 @@ const ProfileScreen = () => {
     }
   });
 
+  const fetchProductImages= async()=>{
+
+    try {
+      setProductLoading(true);
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          vendorId: user._id,
+        },
+      };
+      await axiosInstance
+       .get(`${baseUrl}/product/product-by-vendorId`, config)
+       .then((res) => {
+          // console.log("Product images fetched successfully", res.data);
+          setProductImagesLocal(res.data);
+          dispatch(setProductImages(res.data));
+      setProductLoading(false);
+
+        });
+      
+    } catch (error) {
+      setProductLoading(false);
+       console.error("Error while fetching product images", error);
+    }
+
+  }
+
   useEffect(() => {
+    fetchProductImages();
     fetchRetailerFeedbacks();
   }, []);
 
@@ -228,36 +265,7 @@ const ProfileScreen = () => {
     })();
   }, [cameraScreen]);
 
-  // const takePicture = async () => {
-  //   const options = {
-  //     mediaType: "photo",
-  //     saveToPhotos: true,
-  //   };
-  //   setLoading(true);
-  //   launchCamera(options, async (response) => {
-  //     if (response.didCancel) {
-  //       console.log("User cancelled image picker");
-  //     } else if (response.error) {
-  //       console.log("ImagePicker Error: ");
-  //     } else {
-  //       try {
-  //         const newImageUri = response.assets[0].uri;
-  //         const compressedImage = await manipulateAsync(
-  //           newImageUri,
-  //           [{ resize: { width: 600, height: 800 } }],
-  //           { compress: 0.8, format: "jpeg", base64: true }
-  //         );
-  //         setImgUri(compressedImage.uri);
-  //         if (compressedImage.uri) {
-  //           getImageUrl(compressedImage.uri);
-  //         }
-  //       } catch (error) {
-  //         setLoading(false);
-  //         console.error("Error processing image: ", error);
-  //       }
-  //     }
-  //   });
-  // };
+  
 
   const takePicture = async () => {
     const options = {
@@ -293,7 +301,10 @@ const ProfileScreen = () => {
 
           setImgUri(compressedImage.uri);
           if (compressedImage.uri) {
-            getImageUrl(compressedImage.uri);
+            navigation.navigate("add-product-images", { imgUri: compressedImage.uri ,productImages:productImages,setProductImagesLocal:setProductImagesLocal});
+           setLoading(false);
+            
+            // getImageUrl(compressedImage.uri);
           }
         } catch (error) {
           setLoading(false);
@@ -303,37 +314,36 @@ const ProfileScreen = () => {
     });
   };
 
-  const getImageUrl = async (image) => {
-    setLoading(true);
-    try {
-      const formData = new FormData();
+  // const getImageUrl = async (image) => {
+  //   setLoading(true);
+  //   try {
+  //     const formData = new FormData();
 
-      formData.append("storeImages", {
-        uri: image,
-        type: "image/jpeg",
-        name: `photo-${Date.now()}.jpg`,
-      });
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      };
-      await axios
-        .post(`${baseUrl}/upload`, formData, config)
-        .then(async (res) => {
-          console.log("imageUrl updated from server", res.data[0]);
-          const img = res.data[0];
-          if (img) {
-            setLoading(false);
-            navigation.navigate("add-product-images", { imgUri: img });
-          }
-        });
-    } catch (error) {
-      setLoading(false);
-      console.error("Error getting product imageUrl: ", error);
-    }
-  };
+  //     formData.append("storeImages", {
+  //       uri: image,
+  //       type: "image/jpeg",
+  //       name: `photo-${Date.now()}.jpg`,
+  //     });
+  //     const config = {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //         Authorization: `Bearer ${accessToken}`,
+  //       },
+  //     };
+  //     await axios
+  //       .post(`${baseUrl}/upload`, formData, config)
+  //       .then(async (res) => {
+  //         console.log("imageUrl updated from server", res.data[0]);
+  //         const img = res.data[0];
+  //         if (img) {
+  //           setLoading(false);
+  //         }
+  //       });
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Error getting product imageUrl: ", error);
+  //   }
+  // };
 
   // if (hasCameraPermission === null) {
   //   return <View/>;
@@ -519,6 +529,7 @@ const ProfileScreen = () => {
               </View>
               <View className="pl-[32px] flex flex-row items-center gap-[11px] mb-[60px]">
                 <TouchableOpacity
+                disabled={productLoading}
                   onPress={() => {
                     takePicture();
                   }}
@@ -527,6 +538,11 @@ const ProfileScreen = () => {
                     <AddMoreImage />
                   </View>
                 </TouchableOpacity>
+                {productLoading ? (
+                     <View className="px-[20px]  flex flex-row justify-center items-center">
+                      <ActivityIndicator size="small" color="#fb8c00"/>
+                     </View>
+                ) : (
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -534,12 +550,13 @@ const ProfileScreen = () => {
                     alignSelf: "flex-start",
                   }}
                 >
+                   
                   <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
-                    {user?.productImages?.map((image, index) => (
+                    {productImages && productImages?.map((image, index) => (
                       <Pressable
                         key={index}
                         onPress={() =>
-                          handleImagePressProduct(image?.uri, image?.price,image?.description)
+                          handleImagePressProduct(image?.productImage, image?.productPrice,image?.productDescription)
                         }
                       >
                         <View
@@ -547,13 +564,13 @@ const ProfileScreen = () => {
                           className="rounded-[16px] w-[129px] h-[172px] relative"
                         >
                           <Image
-                            source={{ uri: image?.uri }}
+                            source={{ uri: image?.productImage }}
                             width={129}
                             height={172}
                             className="rounded-[16px] border-[1px] border-[#cbcbce] object-fill"
                           />
                           <Pressable
-                            onPress={() => handleProductImageClick(index)}
+                            onPress={() => handleProductImageClick(image?._id)}
                             style={styles.deleteIcon}
                           >
                             <DelImg width={24} height={24} />
@@ -566,7 +583,7 @@ const ProfileScreen = () => {
                               style={{ fontFamily: "Poppins-Regular" }}
                               className="text-white  text-[12px]"
                             >
-                              {image?.description?.substring(0, 18)}...
+                              {image?.productDescription?.substring(0, 18)}...
                             </Text>
                           </View>
                           }
@@ -581,13 +598,14 @@ const ProfileScreen = () => {
                               style={{ fontFamily: "Poppins-SemiBold" }}
                               className="text-green-500  text-[14px]"
                             >
-                              {image?.price > 0 ? `Rs. ${image?.price}` : "-"}
+                              {image?.productPrice > 0 ? `Rs. ${image?.productPrice}` : "-"}
                             </Text>
                           </View>
                         </View>
                       </Pressable>
                     ))}
                   </View>
+                  
                   <Modal
                     transparent
                     visible={!!selectedImageProd}
@@ -639,6 +657,7 @@ const ProfileScreen = () => {
                     </Pressable>
                   </Modal>
                 </ScrollView>
+                )}
               </View>
               <View className="px-[32px] flex flex-col gap-[26px] mb-[20px] items-center">
                 <View className="px-[32px] mb-[10px]">
@@ -914,6 +933,8 @@ const ProfileScreen = () => {
             modalVisible={modalDelVisible}
             setModalVisible={setModalDelVisible}
             index={indexDelImg}
+            productImages={productImages}
+            setProductImagesLocal={setProductImagesLocal}
           />
           {modalVisible && <View style={styles.overlay} />}
           {modalDelVisible && <View style={styles.overlay} />}
