@@ -88,6 +88,8 @@ const ProfileScreen = () => {
   const [imgUri, setImgUri] = useState("");
   const [productImages,setProductImagesLocal]=useState([]);
   const [productLoading,setProductLoading]=useState(false);
+  const [page,setPage]=useState(1);
+  const [moreProduct,setMoreProduct]=useState(true);
 
 
 
@@ -95,7 +97,7 @@ const ProfileScreen = () => {
     setSelectedImage(image);
 
     // console.log("Image",image);
-    Animated.timing(scaleAnimation, {
+    Animated.timing(scaleAnimation,{
       toValue: 1,
       duration: 300,
       useNativeDriver: true,
@@ -226,7 +228,7 @@ const ProfileScreen = () => {
 
     try {
       setProductLoading(true);
-
+      console.log(page, user._id);
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -234,40 +236,58 @@ const ProfileScreen = () => {
         },
         params: {
           vendorId: user._id,
+          page:page,
         },
       };
       await axiosInstance
        .get(`${baseUrl}/product/product-by-vendorId`, config)
        .then((res) => {
           // console.log("Product images fetched successfully", res.data);
-          setProductImagesLocal(res.data);
-          dispatch(setProductImages(res.data));
-      setProductLoading(false);
+          console.log("Product images fet",res.data.length)
+          if(res.data.length<10){
+            setMoreProduct(false);
+          }
+          if(page>1){
+          setProductImagesLocal([...productImages,...res.data]);
+          }
+          else{
+            setProductImagesLocal(res.data);
+          }
+          setPage(page+1)
+          // dispatch(setProductImages(res.data));
+          setProductLoading(false);
 
         });
       
     } catch (error) {
       setProductLoading(false);
+      if(error.response.status===404)setMoreProduct(false);
        console.error("Error while fetching product images", error);
     }
 
   }
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   // fetchProductImages();
+  //   
+  // }, []);
+
+  useEffect(()=>{
     fetchProductImages();
     fetchRetailerFeedbacks();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(status === "granted");
-    })();
-  }, [cameraScreen]);
+  },[])
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } = await Camera.requestCameraPermissionsAsync();
+  //     setHasCameraPermission(status === "granted");
+  //   })();
+  // }, [cameraScreen]);
 
   
 
   const takePicture = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    setHasCameraPermission(status === "granted");
     const options = {
       mediaType: "photo",
       saveToPhotos: true,
@@ -527,7 +547,7 @@ const ProfileScreen = () => {
                   Add Your Stocks
                 </Text>
               </View>
-              <View className="pl-[32px] flex flex-row items-center gap-[11px] mb-[60px]">
+              <View className="pl-[32px] flex flex-row items-center gap-[11px] mb-[40px]">
                 <TouchableOpacity
                 disabled={productLoading}
                   onPress={() => {
@@ -538,11 +558,11 @@ const ProfileScreen = () => {
                     <AddMoreImage />
                   </View>
                 </TouchableOpacity>
-                {productLoading ? (
+                {/* {productLoading ? (
                      <View className="px-[20px]  flex flex-row justify-center items-center">
                       <ActivityIndicator size="small" color="#fb8c00"/>
                      </View>
-                ) : (
+                ) : ( */}
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -552,6 +572,7 @@ const ProfileScreen = () => {
                 >
                    
                   <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
+                    <>
                     {productImages && productImages?.map((image, index) => (
                       <Pressable
                         key={index}
@@ -604,6 +625,28 @@ const ProfileScreen = () => {
                         </View>
                       </Pressable>
                     ))}
+
+                    {
+                      moreProduct  && !productLoading && productImages && productImages.length > 0 &&
+                       <View className="px-[20px] h-[170px]   flex flex-row justify-center items-center">
+ 
+                      <Pressable onPress={()=>{fetchProductImages()}} className="border-[1px] border-[#fb8c00] p-2 rounded-[16px] mx-[10px]" >
+
+                        <Text style={{ fontFamily: "Poppins-Regular" }}
+                              className="text-[#fb8c00]  text-[14px]">View More</Text>
+                      </Pressable>
+                      </View>
+                    }
+                    {
+                      moreProduct && productLoading
+                      && <View className="px-[20px] h-[170px]   flex flex-row justify-center items-center">
+                        <View className="flex flex-row justify-center items-center">
+                            <ActivityIndicator size="small" color="#fb8c00"/>
+                        </View>
+                       </View>
+
+                     }
+                    </>
                   </View>
                   
                   <Modal
@@ -657,7 +700,7 @@ const ProfileScreen = () => {
                     </Pressable>
                   </Modal>
                 </ScrollView>
-                )}
+                {/* )} */}
               </View>
               <View className="px-[32px] flex flex-col gap-[26px] mb-[20px] items-center">
                 <View className="px-[32px] mb-[10px]">
