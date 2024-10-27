@@ -147,6 +147,7 @@ const RequestPage = () => {
 
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [vendorMessageCount, setVendorMessageCount] = useState(0);
   // ////////////////////////////////////Connecting socket from when app goes from backgroun to foreground/////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -240,7 +241,15 @@ const RequestPage = () => {
 
           console.log("socket join chat setup successfully");
           const lastMessage = response?.data[response?.data.length - 1];
-          // console.log("last Mesage: ", lastMessage);
+          const allMessages=response?.data;
+          setVendorMessageCount((prevCount) =>
+            allMessages.reduce(
+              (count, message) => count + (message?.sender?.type === "Retailer" ? 1 : 0),
+              prevCount
+            )
+          );
+
+
 
           if (
             result?.unreadCount > 0 &&
@@ -757,6 +766,7 @@ const RequestPage = () => {
             newMessageReceived?._id
           ) {
             if (newMessageReceived.bidAccepted === "accepted") {
+              setVendorMessageCount(vendorMessageCount+1);
               let tmp = {
                 ...requestInfo,
                 requestType: "win",
@@ -784,7 +794,8 @@ const RequestPage = () => {
                 //  requestId:{requestActive:"completed"}
               };
               // console.log("request updated", tmp);
-              dispatch(setRequestInfo(tmp));
+              setVendorMessageCount(vendorMessageCount+1);
+              dispatch(setRequestInfo(tmp)); 
               const filteredRequests = ongoingRequests.filter(
                 (request) => request._id !== tmp?._id
               );
@@ -1769,7 +1780,8 @@ const RequestPage = () => {
               </View>
             </View>
           )}
-
+          
+         
         {requestInfo?.requestType !== "closed" &&
           requestInfo?.requestType !== "rejected" &&
           requestInfo?.requestType !== "completed" &&
@@ -1783,7 +1795,7 @@ const RequestPage = () => {
             messages[messages.length - 1]?.bidType === "false" ||
             messages[messages.length - 1]?.bidType === "image" ||
             messages[messages.length - 1]?.bidType === "location" ||
-            messages[messages.length - 1]?.bidType === "document") && (
+            messages[messages.length - 1]?.bidType === "document") && vendorMessageCount>0 && (
             <View
               className="flex flex-row bg-white gap-2 items-center justify-center"
               style={{ padding: 10 }}
@@ -1800,6 +1812,9 @@ const RequestPage = () => {
                 style={{ backgroundColor: "white", flex: 1 }}
               >
                 <View className="h-[63px] flex  flex-1 items-center justify-center bg-white border-[1px] border-[#FB8C00] rounded-3xl">
+                {/* {
+            console.log("last Mesage: ", vendorMessageCount)
+               } */}
                   <Text
                     className="text-[16px] text-[#fb8c00] text-center px-[10px]"
                     style={{ fontFamily: "Poppins-Regular" }}
