@@ -62,7 +62,8 @@ const UpdateLocation = () => {
   }, []);
 
   const getLocationName = async (lat, lon) => {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+    // const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat},${lon}&key=9c3e1d77b8e544f4ad48be64c13156c8`
 
     try {
       const response = await fetch(url);
@@ -74,14 +75,15 @@ const UpdateLocation = () => {
       // console.log("location", data);
       if (!data.error) {
         // return data.display_name;
+        // return data.results[0].formatted;
     
-        setAddress(data?.display_name);
+        setAddress(data.results[0].formatted);
 
       } else {
         return null;
       }
     } catch (error) {
-      console.error("Error fetching location:", error);
+      console.error("Error fetching location name:", error);
       return null;
     }
   };
