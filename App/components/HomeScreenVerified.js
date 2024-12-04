@@ -367,9 +367,9 @@ const HomeScreenVerified = ({ modalVisible, setModalVisible ,currentVersion}) =>
             </TouchableOpacity>
           </View>
 
-          {(newRequests?.length > 0 ||
+          {userData?.storeApproved==="approved" && (newRequests?.length > 0 ||
             ongoingRequests?.length > 0 ||
-            retailerHistory?.length > 0) && userData?.storeApproved==="approved" && (
+            retailerHistory?.length > 0)  && (
             <View className="flex items-center">
               <View>
                 <View className="flex-row justify-center gap-[40px] px-[10px]    mb-[20px]">

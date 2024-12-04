@@ -29,16 +29,22 @@ import axiosInstance from "../utils/axiosInstance";
 import UnableToSendMessage from "../../components/UnableToSendMessage";
 import {
   setCurrentRequest,
+  setNewRequests,
   setOngoingRequests,
   setRequestInfo,
 } from "../../redux/reducers/requestDataSlice";
-import { sendCustomNotificationBid } from "../../notification/notificationMessages";
+import {
+  NotificationRequestAccepted,
+  sendCustomNotificationBid,
+} from "../../notification/notificationMessages";
 import {
   setBidImages,
   setProductWarranty,
 } from "../../redux/reducers/bidSlice";
 import AddImages from "./AddImages";
 import ModalCancel from "../../components/ModalCancel";
+import { setUserDetails } from "../../redux/reducers/storeDataSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SendOffer = () => {
   const route = useRoute();
@@ -47,7 +53,7 @@ const SendOffer = () => {
   const requestInfo = useSelector((state) => state.requestData.requestInfo);
   // const bidDetails = useSelector((state) => state.bid.bidDetails);
   // const bidOfferedPrice = useSelector((state) => state.bid.bidOfferedPrice);
-//   const bidImages = useSelector((state) => state.bid.bidImages);
+  //   const bidImages = useSelector((state) => state.bid.bidImages);
   // const warranty = useSelector((state) => state.bid.productWarranty);
   const navigation = useNavigation();
   const [price, setPrice] = useState(null);
@@ -65,32 +71,206 @@ const SendOffer = () => {
   const ongoingRequests = useSelector(
     (state) => state.requestData.ongoingRequests || []
   );
+  const userDetails = useSelector((state) => state.storeData.userDetails);
+  const newRequests = useSelector(
+    (state) => state.requestData.newRequests || []
+  );
+
   //   const [requestImages,setRequestImages]=useState([])
-  const [bidImages,setBidImages]=useState([]);
+  const [bidImages, setBidImages] = useState([]);
   const [imgIndex, setImgIndex] = useState();
   const [modalVisible, setModalVisible] = useState(false);
-  console.log("bidImages", bidImages);
-//   console.log("requestinfo", requestInfo);
-  
+  console.log("messages", messages);
+  // console.log("requestinfo", requestInfo);
+
+  const updateUserDetails = async () => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    await axiosInstance
+      .patch(
+        `${baseUrl}/retailer/editretailer`,
+        {
+          _id: userDetails?._id,
+          freeSpades: userDetails.freeSpades - 1,
+        },
+        config
+      )
+      .then(async (res) => {
+        // console.log("userData updated Successfully after payment ");
+        dispatch(setUserDetails(res.data));
+        console.log("res after user update", res.data);
+        await AsyncStorage.setItem("userData", JSON.stringify(res.data));
+      })
+      .catch((err) => {
+        console.error("error while updating profile", err.message);
+      });
+  };
+
+  const acceptRequest = async () => {
+    setLoading(true);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    try {
+      await axiosInstance
+        .patch(
+          `${baseUrl}/chat/product-available`,
+          {
+            id: requestInfo?._id,
+          },
+          config
+        )
+        .then(async (res) => {
+          socket.emit("new retailer", res.data);
+         
+        
+
+          const warrantyLocal = Number(warranty);
+          const priceLocal = Number(price);
+          console.log("warranty", warrantyLocal, "price", priceLocal);
+
+          try {
+            const formData = new FormData();
+            if (bidImages) {
+              bidImages?.forEach((uri, index) => {
+                formData.append("bidImages", {
+                  uri: uri,
+                  type: "image/jpeg",
+                  name: `photo-${Date.now()}.jpg`,
+                });
+              });
+            }
+            formData.append(
+              "sender",
+              JSON.stringify({ type: "Retailer", refId: user?._id })
+            );
+            formData.append("userRequest", requestInfo?.requestId?._id);
+            formData.append("message", query);
+            formData.append("bidType", "true");
+            formData.append("chat", requestInfo?._id);
+            formData.append("bidPrice", priceLocal);
+            formData.append("warranty", warrantyLocal);
+            console.log("formDta", formData);
+
+            const configg = {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            };
+            await axiosInstance
+              .post(`${baseUrl}/chat/send-message`, formData, configg)
+              .then(async (response) => {
+                if (response.status === 200) {
+                  setOpenModal(true);
+                }
+                if (response.status !== 201) return;
+                console.log("response status: " , response.data)
+                socket.emit("new message", response.data);
+
+                setMessages((prevMessages) => [...prevMessages, response.data]);
+                console.log("result data: " , res.data)
+
+                updateUserDetails();
+                // dispatch(setProductWarranty(0));
+                // dispatch(setBidImages([]));
+                setBidImages([]);
+                setQuery("");
+                setPrice(null);
+                setWarranty(null);
+
+
+                const req = {
+                  requestId: res.data?._id,
+                  userId: res.data?.users[0]?._id,
+                  senderId: res.data?.users[1]?._id,
+                };
+      
+                dispatch(setCurrentRequest(req));
+      
+                let tmp = {
+                  ...res?.data,
+                  requestType: "ongoing",
+                  updatedAt: new Date().toISOString(),
+                  unreadCount: 0,
+                };
+                console.log("new requestInfo", tmp);
+      
+                dispatch(setRequestInfo(tmp));
+                const filteredRequests = newRequests.filter(
+                  (request) => request._id !== res.data?._id
+                );
+                dispatch(setNewRequests(filteredRequests));
+                const updatedOngoing = [tmp, ...ongoingRequests];
+                dispatch(setOngoingRequests(updatedOngoing));
+      
+                const requestId = req?.requestId;
+                console.log("Request requesrid", requestId)
+                setLoading(false);
+                navigation.navigate(`requestPage${requestId}`);
+      
+                const token = await axiosInstance.get(
+                  `${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,
+                  config
+                );
+                console.log("notify token: " + token.data);
+                if (token?.data?.length > 0) {
+                  const notification = {
+                    token: token.data,
+                    title: user?.storeName,
+                    requestInfo: {
+                      requestId: requestInfo?._id,
+                      userId: res.data?.users[1]._id,
+                      senderId: res.data?.users[0]._id,
+                    },
+                    tag: user?._id,
+                    image: requestInfo?.requestId?.requestImages[0],
+                    redirect_to: "bargain",
+                    details: requestInfo?.requestId?.requestDescription,
+                  };
+                  NotificationRequestAccepted(notification);
+                }
+              });
+          } catch (error) {
+            setLoading(false);
+            console.log("error sending accept message", error);
+          }
+
+         
+        });
+    } catch (error) {
+      setLoading(false);
+      console.error("Error updating requestType 'new':", error);
+      return;
+    }
+  };
+
+ 
 
   const sendBid = async () => {
     setLoading(true);
-    const warrantyLocal=Number(warranty)
-    const priceLocal=Number(price);
-    console.log("warranty", warrantyLocal,"price", priceLocal);
-    
+    const warrantyLocal = Number(warranty);
+    const priceLocal = Number(price);
+    console.log("warranty", warrantyLocal, "price", priceLocal);
+
     try {
       const formData = new FormData();
-      if(bidImages){
-      bidImages?.forEach((uri, index) => {
-        formData.append("bidImages", {
-          uri: uri,
-          type: "image/jpeg",
-          name: `photo-${Date.now()}.jpg`,
+      if (bidImages) {
+        bidImages?.forEach((uri, index) => {
+          formData.append("bidImages", {
+            uri: uri,
+            type: "image/jpeg",
+            name: `photo-${Date.now()}.jpg`,
+          });
         });
-      });
-    }
-   
+      }
 
       formData.append(
         "sender",
@@ -102,8 +282,8 @@ const SendOffer = () => {
       formData.append("chat", requestInfo?._id);
       formData.append("bidPrice", priceLocal);
       formData.append("warranty", warrantyLocal);
-  console.log("formDta",formData)
- 
+      console.log("formDta", formData);
+
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -115,7 +295,6 @@ const SendOffer = () => {
         .then(async (response) => {
           if (response.status === 200) {
             setOpenModal(true);
-          
           }
           if (response.status !== 201) return;
           // console.log("messages recieved", response.data);
@@ -168,7 +347,7 @@ const SendOffer = () => {
             `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,
             config
           );
-          console.log("token",token.data,requestInfo)
+          console.log("token", token.data, requestInfo);
           if (token.data.length > 0) {
             const notification = {
               token: token.data,
@@ -188,8 +367,8 @@ const SendOffer = () => {
               redirect_to: "bargain",
             };
             sendCustomNotificationBid(notification);
-            dispatch(setProductWarranty(0));
-            dispatch(setBidImages([]));
+            // dispatch(setProductWarranty(0));
+            // dispatch(setBidImages([]));
             setBidImages([]);
             setQuery("");
             setPrice(null);
@@ -199,6 +378,14 @@ const SendOffer = () => {
     } catch (error) {
       setLoading(false);
       console.log("error sending message", error);
+    }
+  };
+
+  const sendOffer = async () => {
+    if (requestInfo?.requestType === "new") {
+      acceptRequest();
+    } else {
+      sendBid();
     }
   };
 
@@ -245,7 +432,7 @@ const SendOffer = () => {
               Send new offer
             </Text>
           </View>
-          
+
           <View className="px-[30px] mt-[30px]">
             <Text
               className="text-[14px]  text-[#2e2c43] pb-[20px]"
@@ -253,55 +440,52 @@ const SendOffer = () => {
             >
               Add product images
             </Text>
-            
-             
 
-              <View className="flex flex-row items-center gap-[11px] mb-[10px]">
-                <TouchableOpacity
-                  onPress={() => {
-                    setAddImg(!addImg);
-                  }}
-                >
-                  <View>
-                    <UploadImage />
-                  </View>
-                </TouchableOpacity>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={{
-                    alignSelf: "flex-start",
-                  }}
-                >
-                  <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
-                    {console.log(Array.isArray(bidImages))}
-                    {Array.isArray(bidImages) &&
-                      bidImages.map((image, index) => (
-                        <View key={index}>
-                          <Pressable
-                            onPress={() => {
-                              handleImagePress(image);
-                            }}
-                          >
-
-<View style={styles.imageWrapper}>
-                              <Image
-                                source={{ uri: image }}
-                                style={{
-                                    height: 232,
-                                    width: 174,
-                                    borderRadius: 24,
-                                    backgroundColor: "#EBEBEB",
-                                  }}
-                              />
-                              <Pressable
-                                onPress={() => deleteImage(index)}
-                                style={styles.deleteIcon}
-                              >
-                                <Close width={24} height={24}/>
-                              </Pressable>
-                            </View>
-                            {/* <Image
+            <View className="flex flex-row items-center gap-[11px] mb-[10px]">
+              <TouchableOpacity
+                onPress={() => {
+                  setAddImg(!addImg);
+                }}
+              >
+                <View>
+                  <UploadImage />
+                </View>
+              </TouchableOpacity>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{
+                  alignSelf: "flex-start",
+                }}
+              >
+                <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
+                  {console.log(Array.isArray(bidImages))}
+                  {Array.isArray(bidImages) &&
+                    bidImages.map((image, index) => (
+                      <View key={index}>
+                        <Pressable
+                          onPress={() => {
+                            handleImagePress(image);
+                          }}
+                        >
+                          <View style={styles.imageWrapper}>
+                            <Image
+                              source={{ uri: image }}
+                              style={{
+                                height: 232,
+                                width: 174,
+                                borderRadius: 24,
+                                backgroundColor: "#EBEBEB",
+                              }}
+                            />
+                            <Pressable
+                              onPress={() => deleteImage(index)}
+                              style={styles.deleteIcon}
+                            >
+                              <Close width={24} height={24} />
+                            </Pressable>
+                          </View>
+                          {/* <Image
                               source={{ uri: image }}
                               style={{
                                 height: 232,
@@ -315,15 +499,13 @@ const SendOffer = () => {
                               >
                                 <Close width={24} height={24}/>
                               </Pressable> */}
-                            {/* /> */}
-                          </Pressable>
-                        </View>
-                      ))}
-                  </View>
-                </ScrollView>
-              </View>
-            
-    
+                          {/* /> */}
+                        </Pressable>
+                      </View>
+                    ))}
+                </View>
+              </ScrollView>
+            </View>
           </View>
 
           <View className="mt-[35px] mx-[28px] mb-[60px]">
@@ -393,12 +575,11 @@ const SendOffer = () => {
               />
             </View>
           </View>
-
         </ScrollView>
         <TouchableOpacity
           disabled={!price || query.length == 0 || loading}
           onPress={() => {
-            sendBid();
+            sendOffer();
           }}
           style={{
             position: "absolute",
@@ -407,7 +588,8 @@ const SendOffer = () => {
             right: 0,
             height: 63,
             width: "100%",
-            backgroundColor:!price || query.length === 0 ? "#e6e6e6" : "#FB8C00",
+            backgroundColor:
+              !price || query.length === 0 ? "#e6e6e6" : "#FB8C00",
             justifyContent: "center", // Center content vertically
             alignItems: "center", // Center content horizontally
           }}
@@ -421,13 +603,19 @@ const SendOffer = () => {
                 color: !price || query.length === 0 ? "#888888" : "white",
                 fontFamily: "Poppins-Black",
               }}
-              
             >
               Send an offer
             </Text>
           )}
         </TouchableOpacity>
-        {addImg && <AddImages addImg={addImg} setAddImg={setAddImg} bidImages={bidImages} setBidImages={setBidImages} />}
+        {addImg && (
+          <AddImages
+            addImg={addImg}
+            setAddImg={setAddImg}
+            bidImages={bidImages}
+            setBidImages={setBidImages}
+          />
+        )}
       </View>
       <Modal transparent visible={!!selectedImage} onRequestClose={handleClose}>
         <Pressable style={styles.modalContainer} onPress={handleClose}>
@@ -451,14 +639,14 @@ const SendOffer = () => {
         />
       )}
 
-<ModalCancel
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}
-            imagesLocal={bidImages}
-            setImagesLocal={setBidImages}
-            index={imgIndex}
-          />
-          {modalVisible && <View style={styles.overlay} />}
+      <ModalCancel
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        imagesLocal={bidImages}
+        setImagesLocal={setBidImages}
+        index={imgIndex}
+      />
+      {modalVisible && <View style={styles.overlay} />}
     </View>
   );
 };

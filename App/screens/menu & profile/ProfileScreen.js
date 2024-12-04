@@ -53,7 +53,7 @@ const ProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   //   const [user,setUser]= useState(route.params.user);
   const user = useSelector((state) => state.storeData.userDetails);
-  // console.log("user at profile", user);
+  console.log("user at profile", user);
 
   const [editableField, setEditableField] = useState(null);
   const [location, setLocation] = useState(user?.location || "");

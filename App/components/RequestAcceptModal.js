@@ -78,76 +78,16 @@ const RequestAcceptModal = ({
         },
       };
       if (requestInfo?.requestType === "new") {
-        try {
-          await axiosInstance
-            .patch(
-              `${baseUrl}/chat/product-available`,
-              {
-                id: requestInfo?._id,
-              },
-              config
-            )
-            .then(async (res) => {
-              socket.emit("new retailer", res.data);
-              updateUserDetails();
-              const requests = newRequests.filter(
-                (request) => request._id === res.data?._id
-              );
-              const req = {
-                requestId: res.data?._id,
-                userId: res.data?.users[0]?._id,
-                senderId: res.data?.users[1]?._id,
-              };
-              console.log("RequestType new response", req);
-              dispatch(setCurrentRequest(req));
-              let tmp = {
-                ...res?.data,
-                requestType: "ongoing",
-                updatedAt: new Date().toISOString(),
-              };
-              console.log("new requestInfo", tmp);
-
-              dispatch(setRequestInfo(tmp));
-              const filteredRequests = newRequests.filter(
-                (request) => request._id !== res.data?._id
-              );
-              dispatch(setNewRequests(filteredRequests));
-              const updatedOngoing = [tmp, ...ongoingRequests];
-              dispatch(setOngoingRequests(updatedOngoing));
-
-              setAcceptLocal(true);
-              setModalVisible(false);
-              setLoading(false);
-              const token = await axiosInstance.get(
-                `${baseUrl}/user/unique-token?id=${requestInfo?.customerId?._id}`,
-                config
-              );
-              console.log("notify token: " + token.data);
-              if (token.data.length > 0) {
-                const notification = {
-                  token: token.data,
-                  title: user?.storeName,
-                  requestInfo: {
-                    requestId: requestInfo?._id,
-                    userId: res.data?.users[1]._id,
-                    senderId: res.data?.users[0]._id,
-                  },
-                  tag: user?._id,
-                  image: requestInfo?.requestId?.requestImages[0],
-                  redirect_to: "bargain",
-                  details: requestInfo?.requestId?.requestDescription,
-                };
-                NotificationRequestAccepted(notification);
-              }
-              // console.log("after accepting request",requestInfo);
-            });
-        } catch (error) {
-          setLoading(false);
-          console.error("Error updating requestType 'new':", error);
-          return;
-        }
+        setModalVisible(false);
+        navigation.navigate("send-offer", {
+          user,
+          // requestInfo: requestInfo,
+          messages,
+          setMessages,
+        });
       } else {
         try {
+          
           const accept = await axiosInstance.patch(
             `${baseUrl}/chat/accept-bid`,
             {
@@ -182,14 +122,14 @@ const RequestAcceptModal = ({
               const requests = ongoingRequests.filter(
                 (request) => request._id === tmp?._id
               );
-             
+
               //             // console.log("request ongoing",requests[0]?.updatedAt, new Date().toISOString());
 
               // console.log("request ongoing",filteredRequests.length,requests.length,updatedRequest)
               const data = [tmp, ...filteredRequests];
               dispatch(setOngoingRequests(data));
               setAcceptLocal(true);
-           
+
               setLoading(false);
               const token = await axiosInstance.get(
                 `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,
@@ -211,23 +151,8 @@ const RequestAcceptModal = ({
                 };
                 NotificationBidAccepted(notification);
               }
-              // const notification = {
-              //   token: accept?.data?.uniqueTokens,
-              //   title: user?.storeName,
-              //   requestInfo: {
-              //     requestId: requestInfo?._id,
-              //     userId: requestInfo?.users[0]._id
-              //   },
-              //   details:requestInfo?.requestId?.requestDescription,
-              //   tag: user?._id,
-              //   price: lastMessage?.bidPrice,
-              //   image: requestInfo?.requestId?.requestImages[0],
-              // };
-              //  console.log("new notification",notification);
+
               setModalVisible(false);
-              // setTimeout(() => {
-              //   BidAcceptedOtherRetailer(notification)
-              // }, 500)
             } catch (error) {
               console.error("Error updating chat details:", error);
             }
@@ -245,32 +170,7 @@ const RequestAcceptModal = ({
   };
 
   // Decreasing the count of available spades of retailer //////////////////////////////////////////////////////
-  const updateUserDetails = async () => {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-    await axiosInstance
-      .patch(
-        `${baseUrl}/retailer/editretailer`,
-        {
-          _id: userDetails?._id,
-          freeSpades: userDetails.freeSpades - 1,
-        },
-        config
-      )
-      .then(async (res) => {
-        // console.log("userData updated Successfully after payment ");
-        dispatch(setUserDetails(res.data));
-        // console.log("res after user update", res.data);
-        await AsyncStorage.setItem("userData", JSON.stringify(res.data));
-      })
-      .catch((err) => {
-        console.error("error while updating profile", err.message);
-      });
-  };
+ 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
