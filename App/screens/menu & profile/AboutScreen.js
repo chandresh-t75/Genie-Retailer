@@ -11,7 +11,7 @@ import Analytics  from "../../assets/analytics.svg"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackArrow from "../../assets/BackArrow.svg";
 
-
+// console
 const AboutScreen = () => {
     const navigation = useNavigation();
   const { width } = Dimensions.get("window")
