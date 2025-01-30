@@ -79,7 +79,7 @@ import ErrorModal from "../../components/ErrorModal";
 import axiosInstance from "../utils/axiosInstance";
 import NetworkError from "../../components/NetworkError";
 import CallCustomerModal from "../../components/CallCustomerModal";
-
+import GalleryImg from "../../assets/image-reference.svg";
 // import Clipboard from '@react-native-clipboard/clipboard';
 
 // import MessageLoaderSkeleton from "../utils/MessageLoaderSkeleton";
@@ -1237,6 +1237,12 @@ const RequestPage = () => {
                   </TouchableOpacity>
                 )}
             </View>
+            <TouchableOpacity onPress={() => navigation.navigate('image-refrences')}>
+                                    <View className="flex-row gap-[15px] mt-[10px] items-center">
+                                        <GalleryImg />
+                                        <Text className="text-[14px]  text-[#fb8c00]" style={{ fontFamily: "Poppins-Regular" }}>Image References</Text>
+                                    </View>
+              </TouchableOpacity>
           </View>
         </View>
 
@@ -2020,7 +2026,7 @@ const RequestPage = () => {
                 <View className="h-[63px] flex items-center justify-center bg-[#FB8C00]">
                   <Text
                     className=" text-[16px] text-white"
-                    style={{ fontFamily: "Poppins-Black" }}
+                    style={{ fontFamily: "Poppins-BoldItalic" }}
                   >
                     Call Customer
                   </Text>

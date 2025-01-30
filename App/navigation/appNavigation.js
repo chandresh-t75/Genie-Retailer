@@ -43,6 +43,7 @@ import UpdateServiceDelivery from '../screens/login/UpdateServiceDelivery';
 import UpdateStoreDescription from '../screens/login/UpdateStoreDescription';
 import AddProductImages from '../screens/login/AddProductImages';
 import SendOffer from '../screens/requests/SendOffer';
+import ImageReferences from '../screens/requests/ImageReferences';
 
 const Stack = createNativeStackNavigator();
 const GlobalNavigation = () => {
@@ -114,6 +115,7 @@ const GlobalNavigation = () => {
       <Stack.Screen name="help" component={HelpScreen} />
       <Stack.Screen name="viewrequest" component={ViewRequestScreen} />
       <Stack.Screen name="send-document" component={SendDocument} />
+      <Stack.Screen name="image-refrences" component={ImageReferences}/>
     </Stack.Navigator>
   )
 }

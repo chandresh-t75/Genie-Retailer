@@ -43,7 +43,7 @@ const HomeScreen = () => {
 
 const navigationState = useNavigationState(state => state);
   const isHomeScreen = navigationState.routes[navigationState.index].name === 'home';
-//   console.log("userDta at home",userData);
+ 
 
   useEffect(() => {
     const backAction = () => {
@@ -87,7 +87,7 @@ const fetchUserData = async () => {
       if (userData) {
         dispatch(setUserDetails(userData));
         dispatch(setAccessToken(accessToken));
-        // console.log('Fetched user data successfully at HomeScreen', userData);
+        console.log('Fetched user data successfully at HomeScreen', userData);
       
         const response = await axios.get(
           `${baseUrl}/retailer/`,

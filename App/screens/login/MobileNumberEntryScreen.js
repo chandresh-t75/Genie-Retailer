@@ -97,6 +97,9 @@ const MobileNumberEntryScreen = () => {
     }
   }, [route.params]);
 
+  // console.log("token verify token",token,"unique",uniqueToken)
+
+
   useEffect(() => {
     const backAction = () => {
       // If on OTP screen, set mobileScreen to true to go back to mobile number entry screen
@@ -300,7 +303,7 @@ const MobileNumberEntryScreen = () => {
             'Authorization': `Bearer ${response.data.accessToken}`,
           }
         }
-        console.log("token verify", uniqueToken)
+        console.log("token verify at check", uniqueToken)
         const result = await axiosInstance.patch(
           `${baseUrl}/retailer/editretailer`,
           {
