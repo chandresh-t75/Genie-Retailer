@@ -577,7 +577,7 @@ const SendOffer = () => {
           </View>
         </ScrollView>
         <TouchableOpacity
-          disabled={!price || query.length == 0 || loading}
+          disabled={ query.length == 0 || loading}
           onPress={() => {
             sendOffer();
           }}
@@ -588,8 +588,7 @@ const SendOffer = () => {
             right: 0,
             height: 63,
             width: "100%",
-            backgroundColor:
-              !price || query.length === 0 ? "#e6e6e6" : "#FB8C00",
+            backgroundColor: query.length === 0 ? "#e6e6e6" : "#FB8C00",
             justifyContent: "center", // Center content vertically
             alignItems: "center", // Center content horizontally
           }}
@@ -600,7 +599,7 @@ const SendOffer = () => {
             <Text
               style={{
                 fontSize: 18,
-                color: !price || query.length === 0 ? "#888888" : "white",
+                color: query.length === 0 ? "#888888" : "white",
                 fontFamily: "Poppins-Black",
               }}
             >
