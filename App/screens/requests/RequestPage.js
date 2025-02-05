@@ -155,7 +155,7 @@ const RequestPage = () => {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
-        console.log(currentRequest);
+        // console.log(currentRequest);
         if (currentRequest?.userId && currentRequest?.senderId) SocketSetUp();
         else if (currentRequest?.userId && !currentRequest?.senderId) {
           SocketSetUp();
@@ -359,7 +359,7 @@ const RequestPage = () => {
                 configcl
               )
               .then((res) => {
-                console.log("closed history", res.data);
+                // console.log("closed history", res.data);
                 const filteredRequests = ongoingRequests.filter(
                   (request) => request._id !== result?._id
                 );
@@ -941,7 +941,7 @@ const RequestPage = () => {
             rated: true,
             updatedAt: new Date().toISOString(),
           };
-          console.log("update", tmp);
+          // console.log("update", tmp);
           dispatch(setRequestInfo(tmp));
 
           const filteredRequests = retailerHistory.filter(

@@ -80,7 +80,7 @@ const SendOffer = () => {
   const [bidImages, setBidImages] = useState([]);
   const [imgIndex, setImgIndex] = useState();
   const [modalVisible, setModalVisible] = useState(false);
-  console.log("messages", messages);
+  // console.log("messages", messages);
   // console.log("requestinfo", requestInfo);
 
   const updateUserDetails = async () => {
@@ -278,7 +278,8 @@ const SendOffer = () => {
       );
       formData.append("userRequest", requestInfo?.requestId?._id);
       formData.append("message", query);
-      formData.append("bidType", "true");
+      if(bidImages?.length===0 && priceLocal===0)formData.append("bidType", "false");
+      else formData.append("bidType", "true");
       formData.append("chat", requestInfo?._id);
       formData.append("bidPrice", priceLocal);
       formData.append("warranty", warrantyLocal);
@@ -312,11 +313,11 @@ const SendOffer = () => {
           const requests = ongoingRequests.filter(
             (request) => request._id === requestInfo._id
           );
-          console.log(
-            "request ongoing",
-            filteredRequests.length,
-            requests.length
-          );
+          // console.log(
+          //   "request ongoing",
+          //   filteredRequests.length,
+          //   requests.length
+          // );
           const updatedRequest = {
             ...requests[0],
             updatedAt: new Date().toISOString(),
@@ -347,7 +348,7 @@ const SendOffer = () => {
             `${baseUrl}/user/unique-token?id=${requestInfo?.customerId._id}`,
             config
           );
-          console.log("token", token.data, requestInfo);
+          // console.log("token", token.data, requestInfo);
           if (token.data.length > 0) {
             const notification = {
               token: token.data,
@@ -459,7 +460,7 @@ const SendOffer = () => {
                 }}
               >
                 <View className="px-[20px] flex flex-row items-center gap-[11px] w-max">
-                  {console.log(Array.isArray(bidImages))}
+                  
                   {Array.isArray(bidImages) &&
                     bidImages.map((image, index) => (
                       <View key={index}>
